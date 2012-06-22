@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,8 @@
 
     class Import extends Item
     {
+        protected $tempTableName;
+
         public function __toString()
         {
             return Yii::t('Default', '(Unnamed)');
@@ -90,7 +92,29 @@
             {
                 throw new NotSupportedException();
             }
-            return 'importtable' . $this->id;
+            if ($this->tempTableName != null)
+            {
+                return $this->tempTableName;
+            }
+            $this->tempTableName = 'importtable' . $this->id;
+            return $this->tempTableName;
+        }
+
+        public function setTempTableName($name)
+        {
+            assert('is_string($name)');
+            $this->tempTableName = $name;
+        }
+
+        protected function beforeDelete()
+        {
+            if (!parent::beforeDelete())
+            {
+                return false;
+            }
+            $sql = 'Drop table if exists ' . $this->getTempTableName();
+            R::exec($sql);
+            return true;
         }
     }
 ?>

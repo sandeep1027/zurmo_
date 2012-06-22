@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,9 +30,9 @@
     // DON'T MAKE A MESS!
     return array(
         'Apache'
-            => 'Apache',
+            => 'Apache', // Same Word Translated
         'APC'
-            => 'APC',
+            => 'APC', // Same Word Translated
         'Below you will find the results of the system check. If any required ' .
         'services are not setup correctly, you will need to make sure they are ' .
         'installed correctly before you can continue.'
@@ -58,8 +58,12 @@
             => 'Services optionnels installés avec succès',
         'Creating super user.'
             => 'Creation du super-utilisateur.',
+        'Ctype extension is loaded.'
+            => 'L\'extension ctype est chargée.',
+        'Ctype extension is not loaded.'
+            => 'L\'extension ctype n\'est pas chargée.',
         'Curl'
-            => 'Curl',
+            => 'Curl', // Same Word Translated
         'Database admin password'
             => 'Mot de passe administrateur',
         'Database admin username'
@@ -76,8 +80,14 @@
             => 'La base de données est au mode strict.',
         'Database is not in strict mode.'
             => 'La base de données n\'est pas au mode strict.',
+        'Database log_bin=off and therefore satisfies this requirement.' // Not Coding Standard
+            => 'Dans la base de données, la valeur du paramètre log_bin=off et satisfait les conditions nécéssaires.', // Not Coding Standard
+        'Database log_bin=on and log_bin_trust_function_creators=on and therefore satisfies this requirement' // Not Coding Standard
+            => 'Dans la base de données, les valeurs des paramètres log_bin=on et log_bin_trust_function_creators=on et satisfont les conditions nécéssaires.', // Not Coding Standard
+        'Database log_bin=on. Either set log_bin=off or set log_bin_trust_function_creators=on.' // Not Coding Standard
+            => 'Dans la base de données, le paramètre log_bin=on. Vous devez modifier le paramètre pour que log_bin=off ou log_bin_trust_function_creators=on.', // Not Coding Standard
         'Database max_allowed_packet size is:'
-            => 'Le max_allowed_packet de la base de données est:',
+            => 'La taille max_allowed_packet de la base de données est:',
         'Database max_allowed_packet size meets minimum requirement.'
             => 'La taille max_allowed_packet de la base de données répond aux exigences minimales.',
         'Database max_sp_recursion_depth size is:'
@@ -86,10 +96,20 @@
             => 'La taille max_sp_recursion_depth répond aux exigences minimales.',
         'Database name'
             => 'Nom de la base de donées',
+        'Database optimizer_search_depth size meets requirement.'
+            => 'La valeur du paramètre optimizer_search_depth répond aux exigences.',
+        'Database optimizer_search_depth value is {searchDepth}. It is required to be set to 0.'
+            => 'La valeur du paramètre optimizer_search_depth est {searchDepth}. La valeur doit être 0.',
         'Database password'
             => 'Mot de passe de la base de données',
+        'Database port.'
+            => 'Port (base de données)',
         'Database schema creation complete.'
             => 'Schéma de la base de données crée.',
+        'Database thread_stack value is:'
+            => 'La valeur du thread_stack de la base de données est:',
+        'Database thread_stack value meets minimum requirement.'
+            => 'La valeur du thread_stack de la base de données répond aux exigences minimales.',
         'Database username'
             => 'Nom de l\'utilisateur de la base de données',
         'Dropping existing tables.'
@@ -106,6 +126,10 @@
             => 'Les données de démonstration sont chargées.',
         'Freezing database.'
             => 'Freezing la base de données.',
+        'Host name where Zurmo will be installed.'
+            => 'Le nom de l\'hôte où Zurmo va être installé.',
+        'If this website is in production mode, please remove the app/test.php file.'
+            => 'Si ce site web est en production, veuillez supprimer le fichier app/test.php.',
         'In all likelihood, these items were supplied to you by your Web Host. ' .
         'If you do not have this information, then you will need to contact them ' .
         'before you can continue. If you\'re all ready...'
@@ -124,8 +148,8 @@
             => 'Log d\'Installation',
         'is installed, but the version is unknown.'
             => 'est installé, mais la version est inconnue.',
-        'is not installed'
-            => 'n\'est pas installé',
+        'is not installed.'
+            => 'n\'est pas installé.',
         'It is highly recommended that all optional services are installed and ' .
         'working before continuing.'
             => 'Il est fortement recommandé d\'installer tous les services optionnels ' .
@@ -138,14 +162,12 @@
             => 'Création des données de démonstration.  Veuillez patienter.',
         'Locking Installation.'
             => 'Verrouillage de la page d\'installation',
-        'Login'
-            => 'Connexion',
         'Mbstring is installed.'
             => 'Mbstring est installé.',
         'Mbstring is not installed.'
             => 'Mbstring n\'est pas installé.',
-        'Memcache'
-            => 'Memcache',
+        'Memcache extension'
+            => 'Extension Memcache',
         'Memcache host'
             => 'Nom d\'hôte Memcache',
         'Memcache host name. Default is 127.0.0.1'
@@ -154,48 +176,58 @@
             => 'Memcache numéro du port',
         'Memcache port number. Default is 11211'
             => 'Memcache numéro du port.  Le défault est 11211.',
+        'Microsoft-IIS'
+            => 'Microsoft-IIS', // Same Word Translated
         'minimum requirement is:'
             => 'Exigence minimale:',
         'Minimum version required:'
             => 'Version minimale requise:',
         'Mysql'
-            => 'Mysql',
+            => 'Mysql', // Same Word Translated
         'Oh no!'
             => 'Zut!',
         'PASS'
             => 'RÉUSSI',
+        'PCRE extension is loaded.'
+            => 'L\'extension PCRE est chargée.',
+        'PCRE extension is not loaded.'
+            => 'L\'extension PCRE n\'est pas chargée.',
         'PHP'
-            => 'PHP',
-        'PHP File Uploads is Off.  This should be on.'
-            => 'Le paramètre téléchargement de fichier PHP ne sont pas activés. Cette fonction doit être activée.',
-        'PHP File Uploads is on which is ok.'
-            => 'Le paramètre téléchargement de fichier PHP est activé.',
-        'PHP Memory setting is:'
-            => 'PHP limite de mémoire:',
-        'PHP Memory setting meets minimum requirement.'
-            => 'Le parametre PHP limite de mémoire répond aux exigences minimales.',
+            => 'PHP', // Same Word Translated
+        'PHP date.timezone is not set.'
+            => 'Le paramètre PHP date.timezone n\'est pas configuré.',
+        'PHP date.timezone is set.'
+            => 'Le paramètre PHP date.timezone est configuré.',
+        'PHP file_uploads is Off.  This should be on.'
+            => 'Le paramètre PHP file_uploads n\'est pas activé. Cette fonction doit être activée.',
+        'PHP file_uploads is on which is ok.'
+            => 'Le paramètre PHP file_uploads est activé.',
+        'PHP memory_limit is:'
+            => 'PHP memory_limit:',
+        'PHP memory_limit meets minimum requirement.'
+            => 'Le paramètre PHP memory_limit répond aux exigences minimales.',
         'PHP post_max_size meets minimum requirement.'
             => 'PHP post_max_size répond aux exigences minimales.',
         'PHP post_max_size setting is:'
             => 'La taille PHP post_max_size est:',
-        'PHP Timezone is not set.'
-            => 'Le fuseau horaire PHP n\'est pas configuré.',
-        'PHP Timezone is set.'
-            => 'Le fuseau horaire PHP est configuré.',
-        'PHP Upload size meets minimum requirement.'
-            => 'PHP limite de téléchargement répond aux exigences minimales.',
-        'PHP Upload size setting is:'
-            => 'PHP limite de téléchargement:',
+        'PHP upload_max_filesize value is:'
+            => 'La valeur PHP upload_max_filesize est:',
+        'PHP upload_max_filesize value meets minimum requirement.'
+            => 'La valeur PHP upload_max_filesize répond aux exigences minimales.',
+        'Please delete all files from assets folder on server.'
+            => 'Veuillez supprimer touts les fichiers du dossier Assets.',
         'Rebuilding Permissions.'
             => 'Reconstruction des permissions.',
         'Recheck System'
             => 'Revérifie le système',
         'RedBean'
-            => 'RedBean',
+            => 'RedBean', // Same Word Translated
         'RedBean file is missing patch.'
             => 'Le fichier RedBean manque le correctif.',
         'RedBean file is patched correctly'
             => 'Le fichier RedBean contient le correctif',
+        'Schema update complete.'
+            => 'Mise à jour du schéma effectuée.',
         'Service Status Partially Known'
             => 'Statut du service partiellement connue',
         'Setting up default data.'
@@ -208,8 +240,14 @@
             => 'SOAP est installé.',
         'SOAP is not installed.'
             => 'SOAP n\'est pas installé.',
+        'SPL extension is loaded.'
+            => 'L\'extension SPL est chargée.',
+        'SPL extension is not loaded.'
+            => 'L\'extension SPL n\'est pas chargée.',
         'Starting database schema creation.'
             => 'Création de schémas de base de données.',
+        'Starting schema update process.'
+            => 'Mise à jour du schéma à commencé.',
         'Starting to load demo data.'
             => 'Création des données de démonstration.',
         'The database name specified does not exist or the user specified does not have access.'
@@ -218,6 +256,8 @@
             => 'Le fichier de configuration debug.php n\'est pas inscriptible.',
         'The debug.php config file is writable.'
             => 'Le fichier de configuration debug.php est inscriptible.',
+        'The instance folders are present and writable.'
+            => 'Les fichiers système sont présents et écrivables.',
         'The name of the database you want to run Zurmo in.'
             => 'Le nom de la base de données pour Zurmo.',
         'The next step is to install the demo data.'
@@ -226,6 +266,10 @@
             => 'Le fichier de configuration perInstance.php n\'est pas inscriptible.',
         'The perInstance.php config file is writable.'
             => 'Le fichier de configuration perInstance.php est inscriptible.',
+        'The relative path where Zurmo will be installed.'
+            => 'Le chemin d\'accès relatif où Zurmo va être installé.',
+        'The system has detected that the hostInfo and/or scriptUrl are not set up. Please open the perInstance.php config file and set up these parameters.'
+            => 'Le système a détecté que hostInfo et/ou scriptUrl ne sont pas configurés. Veuillez ouvrir le fichier config perInstance.php et configurer les paramètres.',
         'There was a problem creating the database Error code:'
             => 'Il y a eu un problème lors de la création de la base de données d\'erreurs',
         'There was a problem creating the user Error code:'
@@ -244,12 +288,14 @@
         'This must be checked if you are specifying an existing database.'
             => 'AVERTISSEMENT - Si la base de données existe déjà, la base de données existante ' .
                'va être suprimée.  Cocher la boîte si vous spécifiez une base de données existante.',
-        'Welcome to Zurmo. Before getting started, we need some information on the database. You will need to know the following items before proceeding:'
-            => 'Bienvenue à Zurmo. Avant de commencer, vous devez obtenir les informations suivantes sure votre base de donnéés:',
+        'Welcome to Zurmo. Before getting started, we need some information on the database.' .
+        ' You will need to know the following items before proceeding:'
+            => 'Bienvenue à Zurmo. Avant de commencer, vous devez obtenir les informations suivantes ' .
+            ' sur votre base de donnéés:',
         'Writing Configuration File.'
             => 'Création du fichier de configuration.',
         'Yii'
-            => 'Yii',
+            => 'Yii', // Same Word Translated
         'You cannot access the installation area because the application is already installed.'
             => 'Vous ne pouvez pas accéder l\'installation parce que l\'application est déjà installée.',
         'You have specified an existing database. If you would like to use this database, ' .
@@ -264,9 +310,17 @@
             => 'Vous avez specifié un utilisateur existant.  Si vous voulez utiliser cet utilisateur, ' .
                'ne specifiez pas un nom d\'utilisateur et mot de passe administrateur. Autrement, ' .
                'choisissez un nom d\'utilisateur non existant.',
+        'Your ZurmoCRM software is outdated, new stable release available:'
+            => 'Votre version de Zurmo est obsolète, une nouvelle version stable est disponible:',
         'Zurmo administrative password. The username is `super`.  You can change this later.'
             => 'Zurmo mot de passe administrateur.  Le nom d\'utilisateur est \'super\'. Vous pouvez modifier le nom plus tard.',
         'Zurmo Installation'
             => 'Installation de Zurmo',
-    );
+        'Zurmo Version'
+            => 'Version de Zurmo',
+        '{folderPath} is missing.'
+            => '{folderPath} est manquant.',
+        '{folderPath} is not writable.'
+            => '{folderPath} n\'est pas écrivable.',
+    ); // Not Coding Standard
 ?>

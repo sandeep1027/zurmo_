@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -55,7 +55,8 @@
             // modules, and because ZurmoModule is the root of the module
             // dependence hierarchy it needed concern itself, other than
             // with the models that are specific to itself.
-            return array('NamedSecurableItem', 'GlobalMetadata', 'PerUserMetadata', 'Portlet', 'CustomFieldData');
+            return array('AuditEvent', 'NamedSecurableItem', 'GlobalMetadata', 'PerUserMetadata', 'Portlet', 'CustomFieldData',
+                         'CalculatedDerivedAttributeMetadata', 'DropDownDependencyDerivedAttributeMetadata');
         }
 
         public static function getDefaultMetadata()
@@ -87,22 +88,30 @@
                 ),
                 'headerMenuItems' => array(
                     array(
-                        'label' => 'Your Profile',
-                        'route' => 'users/default/profile',
-                    ),
-                    array(
-                        'label' => 'Admin',
-                        'route' => 'configuration',
+                        'label' => 'Settings',
+                        'url' => array('/configuration'),
                         'right' => self::RIGHT_ACCESS_ADMINISTRATION,
+                        'order' => 6,
                     ),
                     array(
-                        'label' => 'About',
-                        'route' => 'zurmo/default/about',
+                        'label' => 'Forums',
+                        'url' => 'http://zurmo.org/forums/',
+                        'order' => 7,
                     ),
                     array(
-                        'label' => 'Logout',
-                        'route' => 'zurmo/default/logout',
+                        'label' => 'About Zurmo',
+                        'url' => array('/zurmo/default/about'),
+                        'order' => 8,
                     ),
+                ),
+                'adminTabMenuItemsModuleOrdering' => array(
+                    'home',
+                    'designer',
+                    'import',
+                    'groups',
+                    'users',
+                    'roles',
+                    'configuration'
                 ),
                 'tabMenuItemsModuleOrdering' => array(
                     'home',
@@ -180,6 +189,134 @@
         public static function getDefaultDataMakerClassName()
         {
             return 'ZurmoDefaultDataMaker';
+        }
+
+        /**
+        * When updates info are pulled from zurmo home.
+        * @return $lastAttemptedInfoUpdateTimeStamp
+        */
+        public static function getLastAttemptedInfoUpdateTimeStamp()
+        {
+            $lastAttemptedInfoUpdateTimeStamp = ZurmoConfigurationUtil::getByModuleName('ZurmoModule', 'lastAttemptedInfoUpdateTimeStamp');
+            return $lastAttemptedInfoUpdateTimeStamp;
+        }
+
+        /**
+         * Set $lastAttemptedInfoUpdateTimeStamp global configuration.
+         * This function is called during execution of ZurmoModule::checkAndUpdateZurmoInfo()
+         */
+        public static function setLastAttemptedInfoUpdateTimeStamp()
+        {
+            ZurmoConfigurationUtil::setByModuleName('ZurmoModule', 'lastAttemptedInfoUpdateTimeStamp', time());
+        }
+
+        /**
+         * Get last Zurmo Stable version from global configuration property.
+         */
+        public static function getLastZurmoStableVersion()
+        {
+            $lastZurmoStableVersion = ZurmoConfigurationUtil::getByModuleName('ZurmoModule', 'lastZurmoStableVersion');
+            return $lastZurmoStableVersion;
+        }
+
+        /**
+         * Set lastZurmoStableVersion global pconfiguration property.
+         * @param string $zurmoVersion
+         */
+        public static function setLastZurmoStableVersion($zurmoVersion)
+        {
+            assert('isset($zurmoVersion)');
+            assert('$zurmoVersion != ""');
+            ZurmoConfigurationUtil::setByModuleName('ZurmoModule', 'lastZurmoStableVersion', $zurmoVersion);
+        }
+
+        /**
+         * Check if available zurmo updates has been checked within the last 7 days. If not, then perform
+         * update and update the lastAttemptedInfoUpdateTimeStamp and lastZurmoStableVersion global configuration properties.
+         * @param boolean $forceCheck - If true, it will ignore the last time the check was made
+         */
+        public static function checkAndUpdateZurmoInfo($forceCheck = false)
+        {
+            $lastAttemptedInfoUpdateTimeStamp = self::getLastAttemptedInfoUpdateTimeStamp();
+            if ( $forceCheck || $lastAttemptedInfoUpdateTimeStamp == null ||
+            (time() - $lastAttemptedInfoUpdateTimeStamp) > (7 * 24 * 60 * 60))
+            {
+                $headers = array(
+                            'Accept: application/json',
+                            'ZURMO_API_REQUEST_TYPE: REST',
+                );
+                $data = array(
+                            'zurmoToken' => ZurmoModule::getZurmoToken(),
+                            'zurmoVersion' => VERSION,
+                            'serializedData' => ''
+                );
+
+                if (isset($_SERVER['SERVER_ADDR']))
+                {
+                    $data['serverIpAddress'] = $_SERVER['SERVER_ADDR'];
+                }
+
+                if (isset($_SERVER['SERVER_NAME']))
+                {
+                    $data['serverName'] = $_SERVER['SERVER_NAME'];
+                }
+
+                if (isset($_SERVER['SERVER_SOFTWARE']))
+                {
+                    $data['serverSoftware'] = $_SERVER['SERVER_SOFTWARE'];
+                }
+
+                $response = ApiRestHelper::createApiCall('http://updates.zurmo.com/app/index.php/updatesManager/api/create', 'POST', $headers, array('data' => $data));
+                $response = json_decode($response, true);
+                if (ApiResponse::STATUS_SUCCESS == $response['status'])
+                {
+                    if (isset($response['data']['latestStableZurmoVersion']) && $response['data']['latestStableZurmoVersion'] != '')
+                    {
+                        self::setLastZurmoStableVersion($response['data']['latestStableZurmoVersion']);
+                    }
+
+                    $zurmoServiceHelper = new ZurmoServiceHelper();
+                    if (!$zurmoServiceHelper->runCheckAndGetIfSuccessful())
+                    {
+                        $message                    = new NotificationMessage();
+                        $message->textContent       = $zurmoServiceHelper->getMessage();
+                        $rules = new NewZurmoVersionAvailableNotificationRules();
+                        NotificationsUtil::submit($message, $rules);
+                    }
+                }
+                self::setLastAttemptedInfoUpdateTimeStamp();
+            }
+        }
+
+        /**
+         * Get the global configuration value - Zurmo token which is used to indentify installation.
+         * @return string - $zurmoToken.
+         */
+        public static function getZurmoToken()
+        {
+            if (null != $zurmoToken = ZurmoConfigurationUtil::getByModuleName('ZurmoModule', 'zurmoToken'))
+            {
+                return $zurmoToken;
+            }
+            else
+            {
+                $zurmoToken = self::setZurmoToken();
+                return $zurmoToken;
+            }
+        }
+
+        /**
+         * Set Zurmo token.
+         */
+        public static function setZurmoToken($zurmoToken = null)
+        {
+            if (!isset($zurmoToken) || !is_int($zurmoToken))
+            {
+                $zurmoToken = mt_rand( 1000000000 , 9999999999 );
+            }
+
+            ZurmoConfigurationUtil::setByModuleName('ZurmoModule', 'zurmoToken', $zurmoToken);
+            return $zurmoToken;
         }
     }
 ?>

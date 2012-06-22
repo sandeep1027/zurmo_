@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -72,7 +72,7 @@
                     $content .= $this->renderServiceGroupDisplayByServiceDataAndCheckResult(
                                             Yii::t('Default', 'Failed Required Services'),
                                             $this->checkResultsDisplayData[$failedIndexId][$requiredIndexId],
-                                            Yii::t('Default', 'FAIL'));
+                                            '<span class="fail">' . Yii::t('Default', 'FAIL') . '</span>');
                     $content .= '<br/><br/>';
                 }
                 if (count($this->checkResultsDisplayData[$failedIndexId][$optionalIndexId]) > 0)
@@ -80,7 +80,7 @@
                     $content .= $this->renderServiceGroupDisplayByServiceDataAndCheckResult(
                                             Yii::t('Default', 'Failed Optional Services'),
                                             $this->checkResultsDisplayData[$failedIndexId][$optionalIndexId],
-                                            Yii::t('Default', 'FAIL'));
+                                            '<span class="fail">' . Yii::t('Default', 'FAIL') . '</span>');
                     $content .= '<br/>';
                 }
             }
@@ -89,7 +89,7 @@
                 $content .= $this->renderServiceGroupDisplayByServiceDataAndCheckResult(
                                         Yii::t('Default', 'Service Status Partially Known'),
                                         $this->checkResultsDisplayData[$warningIndexId],
-                                        Yii::t('Default', 'WARNING'));
+                                        '<span class="warning">' . Yii::t('Default', 'WARNING') . '</span>');
                 $content .= '<br/>';
             }
 
@@ -98,7 +98,7 @@
                 $content .= $this->renderServiceGroupDisplayByServiceDataAndCheckResult(
                                         Yii::t('Default', 'Correctly Installed Services'),
                                         $this->checkResultsDisplayData[$passedIndexId],
-                                        Yii::t('Default', 'PASS'));
+                                        '<span class="pass">' . Yii::t('Default', 'PASS') . '</span>');
             }
             $content .= '<br/><br/>';
             $content .= CHtml::link(Yii::t('Default', 'Recheck System'), $currentPageUrl);

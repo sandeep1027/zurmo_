@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,7 +50,8 @@
                                     $mappingDataMetadata,
                                     $mappingDataMappingRuleFormsAndElementTypes,
                                     $mappableAttributeIndicesAndDerivedTypes,
-                                    $requiredAttributesLabelsData)
+                                    $requiredAttributesLabelsData,
+                                    $title)
         {
             assert('is_string($controllerId)');
             assert('is_string($moduleId)');
@@ -67,6 +68,7 @@
             $this->mappingDataMappingRuleFormsAndElementTypes = $mappingDataMappingRuleFormsAndElementTypes;
             $this->mappableAttributeIndicesAndDerivedTypes    = $mappableAttributeIndicesAndDerivedTypes;
             $this->requiredAttributesLabelsData               = $requiredAttributesLabelsData;
+            $this->title                                      = $title;
         }
 
         /**
@@ -96,16 +98,18 @@
             $content .= $this->renderRequiredAttributesLabelsDataContent();
             $content .= '<table>';
             $content .= '<colgroup>';
-            $content .= '<col style="width:20%" />';
-            $content .= '<col style="width:20%" />';
             if (count($headerColumns) == 4)
             {
                 $content .= '<col style="width:20%" />';
-                $content .= '<col style="width:40%" />';
+                $content .= '<col style="width:20%" />';
+                $content .= '<col style="width:25%" />';
+                $content .= '<col style="width:35%" />';
             }
             else
             {
-                $content .= '<col style="width:60%" />';
+                $content .= '<col style="width:20%" />';
+                $content .= '<col style="width:25%" />';
+                $content .= '<col style="width:55%" />';
             }
             $content .= '</colgroup>';
             $content .= '<tbody>';
@@ -124,22 +128,22 @@
             $content .= '</tr>';
             $content .= '</tbody>';
             $content .= '</table>';
-            $content .= $this->renderActionLinksContent();
             return $content;
         }
 
         protected function renderRequiredAttributesLabelsDataContent()
         {
-            $content = null;
+            $content = '<div class="required-fields">';
             if (count($this->requiredAttributesLabelsData) > 0)
             {
-                $content .= '<b>' . Yii::t('Default', 'Required Fields') . '</b>' . '<br/>';
+                $content .= '<strong>' . Yii::t('Default', 'Required Fields') . ':</strong>' . '<br/>';
                 foreach ($this->requiredAttributesLabelsData as $label)
                 {
                     $content .= $label. '<br/>';
                 }
                 $content .= '<br/>';
             }
+            $content .= '</div>';
             return $content;
         }
 

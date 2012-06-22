@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,6 +41,8 @@
 
         public $databasePassword;
 
+        public $databasePort = 3306;
+
         public $superUserPassword;
 
         public $memcacheHostname = '127.0.0.1';
@@ -55,6 +57,10 @@
 
         public $installDemoData = false;
 
+        public $hostInfo = '';
+
+        public $scriptUrl = '';
+
         public function rules()
         {
             return array(
@@ -62,6 +68,7 @@
                 array('databaseName',          'required'),
                 array('databaseUsername',      'required'),
                 array('databasePassword',      'required'),
+                array('databasePort',          'required'),
                 array('superUserPassword',     'required'),
                 array('databaseHostname',      'type', 'type' => 'string'),
                 array('databaseAdminUsername', 'type', 'type' => 'string'),
@@ -75,6 +82,8 @@
                 array('memcachePortNumber',    'numerical', 'min'  => 1024),
                 array('removeExistingData',    'boolean'),
                 array('installDemoData',       'boolean'),
+                array('hostInfo',              'type', 'type' => 'string'),
+                array('scriptUrl',             'type', 'type' => 'string'),
             );
         }
 
@@ -118,6 +127,20 @@
                     }
                 }
 
+                if (!$this->hostInfo)
+                {
+                    $this->addError('hostInfo', Yii::t( 'Default', 'Please enter server ip or url.'));
+                    return;
+                }
+                else
+                {
+                    if ((strpos($this->hostInfo, 'http://') === false) && (strpos($this->hostInfo, 'https://') === false))
+                    {
+                        $this->addError('hostInfo', Yii::t( 'Default', 'Host Info must start with "http://" or "https://".'));
+                        return;
+                    }
+                }
+
                 if ($this->databaseAdminUsername != null)
                 {
                     if ($this->databaseAdminPassword == null)
@@ -129,7 +152,8 @@
                     $connectionResult = DatabaseCompatibilityUtil::checkDatabaseConnection($this->databaseType,
                                                                       $this->databaseHostname,
                                                                       $this->databaseAdminUsername,
-                                                                      $this->databaseAdminPassword);
+                                                                      $this->databaseAdminPassword,
+                                                                      (int)$this->databasePort);
                     if ($connectionResult !== true)
                     {
                         $this->addError('databaseAdminUsername', Yii::t('Default', 'Error code:') . " " .
@@ -140,6 +164,7 @@
                                                                              $this->databaseHostname,
                                                                              $this->databaseAdminUsername,
                                                                              $this->databaseAdminPassword,
+                                                                             (int)$this->databasePort,
                                                                              $this->databaseUsername);
                     if ($userExistsResult === true)
                     {
@@ -152,6 +177,7 @@
                                                                              $this->databaseHostname,
                                                                              $this->databaseAdminUsername,
                                                                              $this->databaseAdminPassword,
+                                                                             (int)$this->databasePort,
                                                                              $this->databaseName);
                     if ($databaseExistsResult === true)
                     {
@@ -164,6 +190,7 @@
                                                                              $this->databaseHostname,
                                                                              $this->databaseAdminUsername,
                                                                              $this->databaseAdminPassword,
+                                                                             (int)$this->databasePort,
                                                                              $this->databaseName);
                     if ($createDatabaseResult === false)
                     {
@@ -175,6 +202,7 @@
                                                                              $this->databaseHostname,
                                                                              $this->databaseAdminUsername,
                                                                              $this->databaseAdminPassword,
+                                                                             (int)$this->databasePort,
                                                                              $this->databaseName,
                                                                              $this->databaseUsername,
                                                                              $this->databasePassword);
@@ -190,7 +218,8 @@
                     $connectionResult = DatabaseCompatibilityUtil::checkDatabaseConnection($this->databaseType,
                                                                              $this->databaseHostname,
                                                                              $this->databaseUsername,
-                                                                             $this->databasePassword);
+                                                                             $this->databasePassword,
+                                                                             (int)$this->databasePort);
                     if ($connectionResult !== true)
                     {
                         $this->addError('databaseUsername', Yii::t('Default', 'Error code:') . " " .
@@ -201,6 +230,7 @@
                                                                              $this->databaseHostname,
                                                                              $this->databaseUsername,
                                                                              $this->databasePassword,
+                                                                             (int)$this->databasePort,
                                                                              $this->databaseName);
                     if ($databaseExistsResult !== true)
                     {

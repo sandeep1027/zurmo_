@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,11 +26,12 @@
 
     class ConfigureModulesView extends GridView
     {
+        protected $cssClasses =  array( 'AdministrativeArea' , 'TableOfContentsView' );
+
         public function __construct()
         {
-            parent::__construct(2, 1);
-            $this->setView(new TitleBarView(Yii::t('Default', 'Administration'), Yii::t('Default', 'Menu')), 0, 0);
-            $this->setView(new ConfigureModulesMenuView(), 1, 0);
+            parent::__construct(1, 1);
+            $this->setView(new ConfigureModulesMenuView(), 0, 0);
         }
 
         public function isUniqueToAPage()

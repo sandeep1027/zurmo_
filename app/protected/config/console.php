@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,6 +37,8 @@
     $common_config['behaviors']['onBeginRequest'] = array(
         'class' => 'application.modules.zurmo.components.CommandBeginRequestBehavior'
     );
+    //Turn off gamification
+    $common_config['components']['gamificationObserver']['enabled'] = false;
     //Not applicable for console applications.
     unset($common_config['defaultController']);
     //Not applicable for console applications.

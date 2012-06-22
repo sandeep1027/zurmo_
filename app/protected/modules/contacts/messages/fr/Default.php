@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,7 +34,7 @@
         'Company Name'
             => 'Nom du compte',
         'Contact'
-            => 'Contact',
+            => 'Contact', // Same Word Translated
         'Contact Stage'
             => 'Statut du Contact',
         'Contact Status Translated Labels'
@@ -42,19 +42,19 @@
         'Contact Statuses'
             => 'Statut des Contacts',
         'Contacts'
-            => 'Contacts',
+            => 'Contacts', // Same Word Translated
         'ContactsModulePluralLabel'
-            => 'ContactsModulePluralLabel',
+            => 'ContactsModulePluralLabel', // Same Word Translated
         'ContactsModulePluralLabel For AccountsModuleSingularLabel'
             => 'ContactsModulePluralLabel pour AccountsModuleSingularLabel',
         'ContactsModulePluralLabel For OpportunitiesModuleSingularLabel'
             => 'ContactsModulePluralLabel pour OpportunitiesModuleSingularLabel',
         'ContactsModuleSingularLabel'
-            => 'ContactsModuleSingularLabel',
+            => 'ContactsModuleSingularLabel', // Same Word Translated
         'ContactsModuleSingularLabel or LeadsModuleSingularLabel'
             => 'ContactsModuleSingularLabel ou LeadsModuleSingularLabel',
         'ContactsModuleSingularLabel Search'
-            => 'ContactsModuleSingularLabel Search',
+            => 'Recherche ContactsModuleSingularLabel',
         'Create ContactsModulePluralLabel'
             => 'Créer ContactsModulePluralLabel',
         'Create ContactsModuleSingularLabel'
@@ -81,5 +81,11 @@
             => 'La valeur du statut spécifié n\'existe pas.',
         'The status specified is not unique and is invalid.'
             => 'La valeur du statut spécifié n\'est pas unique et n\'est pas valide.',
+        '{n} ContactsModuleSingularLabel created|{n} ContactsModulePluralLabel created'
+            => '{n} ContactsModuleSingularLabel crée|{n} ContactsModulePluralLabel crées',
+        '{n} ContactsModuleSingularLabel mass updated|{n} ContactsModulePluralLabel mass updated'
+            => '{n} ContactsModuleSingularLabel a été mis à jour|{n} ContactsModulePluralLabel ont été mis à jour',
+        '{n} ContactsModuleSingularLabel search completed|{n} ContactsModuleSingularLabel searches completed'
+            => '{n} recherche ContactsModuleSingularLabel complétée|{n} recherches ContactsModuleSingularLabel complétées',
     );
 ?>

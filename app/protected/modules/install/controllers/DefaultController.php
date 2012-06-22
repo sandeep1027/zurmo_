@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -45,7 +45,7 @@
         public function actionWelcome()
         {
             $welcomeView = new InstallWelcomeView($this->getId(), $this->getModule()->getId());
-            $view = new InstallPageView($this, $welcomeView);
+            $view = new InstallPageView($welcomeView);
             echo $view->render();
         }
 
@@ -54,7 +54,7 @@
             $serviceCheckResultsDataForDisplay = CheckServicesUtil::checkServicesAndGetResultsDataForDisplay();
             $checkServicesView = new InstallCheckServicesView($this->getId(), $this->getModule()->getId(),
                                                               $serviceCheckResultsDataForDisplay);
-            $view = new InstallPageView($this, $checkServicesView);
+            $view = new InstallPageView($checkServicesView);
             echo $view->render();
         }
 
@@ -66,6 +66,9 @@
             {
                 $form->setMemcacheIsNotAvailable();
             }
+            $form->hostInfo = InstallUtil::getDefaultHostInfo();
+            $form->scriptUrl = InstallUtil::getDefaultScriptUrl($this->getRoute());
+
             if (isset($_POST['ajax']) && $_POST['ajax'] === 'install-form')
             {
                 $this->actionValidateSettings($form);
@@ -81,7 +84,7 @@
                 }
             }
             $settingsView = new InstallSettingsView($this->getId(), $this->getModule()->getId(), $form);
-            $view = new InstallPageView($this, $settingsView);
+            $view = new InstallPageView($settingsView);
             echo $view->render();
         }
 
@@ -94,7 +97,7 @@
             {
                 $checkServicesView = new InstallAdditionalCheckServicesView($this->getId(), $this->getModule()->getId(),
                                                                            $serviceCheckResultsDataForDisplay);
-                $view = new InstallPageView($this, $checkServicesView);
+                $view = new InstallPageView($checkServicesView);
                 echo $view->render();
                 Yii::app()->end(0, false);
             }
@@ -119,10 +122,10 @@
         {
             assert('$form instanceof InstallSettingsForm');
             $nextView = new InstallCompleteView($this->getId(), $this->getModule()->getId());
-            $view = new InstallPageView($this, $nextView);
+                $view = new InstallPageView($nextView);
             echo $view->render();
 
-            $template = CHtml::script("$('#logging-table').append('{message}<br/>');");
+            $template = CHtml::script("$('#logging-table').prepend('{message}<br/>');");
             $messageStreamer = new MessageStreamer($template);
             InstallUtil::runInstallation($form, $messageStreamer);
             if ($form->installDemoData)
@@ -146,13 +149,13 @@
             InstallUtil::freezeDatabase();
             Yii::app()->user->userModel = User::getByUsername('super');
             $nextView = new InstallCompleteView($this->getId(), $this->getModule()->getId());
-            $view = new InstallPageView($this, $nextView);
+            $view = new InstallPageView($nextView);
             echo $view->render();
-            $template = CHtml::script("$('#logging-table').append('{message}<br/>');");
+            $template = CHtml::script("$('#logging-table').prepend('{message}<br/>');");
             $messageStreamer = new MessageStreamer($template);
             $messageStreamer->add(Yii::t('Default', 'Starting to load demo data.'));
             $messageLogger = new MessageLogger($messageStreamer);
-            DemoDataUtil::load($messageLogger, 3);
+            DemoDataUtil::load($messageLogger, 6);
             $messageStreamer->add(Yii::t('Default', 'Finished loading demo data.'));
             $messageStreamer->add(Yii::t('Default', 'Locking Installation.'));
             InstallUtil::writeInstallComplete(INSTANCE_ROOT);

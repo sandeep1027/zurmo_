@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -35,7 +35,7 @@
                 'global' => array(
                     'toolbar' => array(
                         'elements' => array(
-                            array('type' => 'ConfigurationLink'),
+                            array('type'  => 'SaveButton',    'renderType' => 'Add Currency'),
                         ),
                     ),
                     'nonPlaceableAttributeNames' => array(
@@ -62,18 +62,9 @@
             return $metadata;
         }
 
-        protected function renderAfterFormLayout($form)
+        protected function renderTitleContent()
         {
-            $elementInformation = array('type' => 'SaveButton', 'label' => "eval:Yii::t('Default', 'Add Currency')");
-            $content = '<div>';
-            $elementclassname = $elementInformation['type'] . 'ActionElement';
-            $params = array_slice($elementInformation, 1);
-            array_walk($params, array($this, 'resolveEvaluateSubString'));
-            $element  = new $elementclassname($this->controllerId, $this->moduleId, $this->modelId, $params);
-            $renderedContent = $element->render();
-            $content .= $renderedContent;
-            $content .= '</div><br/>';
-            return $content;
+            return '<h1>' . Yii::t('Default', 'Currencies: Create') . '</h1>';
         }
     }
 ?>

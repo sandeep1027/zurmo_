@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -63,9 +63,10 @@
                     'id' => $formName,
                     'enableAjaxValidation' => true,
                     'clientOptions' => array(
-                        'validateOnSubmit' => true,
-                        'validateOnChange' => false,
-                        'afterValidate'    => 'js:afterValidateAjaxAction',
+                        'validateOnSubmit'  => true,
+                        'validateOnChange'  => false,
+                        'beforeValidate'    => 'js:beforeValidateAction',
+                        'afterValidate'     => 'js:afterValidateAjaxAction',
                         'afterValidateAjax' => $afterValidateAjax,
                     ),
                 )
@@ -74,22 +75,20 @@
             $cs = Yii::app()->getClientScript();
             $cs->registerScriptFile(
                 Yii::app()->getAssetManager()->publish(
-                    Yii::getPathOfAlias('ext.zurmoinc.framework.elements.assets') . '/Modal.js'
-                    ),
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.elements.assets')
+                    ) . '/Modal.js',
                 CClientScript::POS_END
             );
-            $cs->registerScriptFile(
-                Yii::app()->getAssetManager()->publish(
-                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets') . '/FormUtils.js'
-                    ),
-                CClientScript::POS_END
-            );
-
             $content .= $formStart;
             $content .= $this->renderFormLayout($form);
-            $content .= '<div class="modal-view-toolbar">';
-            $content .= $this->renderActionElementBar(true);
-            $content .= '</div>';
+            $content .= $this->renderAfterFormLayout($form);
+            $actionElementContent = $this->renderActionElementBar(true);
+            if ($actionElementContent != null)
+            {
+                $content .= '<div class="view-toolbar-container clearfix"><div class="modal-view-toolbar">';
+                $content .= $actionElementContent;
+                $content .= '</div></div>';
+            }
             $formEnd = $clipWidget->renderEndWidget();
             $content .= $formEnd;
             $content .= '</div>';

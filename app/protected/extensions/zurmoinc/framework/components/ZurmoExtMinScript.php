@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -31,6 +31,12 @@
     class ZurmoExtMinScript extends ExtMinScript
     {
         protected $themePath;
+
+        /**
+         * Add scripts here that do not need to load when using an ajax request such as a modal search box.  The scripts
+         * are already loaded in the minified script that loads on every page.
+         */
+        public $usingAjaxShouldNotIncludeJsPathAliasesAndFileNames = array();
 
         /**
          * Used to avoid call to ExtMinScript::init() function

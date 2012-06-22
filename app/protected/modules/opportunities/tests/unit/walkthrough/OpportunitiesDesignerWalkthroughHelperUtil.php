@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -42,6 +42,10 @@
                                         array(
                                             'element' => 'name',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'amount',
                                         ),
@@ -52,6 +56,10 @@
                                         array(
                                             'element' => 'owner',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'probability',
                                         ),
@@ -62,6 +70,10 @@
                                         array(
                                             'element' => 'closeDate',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'stage',
                                         ),
@@ -72,6 +84,10 @@
                                         array(
                                             'element' => 'source',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'account',
                                         ),
@@ -83,6 +99,10 @@
                                             'detailViewOnly' => true,
                                             'element' => 'DateTimeCreatedUser',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'detailViewOnly' => true,
                                             'element' => 'DateTimeModifiedUser',
@@ -101,6 +121,10 @@
                                         array(
                                             'element' => 'checkbox',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'currency',
                                         ),
@@ -111,6 +135,10 @@
                                         array(
                                             'element' => 'date',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'datetime',
                                         ),
@@ -121,6 +149,10 @@
                                         array(
                                             'element' => 'decimal',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'picklist',
                                         ),
@@ -131,6 +163,10 @@
                                         array(
                                             'element' => 'integer',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'multiselect',
                                         ),
@@ -139,8 +175,33 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'dropdowndependency',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'radio',
                                         ),
@@ -151,6 +212,10 @@
                                         array(
                                             'element' => 'text',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'textarea',
                                         ),
@@ -160,9 +225,6 @@
                                     array(
                                         array(
                                             'element' => 'url',
-                                        ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
                                         ),
                                     )
                                 ),
@@ -185,6 +247,10 @@
                                         array(
                                             'element' => 'checkbox',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'currency',
                                         ),
@@ -195,6 +261,10 @@
                                         array(
                                             'element' => 'date__Date',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'datetime__DateTime',
                                         ),
@@ -205,6 +275,10 @@
                                         array(
                                             'element' => 'decimal',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'picklist',
                                         ),
@@ -215,6 +289,10 @@
                                         array(
                                             'element' => 'integer',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'multiselect',
                                         ),
@@ -223,8 +301,40 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'radio',
                                         ),
@@ -235,6 +345,10 @@
                                         array(
                                             'element' => 'text',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'textarea',
                                         ),
@@ -245,6 +359,10 @@
                                         array(
                                             'element' => 'url',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'probability',
                                         ),
@@ -261,6 +379,10 @@
                                         array(
                                             'element' => 'name',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'amount',
                                         ),
@@ -271,9 +393,6 @@
                                         array(
                                             'element' => 'owner',
                                         ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
-                                        ),
                                     )
                                 ),
                                 array('cells' =>
@@ -281,6 +400,10 @@
                                         array(
                                             'element' => 'closeDate__Date',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'stage',
                                         ),
@@ -291,6 +414,10 @@
                                         array(
                                             'element' => 'source',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'account',
                                         ),
@@ -301,6 +428,10 @@
                                         array(
                                             'element' => 'createdDateTime__DateTime',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'modifiedDateTime__DateTime',
                                         ),
@@ -311,6 +442,10 @@
                                         array(
                                             'element' => 'createdByUser',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'modifiedByUser',
                                         ),
@@ -488,6 +623,41 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
                                     )
@@ -647,6 +817,34 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
                                     )
@@ -685,28 +883,33 @@
         public static function fetchOpportunitiesSearchFormGetData($accountId, $superUserId, $currencyId)
         {
             return array(
-                            'name'               =>  'myEditOpportunity',
-                            'owner'              =>  array('id' => $superUserId),
-                            'ownedItemsOnly'     =>  '1',
-                            'account'            =>  array('id' => $accountId),
-                            'amount'             =>  array('value'    => 288000,
+                            'name'               => 'myEditOpportunity',
+                            'owner'              => array('id' => $superUserId),
+                            'ownedItemsOnly'     => '1',
+                            'account'            => array('id' => $accountId),
+                            'amount'             => array('value'    => 288000,
                                                           'currency' => array('id' => $currencyId)),
-                            'closeDate__Date'    =>  array('value' => 'Today'),
-                            'stage'              =>  array('value' => 'Qualification'),
-                            'source'             =>  array('value' => 'Inbound Call'),
-                            'probability'        =>  '2',
-                            'decimal'            =>  '12',
-                            'integer'            =>  '11',
-                            'phone'              =>  '259-784-2069',
-                            'text'               =>  'This is a test Edit Text',
-                            'textarea'           =>  'This is a test Edit TextArea',
-                            'url'                =>  'http://wwww.abc-edit.com',
-                            'checkbox'           =>  array('value'  =>  '0'),
-                            'currency'           =>  array('value'  =>  40),
-                            'picklist'           =>  array('value'  =>  'b'),
-                            'radio'              =>  array('value'  =>  'e'),
-                            'date__Date'         =>  array('type'   =>  'Today'),
-                            'datetime__DateTime' =>  array('type'   =>  'Today'));
+                            'closeDate__Date'    => array('value' => 'Today'),
+                            'stage'              => array('value' => 'Qualification'),
+                            'source'             => array('value' => 'Inbound Call'),
+                            'probability'        => '2',
+                            'decimal'            => '12',
+                            'integer'            => '11',
+                            'phone'              => '259-784-2069',
+                            'text'               => 'This is a test Edit Text',
+                            'textarea'           => 'This is a test Edit TextArea',
+                            'url'                => 'http://wwww.abc-edit.com',
+                            'checkbox'           => array('value'  =>  '0'),
+                            'currency'           => array('value'  =>  40),
+                            'picklist'           => array('value'  =>  'b'),
+                            'multiselect'        => array('values' => array('gg', 'hh')),
+                            'tagcloud'           => array('values' => array('reading', 'surfing')),
+                            'countrypicklist'    => array('value'  => 'aaaa'),
+                            'statepicklist'      => array('value'  => 'aaa1'),
+                            'citypicklist'       => array('value'  => 'ab1'),
+                            'radio'              => array('value'  =>  'e'),
+                            'date__Date'         => array('type'   =>  'Today'),
+                            'datetime__DateTime' => array('type'   =>  'Today'));
         }
     }
 ?>

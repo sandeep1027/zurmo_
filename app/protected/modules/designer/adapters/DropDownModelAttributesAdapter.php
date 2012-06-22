@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -62,6 +62,7 @@
                                                               $customFieldDataLabels);
             if ($attributeForm->getCustomFieldDataId() != null)
             {
+                $oldAndNewValuePairs = array();
                 foreach ($attributeForm->customFieldDataData as $order => $newValue)
                 {
                    if (isset($attributeForm->customFieldDataDataExistingValues[$order]) &&
@@ -71,8 +72,23 @@
                                         $attributeForm->getCustomFieldDataId(),
                                         $attributeForm->customFieldDataDataExistingValues[$order],
                                         $newValue);
+                       $oldValue                       = $attributeForm->customFieldDataDataExistingValues[$order];
+                       $oldAndNewValuePairs[$oldValue] = $newValue;
                    }
                 }
+                if (count($oldAndNewValuePairs) > 0)
+                {
+                    DropDownDependencyDerivedAttributeDesignerUtil::
+                    updateValueInMappingByOldAndNewValue($modelClassName,
+                                                        $attributeName,
+                                                        $oldAndNewValuePairs,
+                                                        $attributeForm->customFieldDataDataExistingValues[$order],
+                                                        $newValue);
+                }
+                DropDownDependencyDerivedAttributeDesignerUtil::
+                resolveValuesInMappingWhenValueWasRemoved($modelClassName,
+                                                          $attributeName,
+                                                          $attributeForm->customFieldDataData);
             }
             $this->resolveDatabaseSchemaForModel($modelClassName);
         }

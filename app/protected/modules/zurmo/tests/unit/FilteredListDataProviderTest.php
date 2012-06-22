@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class FilteredListDataProviderTest extends BaseTest
+    class FilteredListDataProviderTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -55,8 +55,8 @@
             $quote = DatabaseCompatibilityUtil::getQuote();
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = lower('Vomo')) and "     .
-                                "({$quote}address$quote.{$quote}city$quote like lower('Chicago%'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = 'Vomo') and "     .
+                                "({$quote}address$quote.{$quote}city$quote like 'Chicago%')",
                                 $where);
             $this->assertEquals(0, $joinTablesAdapter->getFromTableJoinCount());
             $this->assertEquals(1, $joinTablesAdapter->getLeftTableJoinCount());
@@ -86,8 +86,8 @@
 
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = lower('Vomo')) or "     .
-                                "({$quote}address$quote.{$quote}city$quote like lower('Chicago%'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = 'Vomo') or "     .
+                                "({$quote}address$quote.{$quote}city$quote like 'Chicago%')",
                                 $where);
             $this->assertEquals(0, $joinTablesAdapter->getFromTableJoinCount());
             $this->assertEquals(1, $joinTablesAdapter->getLeftTableJoinCount());
@@ -123,9 +123,9 @@
 
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = lower('Vomo')) or "     .
-                                "({$quote}address$quote.{$quote}city$quote like lower('Chicago%')) or " .
-                                "({$quote}address$quote.{$quote}state$quote = lower('IL'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = 'Vomo') or "     .
+                                "({$quote}address$quote.{$quote}city$quote like 'Chicago%') or " .
+                                "({$quote}address$quote.{$quote}state$quote = 'IL')",
                                 $where);
             $this->assertEquals(0, $joinTablesAdapter->getFromTableJoinCount());
             $this->assertEquals(1, $joinTablesAdapter->getLeftTableJoinCount());
@@ -149,7 +149,7 @@
 
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = lower('Vomo'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = 'Vomo')",
                                 $where);
             $this->assertEquals(0, $joinTablesAdapter->getFromTableJoinCount());
             $this->assertEquals(0, $joinTablesAdapter->getLeftTableJoinCount());
@@ -173,7 +173,7 @@
 
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = lower('Vomo'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote = 'Vomo')",
                                 $where);
 
             $metadata = array(
@@ -188,7 +188,7 @@
             );
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote != lower('Vomo'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote != 'Vomo')",
                                 $where);
             $metadata = array(
                 'clauses' => array(
@@ -202,7 +202,7 @@
             );
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote like lower('Vomo%'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote like 'Vomo%')",
                                 $where);
             $metadata = array(
                 'clauses' => array(
@@ -216,7 +216,7 @@
             );
             $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('Account');
             $where = FilteredListDataProvider::makeWhere('Account', $metadata, $joinTablesAdapter);
-            $this->assertEquals("({$quote}account$quote.{$quote}name$quote like lower('%Vomo'))",
+            $this->assertEquals("({$quote}account$quote.{$quote}name$quote like '%Vomo')",
                                 $where);
             $metadata = array(
                 'clauses' => array(

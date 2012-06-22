@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,7 +50,6 @@
             $adaptedMetadata = array('clauses' => array(), 'structure' => '');
             $clauseCount = 1;
             $structure = '';
-
             foreach ($this->metadata as $attributeName => $value)
             {
                 //If attribute is a pseudo attribute on the SearchForm
@@ -103,6 +102,13 @@
                     }
                     $value        = ModelAttributeToCastTypeUtil::resolveValueForCast(
                                         $this->model, $attributeName, $value);
+                    $mixedType    = ModelAttributeToMixedTypeUtil::getType(
+                                        $this->model, $attributeName);
+                    static::
+                    resolveBooleanFalseValueAndOperatorTypeForAdaptedMetadataClause($mixedType,
+                                                                                    $value,
+                                                                                    $operatorType);
+
                     $adaptedMetadataClauses[($clauseCount)] = array(
                         'attributeName' => $attributeName,
                         'operatorType'  => $operatorType,
@@ -130,8 +136,15 @@
                         $operatorType = ModelAttributeToOperatorTypeUtil::getOperatorType(
                                             $this->model, $attributeName);
                     }
-                    $value        = ModelAttributeToCastTypeUtil::resolveValueForCast(
+                    $value     = ModelAttributeToCastTypeUtil::resolveValueForCast(
                                         $this->model, $attributeName, $value['value']);
+
+                    $mixedType = ModelAttributeToMixedTypeUtil::getType(
+                                        $this->model, $attributeName);
+                    static::
+                    resolveBooleanFalseValueAndOperatorTypeForAdaptedMetadataClause($mixedType,
+                                                                                    $value,
+                                                                                    $operatorType);
                     $adaptedMetadataClauses[($clauseCount)] = array(
                         'attributeName' => $attributeName,
                         'operatorType'  => $operatorType,
@@ -159,6 +172,31 @@
                         {
                             $relatedValue = $relatedValue['value'];
                         }
+                        elseif (($this->model->$attributeName instanceof RedBeanManyToManyRelatedModels ||
+                                $this->model->$attributeName instanceof RedBeanOneToManyRelatedModels ) &&
+                               is_array($relatedValue) && count($relatedValue) > 0)
+                        {
+                            //Continue on using relatedValue as is.
+                        }
+                        elseif ($this->model->$attributeName->$relatedAttributeName instanceof RedBeanModels &&
+                               is_array($relatedValue) && count($relatedValue) > 0)
+                        {
+                            //Continue on using relatedValue as is.
+                        }
+                        elseif ($this->model->$attributeName instanceof CustomField && count($relatedValue) > 0)
+                        {
+                            //Handle scenario where the UI posts or sends a get string with an empty value from
+                            //a multi-select field.
+                            if (count($relatedValue) == 1 && $relatedValue[0] == null)
+                            {
+                                break;
+                            }
+                            //Continue on using relatedValue as is.
+                            if ($operatorType == null)
+                            {
+                                $operatorType = 'oneOf';
+                            }
+                        }
                         else
                         {
                             break;
@@ -168,14 +206,39 @@
                     {
                         if ($this->model->isRelation($attributeName))
                         {
+                            if ($this->model->$attributeName instanceof RedBeanOneToManyRelatedModels ||
+                               $this->model->$attributeName instanceof RedBeanManyToManyRelatedModels)
+                            {
+                                $relationModelClassName = $this->model->getRelationModelClassName($attributeName);
+                                $modelForTypeOperations = new $relationModelClassName(false);
+                            }
+                            else
+                            {
+                                $modelForTypeOperations = $this->model->$attributeName;
+                            }
                             if ($operatorType == null)
                             {
                                 $operatorType = ModelAttributeToOperatorTypeUtil::getOperatorType(
-                                                $this->model->$attributeName, $relatedAttributeName);
+                                                $modelForTypeOperations, $relatedAttributeName);
                             }
-                            $relatedValue = ModelAttributeToCastTypeUtil::resolveValueForCast(
-                                            $this->model->$attributeName, $relatedAttributeName, $relatedValue);
-
+                            if (is_array($relatedValue) && $this->model->$attributeName instanceof CustomField)
+                            {
+                                //do nothing, the cast is fine as is. Maybe eventually remove this setting of cast.
+                            }
+                            else
+                            {
+                                $relatedValue  = ModelAttributeToCastTypeUtil::resolveValueForCast(
+                                                 $modelForTypeOperations, $relatedAttributeName, $relatedValue);
+                            }
+                            if ($this->model->$attributeName instanceof RedBeanModel)
+                            {
+                                $mixedType = ModelAttributeToMixedTypeUtil::getType(
+                                                    $this->model->$attributeName, $relatedAttributeName);
+                                static::
+                                resolveBooleanFalseValueAndOperatorTypeForAdaptedMetadataClause($mixedType,
+                                                                                                $relatedValue,
+                                                                                                $operatorType);
+                            }
                             $adaptedMetadataClauses[($clauseCount)] = array(
                                 'attributeName'        => $attributeName,
                                 'relatedAttributeName' => $relatedAttributeName,
@@ -346,6 +409,18 @@
             else
             {
                 $structure .= $clause;
+            }
+        }
+
+        protected static function resolveBooleanFalseValueAndOperatorTypeForAdaptedMetadataClause($type, & $value,
+                                                                                                  & $operatorType)
+        {
+            assert('is_string($type)');
+            assert('is_string($operatorType)');
+            if ($type == 'CheckBox' && ($value == '0' || !$value))
+            {
+                $operatorType = 'doesNotEqual';
+                $value        = (bool)1;
             }
         }
     }

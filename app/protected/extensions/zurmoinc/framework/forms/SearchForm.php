@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,6 +34,24 @@
 
         private $dynamicAttributeNames = array();
 
+        private $attributeNamesThatCanBeSplitUsingDelimiter = array();
+
+        private $supportsMixedSearch;
+
+        /**
+         * String of search content to search on a mixed set of attributes scoped by
+         * @see $anyMixedAttributesScope
+         * @var string
+         */
+        public  $anyMixedAttributes;
+
+        /**
+         * Array of attributes to only use for @see $anyMixedAttributes data.  Or set as
+         * null if nothing specifically scoped on.
+         * @var array or null
+         */
+        private $anyMixedAttributesScope;
+
         public function __construct(RedBeanModel $model)
         {
             parent::__construct($model);
@@ -49,6 +67,26 @@
             }
         }
 
+        protected function getModelModuleClassName()
+        {
+            return $this->model->getModuleClassName();
+        }
+
+        protected function addAttributeNamesThatCanBeSplitUsingDelimiter($value)
+        {
+            $this->attributeNamesThatCanBeSplitUsingDelimiter[] = $value;
+        }
+
+        public function setAnyMixedAttributesScope($anyMixedAttributesScope)
+        {
+            $this->anyMixedAttributesScope = $anyMixedAttributesScope;
+        }
+
+        public function getAnyMixedAttributesScope()
+        {
+            return $this->anyMixedAttributesScope;
+        }
+
         /**
          * (non-PHPdoc)
          * @see CModel::rules()
@@ -60,7 +98,8 @@
             {
                 $dynamicAttributeRules[] = array($attributeName, 'safe');
             }
-            return array_merge(parent::rules(), $dynamicAttributeRules);
+            $rules = array_merge(parent::rules(), $dynamicAttributeRules);
+            return array_merge($rules, $this->getMixedSearchRules());
         }
 
         /**
@@ -76,7 +115,8 @@
                 list($realAttributeName, $type)         = explode($delimiter, $attributeName);
                 $dynamicAttributeLabels[$attributeName] = $this->model->getAttributeLabel($realAttributeName);
             }
-            return array_merge(parent::attributeLabels(), $dynamicAttributeLabels);
+            $attributeLabels = array_merge(parent::attributeLabels(), $dynamicAttributeLabels);
+            return array_merge($attributeLabels, $this->getMixedSearchAttributeLabels());
         }
 
         /**
@@ -136,6 +176,15 @@
                 assert('$dynamicAttributeToElementTypes[$type] != null');
                 $metadata[get_called_class()]['elements'][$attributeName] = $dynamicAttributeToElementTypes[$type];
             }
+            foreach ($this->attributeNamesThatCanBeSplitUsingDelimiter as $attributeName)
+            {
+                $delimiter                      = FormModelUtil::DELIMITER;
+                list($realAttributeName, $type) = explode($delimiter, $attributeName);
+                assert('$dynamicAttributeToElementTypes[$type] != null');
+                $metadata[get_called_class()]['elements'][$attributeName] = $dynamicAttributeToElementTypes[$type];
+            }
+            //add something to resolve for global search....
+            $this->resolveMixedSearchAttributeElementForMetadata($metadata[get_called_class()]['elements']);
             return $metadata;
         }
 
@@ -221,6 +270,21 @@
                     $nonDyanmicAttributeValues[$name] = $value;
                 }
             }
+            //Dropdowns can be searched on as mulit-selects.  This below foreach resolves the issue of needing to show
+            //multiple values in the dropdown.
+            foreach ($values as $name => $value)
+            {
+                if ($value != null && $this->model->isAttribute($name) && $this->model->isRelation($name))
+                {
+                    $relationModelClassName = $this->model->getRelationModelClassName($name);
+                    if (($relationModelClassName == 'CustomField' ||
+                       is_subclass_of($relationModelClassName, 'CustomField') && isset($value['value']) &&
+                       is_array($value['value']) && count($value['value']) > 0))
+                    {
+                        $this->model->$name->value = $value['value'];
+                    }
+                }
+            }
             parent::setAttributes($nonDyanmicAttributeValues, $safeOnly);
         }
 
@@ -239,8 +303,6 @@
             $parts                      = explode($delimiter, $name);
             if (isset($parts[1]) && $parts[1] != null)
             {
-                //also wanted to check for safety:
-                //&& in_array($name, $this->dynamicAttributeNames) but that cant be done statically.
                 if (in_array($parts[1], static::getDynamicAttributeTypes()))
                 {
                     return true;
@@ -338,6 +400,121 @@
                     throw new NotSupportedException();
                 }
             }
+        }
+
+        private function supportsMixedSearch()
+        {
+            if ($this->supportsMixedSearch === null)
+            {
+                $this->supportsMixedSearch = false;
+                $moduleClassName = $this->model->getModuleClassName();
+                if ($moduleClassName != null && $moduleClassName::getGlobalSearchFormClassName() != null)
+                {
+                    $this->supportsMixedSearch  = true;
+                }
+            }
+            return $this->supportsMixedSearch;
+        }
+
+        private function getMixedSearchRules()
+        {
+            if ($this->supportsMixedSearch())
+            {
+                return array(array('anyMixedAttributes', 'safe'));
+            }
+            return array();
+        }
+
+        private function getMixedSearchAttributeLabels()
+        {
+            if ($this->supportsMixedSearch())
+            {
+                return array('anyMixedAttributes' => Yii::t('Default', 'Basic Search Fields'));
+            }
+            return array();
+        }
+
+        /**
+         * Resolves a mixed attribute search by filtering out any attributes not part of the scope.
+         * @param unknown_type $realAttributesMetadata
+         */
+        public function resolveMixedSearchAttributeMappedToRealAttributesMetadata(& $realAttributesMetadata)
+        {
+            assert('is_array($realAttributesMetadata)');
+            if ($this->supportsMixedSearch())
+            {
+                $moduleClassName            = $this->model->getModuleClassName();
+                $metadata                   = $moduleClassName::getMetadata();
+                $data                       = array('anyMixedAttributes' => array());
+                if ($metadata['global']['globalSearchAttributeNames'] != null)
+                {
+                    foreach ($metadata['global']['globalSearchAttributeNames'] as $attributeName)
+                    {
+                        if ($this->anyMixedAttributesScope == null ||
+                           in_array($attributeName, $this->anyMixedAttributesScope))
+                        {
+                            if (!isset($realAttributesMetadata[$attributeName]))
+                            {
+                                $data['anyMixedAttributes'][] = array($attributeName);
+                            }
+                            elseif (isset($realAttributesMetadata[$attributeName]) &&
+                                   is_array($realAttributesMetadata[$attributeName]))
+                            {
+                                foreach ($realAttributesMetadata[$attributeName] as $mixedAttributeMetadata)
+                                {
+                                    $data['anyMixedAttributes'][] = $mixedAttributeMetadata;
+                                }
+                            }
+                            else
+                            {
+                                throw new NotSupportedException();
+                            }
+                        }
+                    }
+                }
+                $realAttributesMetadata = array_merge($realAttributesMetadata, $data);
+            }
+        }
+
+        protected function resolveMixedSearchAttributeElementForMetadata(& $metadata)
+        {
+            if ($this->supportsMixedSearch())
+            {
+                $metadata['anyMixedAttributes'] = 'AnyMixedAttributesSearch';
+            }
+        }
+
+        /**
+         * @return array of attributeName and label pairings.  Based on what attributes are used
+         * in a mixed attribute search.
+         */
+        public function getGlobalSearchAttributeNamesAndLabelsAndAll()
+        {
+            $namesAndLabels = array();
+            if ($this->supportsMixedSearch())
+            {
+                $moduleClassName            = $this->getModelModuleClassName();
+                $metadata                   = $moduleClassName::getMetadata();
+                if ($metadata['global']['globalSearchAttributeNames'] != null)
+                {
+                    foreach ($metadata['global']['globalSearchAttributeNames'] as $attributeName)
+                    {
+                        if ($this->isAttribute($attributeName))
+                        {
+                            $namesAndLabels[$attributeName] = $this->getAttributeLabel($attributeName);
+                        }
+                        else
+                        {
+                            $namesAndLabels[$attributeName] = $this->model->getAttributeLabel($attributeName);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+            return array_merge(array('All' => Yii::t('Default', 'All')), $namesAndLabels);
         }
     }
 ?>

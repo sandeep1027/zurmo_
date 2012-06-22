@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,13 +29,19 @@
      */
     class ZurmoConfigurationEditAndDetailsView extends EditAndDetailsView
     {
+        protected function renderTitleContent()
+        {
+            return '<h1>' . Yii::t('Default', 'Global Configuration') . '</h1>';
+        }
+
         public static function getDefaultMetadata()
         {
             $metadata = array(
                 'global' => array(
                     'toolbar' => array(
                         'elements' => array(
-                            array('type' => 'ConfigurationLink'),
+                            array('type' => 'ConfigurationLink',
+                                            'label' => "eval:Yii::t('Default', 'Cancel')"),
                             array('type' => 'SaveButton',    'renderType' => 'Edit'),
                             array('type' => 'EditLink',      'renderType' => 'Details'),
                         ),
@@ -48,12 +54,16 @@
                                     array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'timeZone', 'type' => 'TimeZoneStaticDropDown'),
+                                                array('attributeName' => 'applicationName', 'type' => 'Text'),
                                             ),
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'listPageSize', 'type' => 'Integer'),
+                                                array('attributeName' => 'timeZone', 'type' => 'TimeZoneStaticDropDown'),
                                             ),
                                         ),
                                     )
@@ -65,9 +75,13 @@
                                                 array('attributeName' => 'subListPageSize', 'type' => 'Integer'),
                                             ),
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'modalListPageSize', 'type' => 'Integer'),
+                                                array('attributeName' => 'listPageSize', 'type' => 'Integer'),
                                             ),
                                         ),
                                     )
@@ -79,9 +93,13 @@
                                                 array('attributeName' => 'dashboardListPageSize', 'type' => 'Integer'),
                                             ),
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => null, 'type' => 'Null'), // Not Coding Standard
+                                                array('attributeName' => 'modalListPageSize', 'type' => 'Integer'),
                                             ),
                                         ),
                                     )
@@ -92,6 +110,11 @@
                 ),
             );
             return $metadata;
+        }
+
+        protected function getNewModelTitleLabel()
+        {
+            return null;
         }
     }
 ?>

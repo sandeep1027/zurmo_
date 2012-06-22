@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -52,8 +52,11 @@
         public function testDefaultCalculatedDates()
         {
             $now = time();
-            $thing = new ThingWithCalculatedDates();
+            $thing         = new ThingWithCalculatedDates();
+            $thingNowValue = $thing->now;
             $this->assertEquals(DateTimeUtil::convertTimestampToDbFormatDateTime($now), $thing->now);
+            $this->assertTrue($thing->save());
+            $this->assertEquals($thingNowValue, $thing->now);
             $stamp = Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateFormat(), $now);
             $this->assertEquals($stamp, $thing->today);
             $stamp = Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateFormat(), $now + 24 * 60 * 60);

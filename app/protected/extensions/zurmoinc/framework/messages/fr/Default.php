@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,16 +37,28 @@
             => 'Ajouter des Fichiers',
         'Add Item'
             => 'Ajouter',
+        'Advanced'
+            => 'Avancée',
         'Advanced Search'
             => 'Recherche avancée',
         'After'
             => 'Après',
         'All'
             => 'Tous',
-         'Basic Search'
+        'All Results'
+            => 'Tout exporter',
+        'and'
+            => 'et',
+        'Basic Search'
             => 'Recherche simple',
+        'Basic Search Fields'
+            => 'Champs recherche simple',
         'Before'
             => 'Avant',
+        'Between'
+            => 'Entre',
+        'Bulk insert failed. There was a row with an incorrect column quantity'
+            => 'Erreur avec l\'opération BULK INSERT.  Une ligne contient une mauvaise quantité de colonnes',
         'by'
             => 'par',
         'Cancel'
@@ -54,12 +66,12 @@
         'Cell Settings'
             => 'Paramètres des cellules',
         'Celsius'
-            => 'Celsius',
+            => 'Celsius', // Same Word Translated
         'Change Log'
             => 'Log de modifications',
         'Changed'
             => 'Modifié',
-        'Clear Search'
+        'Clear'
             => 'Effacer',
         'Create'
             => 'Créer',
@@ -74,7 +86,7 @@
         'CustomManagement class needs to be extended.'
             => 'La classe CustomManagement doit être étendue.',
         'Date'
-            => 'Date',
+            => 'Date', // Same Word Translated
         'Date Time'
             => 'Date/Heure',
         'Default Value'
@@ -93,16 +105,26 @@
             => 'Modifier le portlet',
         'Error'
             => 'Erreur',
+        'Export'
+            => 'Exporter',
         'Fahrenheit'
-            => 'Fahrenheit',
+            => 'Fahrenheit', // Same Word Translated
+        'Fewer Details'
+            => 'Moins de détails',
+        'Fewer Options'
+            => 'Moins d\'options',
         'Filtered Lists'
             => 'Liste Filtrée',
+        'First character must be a lower case letter'
+            => 'Le premier caractère doit être une lettre minuscule',
+        'First select the {attributeLabel}'
+            => 'Choisissez d\'abord le/la {attributeLabel}',
         'firstDateTime must occur after secondDateTime'
             => 'firstDateTime doit être après secondDateTime',
         'firstDateTime must occur before secondDateTime'
             => 'firstDateTime doit être avant secondDateTime',
         'Float'
-            => 'Float',
+            => 'Float', // Same Word Translated
         'from'
             => 'de',
         'Full Name'
@@ -136,7 +158,9 @@
         'Max upload size: {maxSize}'
             => 'Taille max de téléchargement: {maxSize}',
         'Minute'
-            => 'Minute',
+            => 'Minute', // Same Word Translated
+        'Missing the attribute labels.'
+            => 'Il manque les étiquettes d\'attribut.',
         'Model Class Name'
             => 'Nom de la classe du modèle',
         'Model Id'
@@ -148,27 +172,39 @@
         'Module Name'
             => 'Nom du Module',
         'More Details'
-            => 'Plus de dtails',
+            => 'Plus de détails',
         'More Options'
             => 'Plus d\'options',
         'My List View'
             => 'Ma Vue Liste',
         'Name'
             => 'Nom',
+        'Name must not contain spaces or special characters'
+            => 'Le nom ne peut contenir ni caractères spéciaux, ni espace.',
         'Next 7 Days'
             => 'Prochains 7 jours',
         'No'
             => 'Non',
         'No import processes found.'
             => 'Aucun traitement d\'importation trouvé.',
+        'No {moduleLabelPluralLowerCase} found'
+            => 'Aucun résultat trouvé',
         'None'
             => 'Aucun',
         'Now'
             => 'Maintenant',
         'of'
             => 'sur',
+        'Off{visibility}'
+            => 'Éteint',
+        'On{date}'
+            => 'Le',
+        'On{visibility}'
+            => 'Actif',
         'Opted Out'
             => 'Opt out',
+        'Options'
+            => 'Options', // Same Word Translated
         'or'
             => 'ou',
         'Panel'
@@ -177,8 +213,6 @@
             => 'Paramètres du panneau',
         'Panel Title'
             => 'Titre du panneau',
-        'Perform Action'
-            => 'Sélectionner',
         'Radio Drop Down'
             => 'Éléments du bouton radio',
         'record'
@@ -199,16 +233,20 @@
             => 'Seconde',
         'Select'
             => 'Sélectionner',
+        'Selected'
+            => 'Sélectionnés',
         'selected for updating.'
             => 'sélectionnée(s).',
         'Serialized Data'
-            => 'Serialized Data',
+            => 'Données Serializées', // Same Word Translated
         'Some values cannot be removed because they are currently in use. ' .
         'Try changing the records that use them first.'
             => 'Certain éléments ne peuvent être supprimés car ils sont actuellement utilisés. ' .
                'Veuillez modifier la valeur des champs contenant ces éléments avant de supprimer.',
         'Start'
             => 'Commencer',
+        'Start typing to search'
+            => 'Tapez ici votre recherche',
         'Tab'
             => 'Onglet',
         'The file did not exist'
@@ -234,13 +272,15 @@
         'Tomorrow'
             => 'Demain',
         'total'
-            => 'total',
+            => 'total', // Same Word Translated
         'Type'
-            => 'Type',
+            => 'Type', // Same Word Translated
+        'Type to find a tag'
+            => 'Tapez pour retrouver un nuage de mots-clefs',
         'Unknown'
             => 'Inconnu',
-        'Update Selected'
-            => 'Actualiser les données',
+        'Update'
+            => 'Actualiser',
         'updated successfully.'
             => 'mise à jour complète.',
         'Updating'

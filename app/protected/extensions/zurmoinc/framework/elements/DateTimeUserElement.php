@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -52,7 +52,9 @@
             {
                 return Yii::t('Default', 'Unknown');
             }
-            $content = CHtml::encode(Yii::app()->dateFormatter->formatDateTime($this->model->{$dateTimeAttributeName}, 'short', 'short'));
+            $content = CHtml::encode(
+                        DateTimeUtil::
+                        convertDbFormattedDateTimeToLocaleFormattedDisplay($this->model->{$dateTimeAttributeName}));
 
             if ($this->model->{$userModelName}->id > 0)
             {

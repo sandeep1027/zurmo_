@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,8 +34,227 @@
             Yii::app()->user->userModel = $super;
         }
 
+        public function testSearchingOnACustomFieldWithMultipleValues()
+        {
+            $searchAttributes = array(
+                'industry' => array(
+                    'value'    => array('A', 'B', 'C'),
+                )
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new TestCustomFieldsModel(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName'        => 'industry',
+                    'relatedAttributeName' => 'value',
+                    'operatorType'         => 'oneOf',
+                    'value'                => array('A', 'B', 'C'),
+                ),
+            );
+            $compareStructure = '1';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testSearchingOnACustomFieldWithMultipleValuesWhereWithEmptyValueSpecified()
+        {
+            $searchAttributes = array(
+                'industry' => array(
+                    'value'    => array(''),
+                )
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new TestCustomFieldsModel(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array();
+            $compareStructure = null;
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testGetAdaptedMetadataForhasManyRelationAttributes()
+        {
+            $super = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
+            $searchAttributes = array(
+                'ks' => array(
+                    'kMember'    => 'some Value',
+                )
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new I(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName'        => 'ks',
+                    'relatedAttributeName' => 'kMember',
+                    'operatorType'         => 'startsWith',
+                    'value'                => 'some Value',
+                ),
+            );
+
+            $compareStructure = '1';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testSearchFormDynamicAttributesForRelatedManyManyDateTimeAttributes()
+        {
+            $super                      = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
+            $searchAttributes = array(
+                'dateDateTimeADate__Date'          => array('type'         => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
+                                                         'firstDate'  => '1993-04-04'),
+                'dateDateTimeADateTime__DateTime'  => array('type'         => MixedDateTypesSearchFormAttributeMappingRules::TYPE_TODAY),
+            );
+            $searchForm = new ASearchFormTestModel(new MixedRelationsModel());
+            $this->assertTrue($searchForm->isAttributeOnForm('dateDateTimeADate__Date'));
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                $searchForm,
+                $super->id,
+                $searchAttributes
+            );
+            $todayDateTime      = new DateTime(null, new DateTimeZone(Yii::app()->timeZoneHelper->getForCurrentUser()));
+            $today              = Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateFormat(),
+                                  $todayDateTime->getTimeStamp());
+            $todayPlus7Days     = MixedDateTypesSearchFormAttributeMappingRules::calculateNewDateByDaysFromNow(7);
+            $metadata           = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName'        => 'manyMany',
+                    'relatedAttributeName' => 'aDate',
+                    'operatorType'         => 'greaterThanOrEqualTo',
+                    'value'                => '1993-04-04',
+                ),
+                2 => array(
+                    'attributeName'        => 'manyMany',
+                    'relatedAttributeName' => 'aDateTime',
+                    'operatorType'         => 'greaterThanOrEqualTo',
+                    'value'                => DateTimeUtil::
+                                              convertDateIntoTimeZoneAdjustedDateTimeBeginningOfDay($today),
+                ),
+                3 => array(
+                    'attributeName'        => 'manyMany',
+                    'relatedAttributeName' => 'aDateTime',
+                    'operatorType'         => 'lessThanOrEqualTo',
+                    'value'                => DateTimeUtil::
+                                              convertDateIntoTimeZoneAdjustedDateTimeEndOfDay($today),
+                ),
+            );
+
+            $compareStructure = '(1) and (2 and 3)';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testAdaptingBooleanValues()
+        {
+            $super = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+            //Test with blank values for boolean on model and on related model.
+            //Will treat as '0'. Normally you would sanitize $searchAttributes so that this
+            //would be removed before passing into the adapter.
+            $searchAttributes = array(
+                'bool'       => '',
+                'a'          => array('a' => ''),
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new TestBooleanAttributeModel(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName' => 'bool',
+                    'operatorType'  => 'doesNotEqual',
+                    'value'         => (bool)1,
+                ),
+                2 => array(
+                    'attributeName'        => 'a',
+                    'relatedAttributeName' => 'a',
+                    'operatorType'         => 'doesNotEqual',
+                    'value'                => (bool)1,
+                ),
+            );
+            $compareStructure = '1 and 2';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+
+            //Now test with populated as '0'
+            $searchAttributes = array(
+                'bool'       => '0',
+                'a'          => array('a' => '0'),
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new TestBooleanAttributeModel(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName' => 'bool',
+                    'operatorType'  => 'doesNotEqual',
+                    'value'         => (bool)1,
+                ),
+                2 => array(
+                    'attributeName'        => 'a',
+                    'relatedAttributeName' => 'a',
+                    'operatorType'         => 'doesNotEqual',
+                    'value'                => (bool)1,
+                ),
+            );
+            $compareStructure = '1 and 2';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+
+            //Now test with populated as '1'
+            $searchAttributes = array(
+                'bool'       => '1',
+                'a'          => array('a' => '1'),
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new TestBooleanAttributeModel(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName' => 'bool',
+                    'operatorType'  => 'equals',
+                    'value'         => (bool)1,
+                ),
+                2 => array(
+                    'attributeName'        => 'a',
+                    'relatedAttributeName' => 'a',
+                    'operatorType'         => 'equals',
+                    'value'                => (bool)1,
+                ),
+            );
+            $compareStructure = '1 and 2';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
         public function testGetAdaptedMetadata()
         {
+            $super = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
             $searchAttributes = array(
                 'name'          => 'Vomitorio Corp',
                 'officePhone'   => '5',
@@ -70,6 +289,32 @@
             );
 
             $compareStructure = '1 and 2 and 3';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testSearchingOnMultipleValuesCustomFields()
+        {
+            $searchAttributes = array(
+                'multipleIndustries' => array(
+                    'values'    => array('Something'),
+                )
+            );
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                new TestCustomFieldsModel(false),
+                1,
+                $searchAttributes
+            );
+            $metadata = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName'        => 'multipleIndustries',
+                    'relatedAttributeName' => 'values',
+                    'operatorType'         => 'oneOf',
+                    'value'                => array('Something'),
+                ),
+            );
+            $compareStructure = '1';
             $this->assertEquals($compareClauses, $metadata['clauses']);
             $this->assertEquals($compareStructure, $metadata['structure']);
         }
@@ -298,6 +543,95 @@
             );
 
             $compareStructure = '(1) and (2 and 3)';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testSearchFormDynamicAttributesBetweenAndOnDateSearch()
+        {
+            $super                      = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
+            $searchAttributes = array(
+                'date__Date'      => array('type'          => MixedDateTypesSearchFormAttributeMappingRules::TYPE_ON,
+                                                 'firstDate'   => '1991-03-04'),
+                'date2__Date'      => array('type'          => MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN,
+                                                 'firstDate'   => '1991-03-05',
+                                                 'secondDate'  => '1992-04-04'),
+            );
+            $searchForm = new ASearchFormTestModel(new MixedRelationsModel());
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                $searchForm,
+                $super->id,
+                $searchAttributes
+            );
+            $metadata           = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName'        => 'date',
+                    'operatorType'         => 'equals',
+                    'value'                => '1991-03-04',
+                ),
+                2 => array(
+                    'attributeName'        => 'date2',
+                    'operatorType'         => 'greaterThanOrEqualTo',
+                    'value'                => '1991-03-05',
+                ),
+                3 => array(
+                    'attributeName'        => 'date2',
+                    'operatorType'         => 'lessThanOrEqualTo',
+                    'value'                => '1992-04-04',
+                ),
+            );
+
+            $compareStructure = '(1) and (2 and 3)';
+            $this->assertEquals($compareClauses, $metadata['clauses']);
+            $this->assertEquals($compareStructure, $metadata['structure']);
+        }
+
+        public function testSearchFormDynamicAttributesBetweenAndOnDateTimeSearch()
+        {
+            $super                      = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
+            $searchAttributes = array(
+                'dateTime__DateTime'      => array('type'          => MixedDateTypesSearchFormAttributeMappingRules::TYPE_ON,
+                                                   'firstDate'   => '1991-03-04'),
+                'dateTime2__DateTime'      => array('type'          => MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN,
+                                                    'firstDate'   => '1991-03-05',
+                                                    'secondDate'  => '1992-04-04'),
+            );
+            $searchForm = new ASearchFormTestModel(new MixedRelationsModel());
+            $metadataAdapter = new SearchDataProviderMetadataAdapter(
+                $searchForm,
+                $super->id,
+                $searchAttributes
+            );
+            $metadata           = $metadataAdapter->getAdaptedMetadata();
+            $compareClauses = array(
+                1 => array(
+                    'attributeName'        => 'dateTime',
+                    'operatorType'         => 'greaterThanOrEqualTo',
+                    'value'                => '1991-03-04 00:00:00',
+                ),
+                2 => array(
+                    'attributeName'        => 'dateTime',
+                    'operatorType'         => 'lessThanOrEqualTo',
+                    'value'                => '1991-03-04 23:59:59',
+                ),
+                3 => array(
+                    'attributeName'        => 'dateTime2',
+                    'operatorType'         => 'greaterThanOrEqualTo',
+                    'value'                => '1991-03-05 00:00:00',
+                ),
+                4 => array(
+                    'attributeName'        => 'dateTime2',
+                    'operatorType'         => 'lessThanOrEqualTo',
+                    'value'                => '1992-04-04 23:59:59',
+                ),
+            );
+
+            $compareStructure = '(1 and 2) and (3 and 4)';
             $this->assertEquals($compareClauses, $metadata['clauses']);
             $this->assertEquals($compareStructure, $metadata['structure']);
         }

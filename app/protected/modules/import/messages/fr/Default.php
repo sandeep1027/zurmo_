@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -43,6 +43,8 @@
             => 'Les champs obligatoires doivent êtres définis: {attributesLabelContent}',
         'Analyzing the import data...'
             => 'Veuillez patienter pendant l\'analyse de vos données.',
+        'Clear Import tables'
+            => 'Nettoyer les tables d\'import',
         'Congratulations! Your import is complete.  Below is a summary of the results.'
             => 'Félicitations!  Votre import est complet.  Voici un sommaire des résultats.',
         'Default Name'
@@ -70,13 +72,15 @@
         'First Row is Header Row'
             => 'La première ligne du fichier contient les en-têtes de colonne',
         'Format'
-            => 'Format',
+            => 'Format', // Same Word Translated
         'Header'
             => 'L\'en-tête de colonne',
         'Id'
-            => 'Id',
+            => 'Id', // Same Word Translated
         'Import'
             => 'Importer',
+        'Import Cleanup Job'
+            => 'Suppression des tables d\'importation',
         'Import complete.  Rows processed: {rowsProcessed}'
             => 'L\'importation est terminée. Lignes traités: {rowsProcessed}',
         'Import data into Zurmo'
@@ -122,11 +126,13 @@
         'Mapping Data'
             => 'Mappage des données',
         'Messages'
-            => 'Messages',
+            => 'Messages', // Same Word Translated
         'Model Permissions'
             => 'Modèle d\'autorisations',
         'Module To Import To'
             => 'Module à importer',
+        'Multi-Select Pick list value required, but missing.'
+            => 'La valeur de liste déroulante n\'est pas remplie. Une valeur est requise.',
         'Next'
             => 'Suivant',
         'Other Id'
@@ -192,7 +198,7 @@
         'The user id specified did not match any existing records.'
             => 'La valeur du champ ID ne correspond pas ou est introuvable.',
         'The username specified did not match any existing records.'
-            => 'La valeur du champ Resp. du compte  ne correspond pas ou est introuvable.',
+            => 'La valeur du champ Resp. du compte ne correspond pas ou est introuvable.',
         'There was an error processing this import.'
             => 'Une erreur est survenue lors de l\'importation du fichier.',
         'This id is required and was not specified.'

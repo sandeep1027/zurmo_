@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -56,6 +56,15 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'designerMenuItems' => array(
+                    'showFieldsLink' => true,
+                    'showGeneralLink' => true,
+                    'showLayoutsLink' => true,
+                    'showMenusLink' => true,
+                ),
+                'globalSearchAttributeNames' => array(
+                    'name'
+                ),
                 'tabMenuItems' => array(
                     array(
                         'label' => 'OpportunitiesModulePluralLabel',
@@ -75,15 +84,13 @@
                         ),
                     ),
                 ),
-                'designerMenuItems' => array(
-                    'showFieldsLink' => true,
-                    'showGeneralLink' => true,
-                    'showLayoutsLink' => true,
-                    'showMenusLink' => true,
+                'shortcutsCreateMenuItems' => array(
+                    array(
+                        'label' => 'OpportunitiesModuleSingularLabel',
+                        'url'   => array('/opportunities/default/create'),
+                        'right' => self::RIGHT_CREATE_OPPORTUNITIES,
+                    ),
                 ),
-                'globalSearchAttributeNames' => array(
-                    'name'
-                )
             );
             return $metadata;
         }
@@ -131,6 +138,11 @@
         public static function getGlobalSearchFormClassName()
         {
             return 'OpportunitiesSearchForm';
+        }
+
+        public static function hasPermissions()
+        {
+            return true;
         }
     }
 ?>

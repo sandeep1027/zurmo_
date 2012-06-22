@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -140,20 +140,21 @@
             $baseLanguage           = $this->getBaseLanguage();
             return '<li class="ui-state-default" id="editableDropDown_{id}">
                         <span class="ui-icon ui-icon-arrowthick-2-n-s">&#160;</span>
+                        <div class="has-lang-label">
                         <input name = "' . $this->getNameForInputField() .
                         '" id = "' . $this->getIdForInputField('{id}') .
                         '" type = "text" value = "{content}" size="50"/>
                         <input name = "' . $this->getNameForExistingValueHiddenField() . '" type = "hidden" value = "{content}"/>
 
                         ' . static::renderLanguageLabelHtmlContent($activeLanguagesData[$baseLanguage]) .
-                        '&#160;{removalContent}' .
+                        '</div>{removalContent}' .
                         $this->renderSortableLanguageLabelInputsForAddingNewValuesJuiSortableContent() .
                         '</li>';
         }
 
         protected function renderRemoveLink()
         {
-            return CHtml::link(Yii::t('Default', 'Remove'), '#', array('class' => 'remove-sortable-item-link'));
+            return CHtml::link( '<span>' . Yii::t('Default', 'Remove') . '</span>', '#', array('class' => 'remove-sortable-item-link'));
         }
 
         protected function renderAddInputAndAddButton()
@@ -166,9 +167,9 @@
             $content .= '<tbody>';
             $content .= '<tr>';
             $content .= '<td>';
-            $content .= CHtml::textField( $this->attribute . '_AddInput', '', array('size' => 50));
+            $content .= '<div class="has-lang-label">' . CHtml::textField( $this->attribute . '_AddInput', '', array('size' => 50));
             $content .= static::renderLanguageLabelHtmlContent($activeLanguagesData[$baseLanguage]);
-            $content .= '&#160;&#160;';
+            $content .= '</div>';
             $content .= CHtml::button(Yii::t('Default', 'Add Item'), array('id' => $this->attribute . '_AddInputButton'));
             $content .= '<div id="' . $this->attribute . '_AddInput_em_" class="errorMessage" style="display:none"></div>';
             $content .= '</td>';
@@ -184,8 +185,8 @@
             $baseLanguage           = $this->getBaseLanguage();
             Yii::app()->clientScript->registerScriptFile(
                 Yii::app()->getAssetManager()->publish(
-                    Yii::getPathOfAlias('ext.zurmoinc.framework.elements.assets') . '/SelectInputUtils.js'
-                    ),
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.elements.assets')
+                    ) . '/SelectInputUtils.js',
                 CClientScript::POS_END
             );
             $inputIdPrefix = $this->getInputIdPrefix();
@@ -214,10 +215,11 @@
                         var currenInputCollectionLength = $('input[name=\"" . $this->getNameForInputField() . "\"]').length;
                         $('<li class=\"ui-state-default\" id=\"{id}\">' +
                         '<span class=\"ui-icon ui-icon-arrowthick-2-n-s\">&#160;</span>' +
+                        '<div class=\"has-lang-label\">' +
                         '<input name=\"" . $this->getNameForInputField() . "\" id=\"" . $inputIdPrefix .
                         "' + ($('input[name=\"" . $this->getNameForInputField() . "\"]').length + 1) +'\" type=\"text\" value=\"' +
                         $('#" . $this->attribute . "_AddInput').val()
-                         + '\" size=\"50\"/>" . static::renderLanguageLabelHtmlContent($supportedLanguagesData[$baseLanguage]) . "' +
+                         + '\" size=\"50\"/>" . static::renderLanguageLabelHtmlContent($supportedLanguagesData[$baseLanguage]) . "</div>' +
                         '<input name=\"" . $this->getNameForExistingValueHiddenField() . "\" type=\"hidden\" value=\"' +
                         $('#" . $this->attribute . "_AddInput').val() + '\" />&#160;&#160;&#160;" . $this->renderRemoveLink() . "' +
                         '" . $this->renderSortableLanguageLabelInputsForAddingNewValuesJavaScriptContent(). "' +
@@ -244,10 +246,10 @@
             {
                 if ($language != $baseLanguage)
                 {
-                    $content .= "<br/><input name=\"" . $this->getNameForLabelInputField($language) . "\" id=\"" . $this->getLabelInputIdPrefix($language) .
+                    $content .= "<div class=\"has-lang-label\"><input name=\"" . $this->getNameForLabelInputField($language) . "\" id=\"" . $this->getLabelInputIdPrefix($language) .
                                 "' + ($('input[name=\"" . $this->getNameForLabelInputField($language) . "\"]').length + 1) +'\"" .
                                 " type=\"text\" value=\"' + $('#" . $this->attribute . "_AddInput').val() + '\" size=\"50\"/>";
-                    $content .= static::renderLanguageLabelHtmlContent($label);
+                    $content .= static::renderLanguageLabelHtmlContent($label) . "</div>";
                 }
             }
             return $content;
@@ -262,10 +264,10 @@
             {
                 if ($language != $baseLanguage)
                 {
-                    $content .= "<br/><input name=\"" . $this->getNameForLabelInputField($language) . "\" id=\"" . $this->getLabelInputIdPrefix($language) .
+                    $content .= "<div class=\"has-lang-label\"><input name=\"" . $this->getNameForLabelInputField($language) . "\" id=\"" . $this->getLabelInputIdPrefix($language) .
                                 "{dataLengthPlusOne}\"" .
                                 " type=\"text\" value=\"{" . $language . "Label}\" size=\"50\"/>";
-                    $content .= static::renderLanguageLabelHtmlContent($label);
+                    $content .= static::renderLanguageLabelHtmlContent($label) . "</div>";
                 }
             }
             return $content;
@@ -419,7 +421,7 @@
 
         protected static function renderLanguageLabelHtmlContent($label)
         {
-            return '&#160;&#40;' . $label . '&#41;';
+            return '<span>' . $label . '</span>';
         }
     }
 ?>

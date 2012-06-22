@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -25,40 +25,13 @@
      ********************************************************************************/
 
     /**
-     * View that renders breadcrumb content
+     * View that renders designer module breadcrumb content
      */
-    class DesignerBreadCrumbView extends View
+    class DesignerBreadCrumbView extends BreadCrumbView
     {
-        protected $controllerId;
-        protected $moduleId;
-        protected $breadcrumbLinks;
-
-        public function __construct($controllerId, $moduleId, $breadcrumbLinks)
+            protected function getHomeLinkLabel()
         {
-            $this->controllerId    = $controllerId;
-            $this->moduleId        = $moduleId;
-            $this->breadcrumbLinks = $breadcrumbLinks;
-        }
-
-        public function isUniqueToAPage()
-        {
-            return true;
-        }
-
-        protected function renderContent()
-        {
-            $homeUrl = Yii::app()->createUrl($this->moduleId . '/' . $this->controllerId . '/index');
-            $cClipWidget = new CClipWidget();
-            $cClipWidget->beginClip("Breadcrumbs");
-            $cClipWidget->widget('zii.widgets.CBreadcrumbs', array(
-                'homeLink'  => CHtml::link(Yii::t('Default', 'Designer Home'), $homeUrl),
-                'links'     => $this->breadcrumbLinks,
-                'separator' => ' &#187; ',
-            ));
-            $cClipWidget->endClip();
-            $content = $cClipWidget->getController()->clips['Breadcrumbs'];
-            $content .= '<div style="margin-bottom:5px"></div>';
-            return $content;
+            return Yii::t('Default', 'Designer Home');
         }
     }
 ?>

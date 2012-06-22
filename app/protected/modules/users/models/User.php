@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,12 +30,13 @@
         {
             assert('is_string($username)');
             assert('$username != ""');
-            $bean = R::findOne('_user', "username = '$username'");
+            $bean = R::findOne('_user', "username = :username ", array(':username' => $username));
             assert('$bean === false || $bean instanceof RedBean_OODBBean');
             if ($bean === false)
             {
                 throw new NotFoundException();
             }
+            RedBeansCache::cacheBean($bean, User::getTableName('User') . $bean->id);
             return self::makeModel($bean);
         }
 
@@ -49,10 +50,16 @@
             {
                 throw new BadPasswordException();
             }
-            if (Right::ALLOW != $user->getEffectiveRight(
-                'UsersModule', UsersModule::RIGHT_LOGIN_VIA_WEB))
+            if (Right::ALLOW != $user->getEffectiveRight('UsersModule', UsersModule::RIGHT_LOGIN_VIA_WEB) &&
+                !Yii::app()->apiRequest->isApiRequest())
             {
                 throw new NoRightWebLoginException();
+            }
+
+            if (Right::ALLOW != $user->getEffectiveRight('UsersModule', UsersModule::RIGHT_LOGIN_VIA_WEB_API) &&
+                Yii::app()->apiRequest->isApiRequest())
+            {
+                throw new ApiNoRightWebApiLoginException();
             }
             return $user;
         }
@@ -89,7 +96,7 @@
             $modelClassName = 'Person';
             $this->deleteOwnedRelatedModels  ($modelClassName);
             $this->deleteForeignRelatedModels($modelClassName);
-            parent::unrestrictedDelete();
+            return parent::unrestrictedDelete();
         }
 
         /**
@@ -232,8 +239,12 @@
 
         protected function beforeDelete()
         {
-            parent::beforeDelete();
+            if (!parent::beforeDelete())
+            {
+                return false;
+            }
             ReadPermissionsOptimizationUtil::userBeingDeleted($this);
+            return true;
         }
 
         protected function logAuditEventsListForCreatedAndModifed($newModel)
@@ -335,6 +346,8 @@
                     'fullName' => 'Name',
                     'timeZone' => 'Time Zone',
                     'title'    => 'Salutation',
+                    'primaryEmail' => 'Email',
+                    'primaryAddress' => 'Address',
                 )
             );
         }
@@ -533,22 +546,31 @@
             $metadata['Person'] = $personMetadata['Person'];
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'username',
                     'hash',
                     'language',
                     'timeZone',
+                    'username',
                 ),
                 'relations' => array(
-                    'manager'  => array(RedBeanModel::HAS_ONE,             'User'),
-                    'groups'   => array(RedBeanModel::MANY_MANY,           'Group'),
-                    'role'     => array(RedBeanModel::HAS_MANY_BELONGS_TO, 'Role'),
-                    'currency' => array(RedBeanModel::HAS_ONE,             'Currency'),
+                    'currency'   => array(RedBeanModel::HAS_ONE,             'Currency'),
+                    'groups'     => array(RedBeanModel::MANY_MANY,           'Group'),
+                    'manager'    => array(RedBeanModel::HAS_ONE,             'User'),
+                    'role'       => array(RedBeanModel::HAS_MANY_BELONGS_TO, 'Role'),
+                    'emailBoxes' => array(RedBeanModel::HAS_MANY,            'User'),
                 ),
                 'foreignRelations' => array(
                     'Dashboard',
                     'Portlet',
                 ),
                 'rules' => array(
+                    array('hash',     'type',    'type' => 'string'),
+                    array('hash',     'length',  'min'   => 32, 'max' => 32),
+                    array('language', 'type',    'type'  => 'string'),
+                    array('language', 'length',  'max'   => 5),
+                    array('timeZone', 'type',    'type'  => 'string'),
+                    array('timeZone', 'length',  'max'   => 64),
+                    array('timeZone', 'default', 'value' => 'UTC'),
+                    array('timeZone', 'ValidateTimeZone'),
                     array('username', 'required'),
                     array('username', 'unique'),
                     array('username', 'UsernameLengthValidator'),
@@ -556,18 +578,17 @@
                     array('username', 'match',   'pattern' => '/^[^A-Z]+$/', // Not Coding Standard
                                                'message' => 'Username must be lowercase.'),
                     array('username', 'length',  'max'   => 64),
-                    array('hash',     'type',    'type' => 'string'),
-                    array('hash',     'length',  'min'   => 32, 'max' => 32),
-                    array('language', 'type',    'type'  => 'string'),
-                    array('language', 'length',  'max'   => 2),
-                    array('timeZone', 'type',    'type'  => 'string'),
-                    array('timeZone', 'length',  'max'   => 64),
-                    array('timeZone', 'default', 'value' => 'UTC'),
-                    array('timeZone', 'validateTimeZone'),
                 ),
                 'elements' => array(
                 ),
                 'defaultSortAttribute' => 'lastName',
+                'noExport' => array(
+                    'hash'
+                ),
+                'noApiExport' => array(
+                    'hash'
+                ),
+
             );
             return $metadata;
         }

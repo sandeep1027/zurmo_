@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -149,11 +149,15 @@
 
         protected function beforeDelete()
         {
-            parent::beforeDelete();
+            if (!parent::beforeDelete())
+            {
+                return false;
+            }
             if ($this->hasReadPermissionsOptimization())
             {
                 ReadPermissionsOptimizationUtil::securableItemBeingDeleted($this);
             }
+            return true;
         }
 
         public static function getDefaultMetadata()
@@ -221,12 +225,11 @@
                 $permission = PermissionsUtil::getActualPermissionDataForReadByModuleNameForCurrentUser($moduleClassName);
                 if ($permission == Permission::NONE || $permission == Permission::DENY)
                 {
-                    $quote               = DatabaseCompatibilityUtil::getQuote();
-                    $ownedTableName      = $modelClassName::getTableName('OwnedSecurableItem');
+                    $quote                               = DatabaseCompatibilityUtil::getQuote();
+                    $modelAttributeToDataProviderAdapter = new OwnedSecurableItemIdToDataProviderAdapter(
+                                                               $modelClassName, null);
                     $ownedTableAliasName = ModelDataProviderUtil::
-                                           resolveShouldAddFromTableAndGetAliasName( $ownedTableName,
-                                                                                     'OwnedSecurableItem',
-                                                                                     $modelClassName,
+                                           resolveShouldAddFromTableAndGetAliasName( $modelAttributeToDataProviderAdapter,
                                                                                      $joinTablesAdapter);
                     $ownerColumnName = RedBeanModel::getForeignKeyName('OwnedSecurableItem', 'owner');
                     $mungeIds = ReadPermissionsOptimizationUtil::getMungeIdsByUser($user);

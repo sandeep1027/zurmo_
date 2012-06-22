@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -357,7 +357,6 @@
                     ),
                 ),
             );
-            $this->assertEquals(15, count($data));
             $this->assertEquals($compareData['AccountsModule'], $data['AccountsModule']);
             $this->assertEquals($compareData['ContactsModule'], $data['ContactsModule']);
             $this->assertEquals($compareData['LeadsModule'],    $data['LeadsModule']);
@@ -603,7 +602,6 @@
                     ),
                 ),
             );
-            $this->assertEquals(15, count($data));
             $this->assertEquals($compareData['AccountsModule'], $form->data['AccountsModule']);
             $this->assertEquals($compareData['ContactsModule'], $form->data['ContactsModule']);
             $this->assertEquals($compareData['LeadsModule'],    $form->data['LeadsModule']);
@@ -877,7 +875,6 @@
                     ),
                 ),
             );
-            $this->assertEquals(15, count($data));
             $this->assertEquals($compareData['AccountsModule'], $form->data['AccountsModule']);
             $this->assertEquals($compareData['ContactsModule'], $form->data['ContactsModule']);
             $this->assertEquals($compareData['LeadsModule'],    $form->data['LeadsModule']);
@@ -1135,7 +1132,6 @@
                 ),
             );
             $data = PermissionsUtil::getAllModulePermissionsDataByPermitable($group);
-            $this->assertEquals(15, count($data));
             $this->assertEquals($compareData['AccountsModule'], $data['AccountsModule']);
             $this->assertEquals($compareData['ContactsModule'], $data['ContactsModule']);
             $this->assertEquals($compareData['LeadsModule'],    $data['LeadsModule']);

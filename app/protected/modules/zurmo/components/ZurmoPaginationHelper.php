@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -68,6 +68,16 @@
         protected $_autoCompleteListPageSize;
 
         /**
+        * Default list page size for api calls.
+        */
+        protected $_apiListPageSize;
+
+        /**
+        * Default list page size for api calls.
+        */
+        protected $_unlimitedPageSize;
+
+        /**
          * This is set from the value in the application common config file. It is used as the final fall back
          * if no other configuration settings are found.
          */
@@ -128,6 +138,24 @@
         public function setAutoCompleteListPageSize($value)
         {
             $this->_autoCompleteListPageSize = $value;
+        }
+
+        /**
+        * This is set from the value in the application common config file. It is used as the final fall back
+        * if no other configuration settings are found.
+        */
+        public function setUnlimitedPageSize($value)
+        {
+            $this->_unlimitedPageSize = $value;
+        }
+
+        /**
+        * This is set from the value in the application common config file. It is used as the final fall back
+        * if no other configuration settings are found.
+        */
+        public function setApiListPageSize($value)
+        {
+            $this->_apiListPageSize = $value;
         }
 
         /**
@@ -263,7 +291,8 @@
         protected static function getAvailablePageSizeNames()
         {
             return array('listPageSize', 'subListPageSize', 'modalListPageSize', 'massEditProgressPageSize',
-                         'autoCompleteListPageSize', 'importPageSize', 'dashboardListPageSize');
+                         'autoCompleteListPageSize', 'importPageSize', 'dashboardListPageSize', 'apiListPageSize',
+                         'unlimitedPageSize');
         }
     }
 ?>

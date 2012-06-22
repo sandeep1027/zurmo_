@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,5 +26,42 @@
 
     class MeetingsDefaultController extends ActivityModelsDefaultController
     {
+        public function actionDaysMeetingsFromCalendarModalList($stringTime, $displayStringTime, $redirectUrl)
+        {
+            if (isset($_GET['ownerOnly']))
+            {
+                $ownerOnly = true;
+            }
+            else
+            {
+                $ownerOnly = false;
+            }
+            if (isset($_GET['relationModelId']))
+            {
+                $relationModelClassName = $_GET['relationModelClassName'];
+                $relationModel          = $relationModelClassName::getById((int)$_GET['relationModelId']);
+            }
+            else
+            {
+                $relationModel = null;
+            }
+            $pageTitle = Yii::t('Default', 'MeetingsModulePluralLabel On {displayStringTime}',
+                         array_merge(LabelUtil::getTranslationParamsForAllModules(),
+                             array('{displayStringTime}' => $displayStringTime)));
+            Yii::app()->getClientScript()->setToAjaxMode();
+            $meetingsView = new DaysMeetingsFromCalendarModalListView(
+                $this->getId(),
+                $this->getModule()->getId(),
+                $stringTime,
+                $redirectUrl,
+                $ownerOnly,
+                $relationModel
+            );
+            $view = new ModalView($this,
+                $meetingsView,
+                'dayMeetingsModalContainer',
+                $pageTitle);
+            echo $view->render();
+        }
     }
 ?>

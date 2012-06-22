@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,13 @@
 
     class MenuView extends View
     {
+        protected $items;
+
+        public function __construct(array $items)
+        {
+            $this->items = $items;
+        }
+
         /**
          * Rendering the MenuView with overflow would cause
          * some portions of the MenuView to be cut off in the
@@ -40,36 +47,17 @@
          */
         protected function renderContent()
         {
-            try
-            {
-                $items = GeneralCache::getEntry($this->getMenuViewItemsCacheIdentifier());
-            }
-            catch (NotFoundException $e)
-            {
-                $items = MenuUtil::getVisibleAndOrderedTabMenuByCurrentUser();
-                GeneralCache::cacheEntry($this->getMenuViewItemsCacheIdentifier(), $items);
-            }
-
-            if (count($items) == 0)
+            if (count($this->items) == 0)
             {
                 return null;
             }
             $cClipWidget = new CClipWidget();
             $cClipWidget->beginClip("Tabs");
             $cClipWidget->widget('ext.zurmoinc.framework.widgets.MbMenu', array(
-                'items' => $items
+                'items' => $this->items
             ));
             $cClipWidget->endClip();
             return $cClipWidget->getController()->clips['Tabs'];
-        }
-
-        /**
-         * The menu view items cache identifier is a combination of the language and current user.
-         * This ensures if the user or language changes, that it properly retrieves the cache.
-         */
-        protected function getMenuViewItemsCacheIdentifier()
-        {
-            return 'MenuViewItems' . Yii::app()->user->userModel->id . Yii::app()->language;
         }
     }
 ?>

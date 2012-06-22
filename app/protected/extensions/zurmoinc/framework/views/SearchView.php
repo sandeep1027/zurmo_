@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -65,10 +65,11 @@
             $clipWidget = new ClipWidget();
             list($form, $formStart) = $clipWidget->renderBeginWidget(
                                                                 'NoRequiredsActiveForm',
-                                                                array('id' => 'search-form', 'enableAjaxValidation' => false)
+                                                                array('id' => $this->getSearchFormId(), 'enableAjaxValidation' => false)
                                                             );
             $content .= $formStart;
             $content .= $this->renderFormLayout($form);
+            $content .= $this->renderAfterFormLayout($form);
             $formEnd  = $clipWidget->renderEndWidget();
             $content .= $formEnd;
 
@@ -76,74 +77,86 @@
             return $content;
         }
 
+        protected function renderAfterFormLayout($form)
+        {
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/dropDownInteractions.js');
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/jquery.dropkick-1.0.0.js');
+        }
+
         /**
          * Renders the bottom panel of the layout. Includes the search button
-         * and the advanced search link that opens/closes the second panel
+         * and the advanced search link that opens/closes the second panel. Using click.clear namespace to
+         * avoid collision with the binding from clearform.
          * @return A string containing the element's content.
          */
         protected function renderFormBottomPanel()
         {
-            $searchButton = CHtml::submitButton(Yii::t('Default', 'Search'), array('name' => 'search'));
-            $moreSearchOptionsLink = CHtml::link(Yii::t('Default', 'Advanced Search'), '#', array('class' => 'more-search-link'));
-            $clearSearchLink = CHtml::link(Yii::t('Default', 'Clear Search'), '#', array('class' => 'clear-search-link'));
-            $cs = Yii::app()->getClientScript();
-            $cs->registerScriptFile(
-                Yii::app()->getAssetManager()->publish(
-                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets') . '/FormUtils.js'
-                    ),
-                CClientScript::POS_END
-            );
+            $moreSearchOptionsLink = CHtml::link(Yii::t('Default', 'Advanced'), '#', array('id' => 'more-search-link' . $this->gridIdSuffix));
+            $clearSearchLink = CHtml::link(Yii::t('Default', 'Clear'), '#', array('id' => 'clear-search-link' . $this->gridIdSuffix));
             Yii::app()->clientScript->registerScript('search', "
-                $('.more-search-link').clearform(
+                $('#clear-search-link" . $this->gridIdSuffix . "').removeAttr('clearForm');
+                $('#clear-search-link" . $this->gridIdSuffix . "').clearform(
                     {
-                        form: '#search-form'
+                        form: '#" . $this->getSearchFormId() . "'
                     }
                 );
-                $('.clear-search-link').clearform(
+                $('#clear-search-link" . $this->gridIdSuffix . "').unbind('click.clear');
+                $('#clear-search-link" . $this->gridIdSuffix . "').bind('click.clear', function()
                     {
-                        form: '#search-form'
+                        $(this).closest('form').submit();
+                        return false;
                     }
                 );
-                $('.more-search-link').click( function()
+                $('#more-search-link" . $this->gridIdSuffix . "').unbind('click.more');
+                $('#more-search-link" . $this->gridIdSuffix . "').bind('click.more',  function(event)
                     {
                         $('.search-view-1').toggle();
                         return false;
                     }
                 );
-                $('.clear-search-link').click( function()
+                $('#cancel-advanced-search').unbind('click');
+                $('#cancel-advanced-search').bind('click', function(event){
+                    $('.search-view-1').hide();
+                });
+                $('#search-advanced-search').unbind('click');
+                $('#search-advanced-search').bind('click', function(event)
                     {
-                        $('#search-form').submit();
+                        $('.search-view-0').children(\"input[type='text']\").val('');
+                        $('.search-view-1').hide();
+                        $(this).closest('form').submit();
                         return false;
                     }
                 );
-                $('#search-form').submit(function()
+                $('#" . $this->getSearchFormId() . "').unbind('submit');
+                $('#" . $this->getSearchFormId() . "').bind('submit', function(event)
                     {
                         $('#" . $this->gridId . $this->gridIdSuffix . "-selectedIds').val(null);
-                        $('#" . $this->gridId . $this->gridIdSuffix . "-selectAll').val(null);
                         $.fn.yiiGridView.update('" . $this->gridId . $this->gridIdSuffix . "',
                         {
                             data: $(this).serialize() + '&" . $this->listModelClassName . "_page=&" . // Not Coding Standard
                             $this->listModelClassName . "_sort=" .
-                            $this->getExtraQueryPartForSearchFormScriptSubmitFunction() ."' " . // Not Coding Standard
-                        "}
+                            $this->getExtraQueryPartForSearchFormScriptSubmitFunction() ."' // Not Coding Standard
+                         }
                         );
                         return false;
                     }
                 );
             " . $this->getExtraRenderFormBottomPanelScriptPart());
+            // End Not Coding Standard
             $startingDivStyle = null;
             if ($this->hideAllSearchPanelsToStart)
             {
                 $startingDivStyle = "style='display:none;'";
             }
-            $content  = '<tbody class="search-view-bottom-panel" ' . $startingDivStyle . '>';
-            $content .= '<tr><td colspan="4">';
-            $content .= $searchButton . '&#160;';
+            $content  = '<div class="search-form-tools">';
             $content .= $moreSearchOptionsLink . '&#160;|&#160;';
             $content .= $clearSearchLink;
             $content .= $this->renderFormBottomPanelExtraLinks();
-            $content .= '</td></tr>';
-            $content .= '</tbody>';
+            $content .= '</div>';
             return $content;
         }
 
@@ -178,9 +191,10 @@
          */
         protected function renderFormLayout($form = null)
         {
-            $metadata = self::getMetadata();
-            $content  = '<table>';
-            $content .= TableUtil::getColGroupContent($this->getColumnCount($metadata['global']));
+            $metadata       = self::getMetadata();
+            $maxCellsPerRow = $this->getMaxCellsPerRow();
+            $content        = null;
+            $content       .= TableUtil::getColGroupContent($this->getColumnCount($metadata['global']));
             assert('count($metadata["global"]["panels"]) == 2');
             foreach ($metadata['global']['panels'] as $key => $panel)
             {
@@ -189,28 +203,40 @@
                 {
                     $startingDivStyle = "style='display:none;'";
                 }
-                $content .= '<tbody class="search-view-' . $key . '" ' . $startingDivStyle . '>';
+                $content .= '<div class="search-view-' . $key . '" ' . $startingDivStyle . '>';
                 foreach ($panel['rows'] as $row)
                 {
-                    $content .= '<tr>';
+                    //$content .= '<tr>';
                     foreach ($row['cells'] as $cell)
                     {
                         if (!empty($cell['elements']))
                         {
                             foreach ($cell['elements'] as $elementInformation)
                             {
+                                if (count($row['cells']) == 1 && count($row['cells']) < $maxCellsPerRow)
+                                {
+                                    $elementInformation['wide'] = true;
+                                }
                                 $elementclassname = $elementInformation['type'] . 'Element';
                                 $element = new $elementclassname($this->model, $elementInformation['attributeName'], $form, array_slice($elementInformation, 2));
                                 $content .= $element->render();
                             }
                         }
                     }
-                    $content .= '</tr>';
+                    //$content .= '</tr>';
                 }
-                $content .= '</tbody>';
+                if ($key == 1)
+                {
+                    $content .= '<div class="view-toolbar-container clearfix">';
+                    $content .= '<div class="form-toolbar">';
+                    $content .= CHtml::button(Yii::t('Default', 'Cancel'), array('id' => 'cancel-advanced-search'));
+                    $content .= CHtml::button(Yii::t('Default', 'Search'), array('id' => 'search-advanced-search'));
+                    $content .= '</div></div>';
+                }
+                $content .= '</div>';
             }
             $content .= $this->renderFormBottomPanel();
-            $content .= '</table>';
+            //$content .= '</table>';
             return $content;
         }
 
@@ -311,6 +337,19 @@
         public static function getDesignerRulesType()
         {
             return 'SearchView';
+        }
+
+        protected function getSearchFormId()
+        {
+            return 'search-form' . $this->gridIdSuffix;
+        }
+
+        protected function getMaxCellsPerRow()
+        {
+            $designerRulesType      = static::getDesignerRulesType();
+            $designerRulesClassName = $designerRulesType . 'DesignerRules';
+            $designerRules          = new $designerRulesClassName();
+            return $designerRules->maxCellsPerRow();
         }
     }
 ?>

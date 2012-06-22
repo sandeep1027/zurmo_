@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -38,7 +38,7 @@
         '2 Columns Right Strong'
             => 'Droite',
         'Access Dashboards'
-            => 'Accès au Tableaux de bord',
+            => 'Accès aux Tableaux de bord',
         'Add Portlet'
             => 'Ajouter un portlet',
         'Are you sure want to delete this dashboard?'
@@ -53,17 +53,37 @@
             => 'Supprimer le tableau de bord',
         'Delete Dashboards'
             => 'Supprimer les Tableaux de bord',
+        'Don\'t show me this screen again (Don\'t worry you can turn it on again)'
+            => 'Ne plus afficher cette page (vous pouvez rétablir son affichage)',
         'Edit Dashboard'
             => 'Modifier le tableau de bord',
+        'Go to the dashboard'
+            => 'Continuer aux Tableaux de bord',
+        'Helpful Links'
+            => 'Liens Utiles',
         'Home'
             => 'Accueil',
         'Is Default'
             => 'Défault',
+        'Join the forum'
+            => 'S\'inscrire au forum',
         'Layout Id'
             => 'ID mise en page',
         'Layout Type'
             => 'Format des colonnes',
+        'Read the wiki'
+            => 'Lire le wiki',
         'Return to Home'
             => 'Retourner a l\'acceuil',
+        'Tip of the Day'
+            => 'Conseil du jour',
+        'Using a CRM shouldn\'t be a chore. With Zurmo, you can earn points, ' .
+        'collect badges, and compete against co-workers while getting your job done.'
+            => 'L\'utilisation d\'un CRM ne doit pas être une corvée. Avez Zurmo, vous pouvez ' .
+               'gagner des points, remporter des badges, et concourir contre vos collègues, tout en complétant votre travail.',
+        'View a tutorial'
+            => 'Visualiser un tutoriel',
+        'Watch a video'
+            => 'Regarder une vidéo',
     );
 ?>

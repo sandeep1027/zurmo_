@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -64,9 +64,13 @@
 
         protected function renderContent()
         {
-            $content  = '<div class="view-toolbar">';
-            $content .= $this->renderActionElementBar(false);
-            $content .= '</div>';
+            $actionElementContent = $this->renderActionElementBar(false);
+            if ($actionElementContent != null)
+            {
+                $content  = '<div class="view-toolbar-container clearfix"><div class="view-toolbar">';
+                $content .= $actionElementContent;
+                $content .= '</div></div>';
+            }
             $this->portlets = $this->getPortlets($this->uniqueLayoutId, self::getMetadata());
             $content .= $this->renderPortlets($this->uniqueLayoutId);
             return $content;
@@ -86,7 +90,8 @@
                 $this->controllerId,
                 $this->moduleId,
                 $this->modelId,
-                array('htmlOptions' => array('confirm' => Yii::t('Default', 'Are you sure want to delete this dashboard?')))
+                array('htmlOptions' => array('class'   => 'icon-delete',
+                                             'confirm' => Yii::t('Default', 'Are you sure want to delete this dashboard?')))
             );
             if (!ActionSecurityUtil::canCurrentUserPerformAction($deleteDashboardLinkActionElement->getActionType(), $this->model))
             {
@@ -94,7 +99,7 @@
             }
             if (!$this->isDefaultDashboard)
             {
-                $content .= '&#160;|&#160;' . $deleteDashboardLinkActionElement->render();
+                $content .= $deleteDashboardLinkActionElement->render();
             }
             return $content;
         }

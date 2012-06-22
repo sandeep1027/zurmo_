@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,48 +30,56 @@
     // DON'T MAKE A MESS!
     return array(
         'Access OpportunitiesModulePluralLabel Tab'
-            => '??',
+            => 'Accesso ai OpportunitiesModulePluralLabel',
         'Close Date'
-            => '??',
+            => 'Data chiusura',
         'Closed Lost'
-            => '??',
+            => 'Chiuso Perso',
         'Closed Won'
-            => '??',
+            => 'Chiuso Vinto',
         'Create OpportunitiesModulePluralLabel'
-            => '??',
+            => 'Crea OpportunitiesModulePluralLabel',
         'Create OpportunitiesModuleSingularLabel'
-            => '?? OpportunitiesModuleSingularLabel',
+            => 'Nuova OpportunitiesModuleSingularLabel',
         'Delete OpportunitiesModulePluralLabel'
-            => '??',
+            => 'Elimina OpportunitiesModulePluralLabel',
         'My OpportunitiesModulePluralLabel'
-            => '?? OpportunitiesModulePluralLabel',
+            => 'Le miei OpportunitiesModulePluralLabel',
         'Negotiating'
-            => '??',
+            => 'Negoziazione',
         'Opportunities'
-            => '??',
+            => 'Opportunità',
         'Opportunities By Lead Source'
-            => '??',
+            => 'Opportunità per fonte de lead',
         'Opportunities By Sales Stage'
-            => '??',
+            => 'Opportunità per fase di vendita',
         'OpportunitiesModulePluralLabel'
-            => 'OpportunitiesModulePluralLabel',
+            => 'OpportunitiesModulePluralLabel', // Same Word Translated
         'OpportunitiesModulePluralLabel For AccountsModuleSingularLabel'
-            => 'OpportunitiesModulePluralLabel ?? AccountsModuleSingularLabel',
+            => 'OpportunitiesModulePluralLabel per AccountsModuleSingularLabel',
         'OpportunitiesModulePluralLabel For ContactsModuleSingularLabel'
-            => 'OpportunitiesModulePluralLabel ?? ContactsModuleSingularLabel',
+            => 'OpportunitiesModulePluralLabel per ContactsModuleSingularLabel',
         'OpportunitiesModuleSingularLabel'
-            => 'OpportunitiesModuleSingularLabel',
+            => 'OpportunitiesModuleSingularLabel', // Same Word Translated
         'OpportunitiesModuleSingularLabel Search'
-            => 'OpportunitiesModuleSingularLabel ??',
+            => 'Ricerca OpportunitiesModuleSingularLabel',
         'Opportunity'
-            => '??',
+            => 'Opportunità',
         'Probability'
-            => '??',
+            => 'Probabilità',
         'Prospecting'
-            => '??',
+            => 'In Prospettiva',
         'Qualification'
-            => '??',
+            => 'Qualificazione',
         'Verbal'
-            => '??',
+            => 'Verbale',
+        '{n} OpportunitiesModuleSingularLabel created|{n} OpportunitiesModulePluralLabel created'
+            => '{n} OpportunitiesModuleSingularLabel create|{n} OpportunitiesModulePluralLabel creati',
+        '{n} OpportunitiesModuleSingularLabel mass updated|{n} OpportunitiesModulePluralLabel mass updated'
+            => '{n} OpportunitiesModuleSingularLabel è stata aggiornata|{n} OpportunitiesModulePluralLabel sono state aggiornate',
+        '{n} OpportunitiesModuleSingularLabel search completed|{n} OpportunitiesModuleSingularLabel searches completed'
+            => '{n} recherche OpportunitiesModuleSingularLabel completata|{n} recherches OpportunitiesModuleSingularLabel completate',
+        '{n} OpportunitiesModuleSingularLabel won|{n} OpportunitiesModulePluralLabel won'
+            => '{n} OpportunitiesModuleSingularLabel vinta|{n} OpportunitiesModulePluralLabel vinte',
     );
 ?>

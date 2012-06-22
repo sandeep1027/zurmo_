@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,7 +50,7 @@
          * requirements for what should be shown in a mashable activity feed.
          * @param array $searchAttributeData
          */
-        abstract protected function resolveSearchAttributeDataForLatestActivities($searchAttributeData);
+        abstract public function resolveSearchAttributeDataForLatestActivities($searchAttributeData);
 
         /**
          * For a given model, what attribute is used for the ordering in a latest activity feed.
@@ -61,5 +61,35 @@
          * Override if you want to display anything extra in the view for a particular model.
          */
         abstract public function getLatestActivityExtraDisplayStringByModel($model);
+
+        /**
+         * Override to define how related models are displayed if at all.
+         * @param RedBeanModel $model
+         */
+        public function renderRelatedModelsByImportanceContent(RedBeanModel $model)
+        {
+        }
+
+        /**
+         * Override to customize summary content.
+         * @param string $ownedByFilter
+         * @param string $viewModuleClassName
+         */
+        public function getSummaryContentTemplate($ownedByFilter, $viewModuleClassName)
+        {
+            assert('is_string($ownedByFilter)');
+            assert('is_string($viewModuleClassName)');
+            if ($ownedByFilter != LatestActivitiesConfigurationForm::OWNED_BY_FILTER_USER)
+            {
+                return "<span>{modelStringContent}</span><span class='less-pronounced-text'>" .
+                       Yii::t('Default', 'by {ownerStringContent}') . "</span><span>{extraContent}</span>";
+            }
+            else
+            {
+                return "<span>{modelStringContent}</span><span>{extraContent}</span>";
+            }
+        }
+
+
     }
 ?>

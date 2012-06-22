@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,12 +41,10 @@
                     ),
                     'derivedAttributeTypes' => array(
                         'ActivityItems',
-                        'DateTimeCreatedUser',
-                        'DateTimeModifiedUser',
-                        'DerivedExplicitReadWriteModelPermissions',
                     ),
                     'nonPlaceableAttributeNames' => array(
                         'latestDateTime',
+                        'owner'
                     ),
                     'panelsDisplayType' => FormLayout::PANELS_DISPLAY_TYPE_ALL,
                     'panels' => array(
@@ -106,51 +104,18 @@
                                         ),
                                     )
                                 ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'owner', 'type' => 'User'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'null',
-                                                      'type' => 'DerivedExplicitReadWriteModelPermissions'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'detailViewOnly' => true,
-                                            'elements' => array(
-                                                array('attributeName' => 'null', 'type' => 'DateTimeCreatedUser'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'detailViewOnly' => true,
-                                            'elements' => array(
-                                                array('attributeName' => 'null', 'type' => 'DateTimeModifiedUser'),
-                                            ),
-                                        ),
-                                    )
-                                ),
                             ),
                          ),
                     ),
                 ),
             );
             return $metadata;
+        }
+
+        protected function getNewModelTitleLabel()
+        {
+            return Yii::t('Default', 'Create TasksModuleSingularLabel',
+                                     LabelUtil::getTranslationParamsForAllModules());
         }
     }
 ?>

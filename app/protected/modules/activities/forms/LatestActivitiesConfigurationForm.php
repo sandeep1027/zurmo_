@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -38,17 +38,32 @@
         const  FILTERED_BY_ALL = 'all';
 
         /**
-         * The type of view layout to use in the user interface. Currently support list view and summary view.
-         * @see LatestActivitiesView
-         * @var integer
+         * Value to be used to signal that the ownership filter is for all activities.
+         * @see LatestActivitiesMashableFilterRadioElement
+         * @var string
          */
-        public $viewType = LatestActivitiesView::VIEW_TYPE_LISTVIEW;
+        const  OWNED_BY_FILTER_ALL = 'all';
+
+        /**
+         * Value to be used to signal that the ownership filter is for only activities owned by the user.
+         * @see LatestActivitiesMashableFilterRadioElement
+         * @var string
+         */
+        const OWNED_BY_FILTER_USER = 'user';
 
         /**
          * Should the latest activity feed rollup data beyond just the related model.
          * @var boolean
          */
         public $rollup;
+
+        /**
+         * Whether to filter latest activity feed by ownership for the current user.  Can also be a user id that is an integer.
+         * Defaults to not filtering on anything, thus showing all available models that implement the
+         * MashableActivityInterface.
+         * @var string
+         */
+        public $ownedByFilter = self::OWNED_BY_FILTER_ALL;
 
         /**
          * What model to filter by if any for the latest activity feed.  Defaults to not filtering on anything, thus
@@ -68,9 +83,9 @@
         public function rules()
         {
             return array(
-                array('viewType',            'type', 'type' => 'integer'),
                 array('filteredByModelName', 'type',    'type' => 'string'),
                 array('rollup',              'boolean'),
+                array('ownedByFilter',       'type',    'type' => 'string')
             );
         }
     }

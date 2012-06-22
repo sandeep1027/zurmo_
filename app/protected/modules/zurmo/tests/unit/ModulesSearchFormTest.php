@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -27,7 +27,7 @@
     /**
      * Broad data provider tests that touch across different modules in the zurmo application.
      */
-    class ModulesSearchFormTest extends BaseTest
+    class ModulesSearchFormTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -228,14 +228,14 @@
                 1 => array(
                     'attributeName'        => 'primaryEmail',
                     'relatedAttributeName' => 'optOut',
-                    'operatorType'         => 'equals',
-                    'value'                => (bool)0,
+                    'operatorType'         => 'doesNotEqual',
+                    'value'                => (bool)1,
                 ),
                 2 => array(
                     'attributeName'        => 'secondaryEmail',
                     'relatedAttributeName' => 'optOut',
-                    'operatorType'         => 'equals',
-                    'value'                => (bool)0,
+                    'operatorType'         => 'doesNotEqual',
+                    'value'                => (bool)1,
                 ),
             );
             $compareStructure = '(1 or 2)';

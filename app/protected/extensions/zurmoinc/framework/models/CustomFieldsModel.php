@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -42,9 +42,17 @@
                         $customFieldData = CustomFieldData::getByName($customFieldDataName);
                         if ($bean === null)
                         {
-                            if (($customField->value === null || $customField->value === '') && $setDefaults)
+                            if ($customField instanceof CustomField &&
+                                ($customField->value === null || $customField->value === '') && $setDefaults)
                             {
                                 $customField->value = $customFieldData->defaultValue;
+                            }
+                            elseif ($customField instanceof MultipleValuesCustomField &&
+                                 $customField->values->count() == 0 && $setDefaults && isset($customFieldData->defaultValue))
+                            {
+                                $customFieldValue = new CustomFieldValue();
+                                $customFieldValue->value = $customFieldData->defaultValue;
+                                $customField->values->add($customFieldValue);
                             }
                         }
                         $customField->data = $customFieldData;
@@ -55,13 +63,16 @@
 
         /**
          * Utilized for existing models, that were not originally saved with a new custom field.  This will be utilized
-         * to ensure cached models properly generate information needed by the model.
+         * to ensure cached models properly generate information needed by the existing model. Construct incomplete does
+         * not run on new models.  This only needs to run on custom fields that have been created after a model was
+         * created, so the model does not have a  value for the linking id in the table.
          * (non-PHPdoc)
          * @see RedBeanModel::constructIncomplete()
          */
         protected function constructIncomplete($bean)
         {
             assert('$bean === null || $bean instanceof RedBean_OODBBean');
+            parent::constructIncomplete($bean);
             $metadata = $this->getMetadata();
             foreach ($metadata as $unused => $classMetadata)
             {
@@ -69,9 +80,15 @@
                 {
                     foreach ($classMetadata['customFields'] as $customFieldName => $customFieldDataName)
                     {
-                        $customField       = $this->unrestrictedGet($customFieldName);
-                        $customFieldData   = CustomFieldData::getByName($customFieldDataName);
-                        $customField->data = $customFieldData;
+                        $customFieldModelClassName = $this->getAttributeModelClassName($customFieldName);
+                        $classBean                 = $this->getClassBean($customFieldModelClassName);
+                        $columnName                = static::getForeignKeyName($customFieldModelClassName, $customFieldName);
+                        if($classBean->{$columnName} == null)
+                        {
+                            $customField       = $this->unrestrictedGet($customFieldName);
+                            $customFieldData   = CustomFieldData::getByName($customFieldDataName);
+                            $customField->data = $customFieldData;
+                        }
                     }
                 }
             }

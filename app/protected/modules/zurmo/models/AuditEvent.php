@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,8 @@
 
     class AuditEvent extends RedBeanModel
     {
+        public static $isTableOptimized = false;
+
         public static function getSinceTimestamp($timestamp)
         {
             assert('is_int($timestamp)');
@@ -64,9 +66,9 @@
             assert('is_string($eventName)');
             assert('is_int($count)');
             $sql = "select id
-                    from auditevent
-                    where _user_id = {$user->id} AND eventname = '{$eventName}' group by concat(modelclassname, modelid)
-                    order by id desc limit $count";
+                    from ( select id, modelclassname, modelid, datetime from auditevent where _user_id = {$user->id}
+                    AND eventname = '{$eventName}' order by id desc ) auditevent
+                    group by concat(modelclassname, modelid) order by datetime desc limit $count";
             $ids   = R::getCol($sql);
             $beans = R::batch ('auditevent', $ids);
             return self::makeModels($beans, __CLASS__);
@@ -84,7 +86,7 @@
                     throw new NoCurrentUserSecurityException();
                 }
             }
-            if (!AUDITING_OPTIMIZED || !RedBeanDatabase::isFrozen())
+            if (!AuditEvent::$isTableOptimized && (!AUDITING_OPTIMIZED || !RedBeanDatabase::isFrozen()))
             {
                 $tableName  = self::getTableName('AuditEvent');
                 RedBean_Plugin_Optimizer_Id::ensureIdColumnIsINT11($tableName, strtolower('modelId'));
@@ -97,6 +99,7 @@
                 $auditEvent->modelId        = $model !== null ? $model->id        : null;
                 $auditEvent->serializedData = serialize($data);
                 $saved = $auditEvent->save();
+                AuditEvent::$isTableOptimized = true;
             }
             else
             {
@@ -150,8 +153,8 @@
             $metadata[__CLASS__] = array(
                 'members' => array(
                     'dateTime',
-                    'moduleName',
                     'eventName',
+                    'moduleName',
                     'modelClassName',
                     'modelId',
                     'serializedData',
@@ -162,12 +165,12 @@
                 'rules' => array(
                     array('dateTime',       'required'),
                     array('dateTime',       'type', 'type' => 'datetime'),
-                    array('moduleName',     'required'),
-                    array('moduleName',     'type',   'type' => 'string'),
-                    array('moduleName',     'length', 'min'  => 3, 'max' => 64),
                     array('eventName',      'required'),
                     array('eventName',      'type',   'type' => 'string'),
                     array('eventName',      'length', 'min'  => 3, 'max' => 64),
+                    array('moduleName',     'required'),
+                    array('moduleName',     'type',   'type' => 'string'),
+                    array('moduleName',     'length', 'min'  => 3, 'max' => 64),
                     array('modelClassName', 'type', 'type' => 'string'),
                     array('modelClassName', 'length', 'min'  => 3, 'max' => 64),
                     array('modelId',        'type', 'type' => 'integer'),
@@ -176,6 +179,34 @@
                 )
             );
             return $metadata;
+        }
+
+        public static function deleteAllByModel(RedBeanModel $model)
+        {
+            if ($model instanceof Item)
+            {
+                $searchAttributeData = array();
+                $searchAttributeData['clauses'] = array(
+                    1 => array(
+                        'attributeName'        => 'modelClassName',
+                        'operatorType'         => 'equals',
+                        'value'                => get_class($model),
+                    ),
+                    2 => array(
+                        'attributeName'        => 'modelId',
+                        'operatorType'         => 'equals',
+                        'value'                => $model->id,
+                    ),
+                );
+                $searchAttributeData['structure'] = '1 and 2';
+                $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('AuditEvent');
+                $where             = RedBeanModelDataProvider::makeWhere('AuditEvent', $searchAttributeData, $joinTablesAdapter);
+                $auditEvents       = self::getSubset($joinTablesAdapter, null, null, $where, null);
+                foreach ($auditEvents as $event)
+                {
+                    $event->delete();
+                }
+            }
         }
     }
 ?>

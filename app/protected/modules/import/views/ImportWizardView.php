@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,13 +29,23 @@
      */
     abstract class ImportWizardView extends EditView
     {
-        public function __construct($controllerId, $moduleId, ImportWizardForm $model)
+		protected $cssClasses =  array( 'AdministrativeArea');
+		
+        public function __construct($controllerId, $moduleId, ImportWizardForm $model, $title = null)
         {
             assert('is_string($controllerId)');
             assert('is_string($moduleId)');
+            assert('is_string($title) || $title == null');
             $this->controllerId = $controllerId;
             $this->moduleId     = $moduleId;
             $this->model        = $model;
+            $this->title        = $title;
+        }
+
+        protected function renderActionElementBar($renderedInForm)
+        {
+            assert('$renderedInForm == true');
+            return $this->renderActionLinksContent();
         }
 
         /**
@@ -47,18 +57,15 @@
         {
             $previousPageLinkContent = $this->renderPreviousPageLinkContent();
             $nextPageLinkContent     = $this->renderNextPageLinkContent();
-            $content  = '<div class="view-toolbar">'; //change to different class?
+            $content                 = null;
             if ($previousPageLinkContent)
             {
-                $content .= '<div id="previous-page-link" class="import-previous-page-link">' .
-                $previousPageLinkContent . '</div>';
+                $content .= $previousPageLinkContent;
             }
             if ($nextPageLinkContent)
             {
-                $content .= '<div id="next-page-link" class="import-next-page-link">' .
-                $nextPageLinkContent . '</div>';
+                $content .= $nextPageLinkContent;
             }
-            $content .= '</div>';
             return $content;
         }
 

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -72,8 +72,9 @@
             assert('is_int($pageSize)');
             assert('$stateMetadataAdapterClassName == null || is_string($stateMetadataAdapterClassName)');
             $searchAttributes          = SearchUtil::resolveSearchAttributesFromGetArray(get_class($searchModel));
+            SearchUtil::resolveAnyMixedAttributesScopeForSearchModelFromGetArray($searchModel, get_class($searchModel));
             $sanitizedSearchAttributes = GetUtil::sanitizePostByDesignerTypeForSavingModel($searchModel,
-                                                                                            $searchAttributes);
+                                                                                           $searchAttributes);
             $sortAttribute             = SearchUtil::resolveSortAttributeFromGetArray($listModelClassName);
             $sortDescending            = SearchUtil::resolveSortDescendingFromGetArray($listModelClassName);
             $metadataAdapter = new SearchDataProviderMetadataAdapter(
@@ -81,6 +82,7 @@
                 $userId,
                 $sanitizedSearchAttributes
             );
+
             return RedBeanModelDataProviderUtil::makeDataProvider(
                 $metadataAdapter,
                 $listModelClassName,
@@ -115,8 +117,7 @@
                 $listModel,
                 $moduleClassName,
                 $dataProvider,
-                GetUtil::resolveSelectedIdsFromGet(),
-                GetUtil::resolveSelectAllFromGet()
+                GetUtil::resolveSelectedIdsFromGet()
             );
         }
 
@@ -129,12 +130,10 @@
                 'relationModel'    => $model,
                 'redirectUrl'      => $redirectUrl,
             );
-            $gridView = new GridView(2, 1);
-            $gridView->setView(new TitleBarView (
-                                $moduleClassName::getModuleLabelByTypeAndLanguage('Plural'), strval($model)), 0, 0);
+            $gridView = new GridView(1, 1);
             $gridView->setView(new $viewClassName(  $this->getId(),
                                                     $this->getModule()->getId(),
-                                                    $params), 1, 0);
+                                                    $params), 0, 0);
             return $gridView;
         }
 
@@ -153,11 +152,31 @@
             );
         }
 
+        protected function makeEditAndDetailsView($model, $renderType)
+        {
+            assert('$model != null');
+            assert('$renderType == "Edit" || $renderType == "Details"');
+            $editViewClassName = get_class($model) . 'EditAndDetailsView';
+            return new $editViewClassName($renderType, $this->getId(), $this->getModule()->getId(), $model);
+        }
+
         protected function makeTitleBarAndEditView($model, $titleBarAndEditViewClassName)
         {
             assert('$model != null');
             assert('$titleBarAndEditViewClassName != null && is_string($titleBarAndEditViewClassName)');
             return new $titleBarAndEditViewClassName(
+                $this->getId(),
+                $this->getModule()->getId(),
+                $model,
+                $this->getModule()->getPluralCamelCasedName()
+            );
+        }
+
+        protected function makeTitleBarAndDetailsView($model, $titleBarAndDetailsViewClassName = 'TitleBarAndDetailsView')
+        {
+            assert('$model != null');
+            assert('$titleBarAndDetailsViewClassName != null && is_string($titleBarAndDetailsViewClassName)');
+            return new $titleBarAndDetailsViewClassName(
                 $this->getId(),
                 $this->getModule()->getId(),
                 $model,
@@ -177,25 +196,23 @@
             }
         }
 
-        protected function makeTitleBarAndMassEditView(
+        protected function makeMassEditView(
             $model,
             $activeAttributes,
             $selectedRecordCount,
             $title)
         {
-            return new TitleBarAndMassEditView(
-                $this->getId(),
-                $this->getModule()->getId(),
-                $model,
-                $activeAttributes,
-                $selectedRecordCount,
-                $this->getModule()->getPluralCamelCasedName(),
-                $title,
-                $this->getMassEditAlertMessage(get_class($model))
-                );
+            $alertMessage          = $this->getMassEditAlertMessage(get_class($model));
+            $moduleName            = $this->getModule()->getPluralCamelCasedName();
+            $moduleClassName       = $moduleName . 'Module';
+            $title                 = Yii::t('Default', 'Mass Update') . ': ' . $title;
+            $massEditViewClassName = $moduleName . 'MassEditView';
+            $view  = new $massEditViewClassName($this->getId(), $this->getModule()->getId(), $model, $activeAttributes,
+                                                      $selectedRecordCount, $title, $alertMessage);
+            return $view;
         }
 
-        protected function getSelectedRecordCountByResolvingSelectAllFromGet($dataProvider)
+        protected function getSelectedRecordCountByResolvingSelectAllFromGet($dataProvider, $countEmptyStringAsElement = true)
         {
             if ($_GET['selectAll'])
             {
@@ -203,7 +220,14 @@
             }
             else
             {
-                return count(explode(",", $_GET['selectedIds'])); // Not Coding Standard
+                if ($countEmptyStringAsElement)
+                {
+                    return count(explode(",", trim($_GET['selectedIds'], ', '))); // Not Coding Standard
+                }
+                else
+                {
+                    return count(array_filter(explode(",", trim($_GET['selectedIds'], " ,")))); // Not Coding Standard
+                }
             }
         }
 

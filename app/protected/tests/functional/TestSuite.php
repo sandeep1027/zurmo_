@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,10 @@
 
     $basePath = realpath(dirname(__FILE__) . '/../../../');
 
+    require_once('../PhpUnitServiceUtil.php');
+    require_once 'File/Iterator.php';
+    require_once('File/Iterator/Factory.php');
+
     if (is_file($basePath . '/protected/config/debugTest.php'))
     {
         require_once($basePath . '/protected/config/debugTest.php');
@@ -44,9 +48,8 @@
     define('USER_EXTENSIONS_JS_PATH', './assets/extensions/user-extensions.js');
     define('SELENIUM_SERVER_PORT', $seleniumServerPort);
     define('BROWSERS_TO_RUN', $seleniumBrowsersToRun);
-    define('TEST_BASE_DB_CONTROL_URL', $seleniumDbControlUrl);
+    define('TEST_BASE_CONTROL_URL', $seleniumControlUrl);
 
-    require_once('File/Iterator/Factory.php');
     class TestSuite
     {
         public static function run()
@@ -76,6 +79,7 @@
                      "  Note:\n"                                                                                            .
                      "\n"                                                                                                   ;
 
+            PhpUnitServiceUtil::checkVersion();
             if ($argv[0] != 'TestSuite.php')
             {
                 echo $usage;
@@ -162,14 +166,23 @@
             $browsersToRun = self::resolveBrowserFromParameter();
             foreach ($browsersToRun as $browserId => $browserDisplayName)
             {
+                self::clearPreviousTestResultsByBrowser($browserDisplayName);
                 foreach ($htmlTestSuiteFiles as $pathToSuite)
                 {
-                    echo 'Restoring test db';
-                    self::remoteAction(TEST_BASE_DB_CONTROL_URL, array('action' => 'restore'));
-                    echo "Restored test db";
-                    echo 'Clear cache on remote server';
-                    self::remoteAction(TEST_BASE_URL, array('clearCache'         => '1',
-                                                            'ignoreBrowserCheck' => '1'));
+                    if (!self::isInstallationTest($pathToSuite))
+                    {
+                        echo 'Restoring test db';
+                        self::remoteAction(TEST_BASE_CONTROL_URL, array('action' => 'restore'));
+                        echo "Restored test db";
+                        echo 'Clear cache on remote server';
+                        self::remoteAction(TEST_BASE_URL, array('clearCache'         => '1',
+                                                                'ignoreBrowserCheck' => '1'));
+                    }
+                    else
+                    {
+                        echo 'Uninstall zurmo';
+                        self::remoteAction(TEST_BASE_CONTROL_URL, array('action' => 'backupRemovePerInstance'));
+                    }
                     echo "Cache cleared";
 
                     echo 'Running test suite: ';
@@ -196,11 +209,15 @@
                     echo $finalCommand . "\n";
                     exec($finalCommand);
                     echo 'Restoring test db';
-                    self::remoteAction(TEST_BASE_DB_CONTROL_URL, array('action' => 'restore'));
+                    self::remoteAction(TEST_BASE_CONTROL_URL, array('action' => 'restore'));
+                    if (self::isInstallationTest($pathToSuite))
+                    {
+                        self::remoteAction(TEST_BASE_CONTROL_URL, array('action' => 'restorePerInstance'));
+                    }
                 }
             }
             echo 'Functional Run Complete.' . "\n";
-            self::updateTestResultsSummaryFile();
+            self::updateTestResultsSummaryAndDetailsFiles();
         }
 
         public static function buildSuiteFromSeleneseDirectory($htmlTestSuiteFiles, $directoryName, $whatToTest = null)
@@ -357,7 +374,7 @@
             );
         }
 
-        protected static function updateTestResultsSummaryFile()
+        protected static function updateTestResultsSummaryAndDetailsFiles()
         {
             $data = array();
             if (is_dir(TEST_RESULTS_PATH))
@@ -367,7 +384,8 @@
                 {
                     if ($resultFile != '.' &&
                         $resultFile != '..' &&
-                        $resultFile != 'Summary.html')
+                        $resultFile != 'Summary.html' &&
+                        $resultFile != 'Details.html')
                     {
                         $data[] = array(
                             'fileName' => $resultFile,
@@ -378,7 +396,25 @@
                     }
                 }
             }
+            self::makeResultsDetailsFile($data);
             self::makeResultsSummaryFile($data);
+        }
+
+        protected static function clearPreviousTestResultsByBrowser($browserDisplayName)
+        {
+            if (is_dir(TEST_RESULTS_PATH))
+            {
+                $resultsNames = scandir(TEST_RESULTS_PATH);
+                foreach ($resultsNames as $resultFile)
+                {
+                    if ($resultFile != '.' &&
+                    $resultFile != '..' &&
+                    stristr($resultFile, strtolower($browserDisplayName)))
+                    {
+                        unlink(TEST_RESULTS_PATH . $resultFile);
+                    }
+                }
+            }
         }
 
         protected static function getResultFileStatusByFileName($resultFile)
@@ -415,9 +451,9 @@
             return 'Unknown';
         }
 
-        protected static function makeResultsSummaryFile($data)
+        protected static function makeResultsDetailsFile($data)
         {
-            $fileName = TEST_RESULTS_PATH . 'Summary.html';
+            $fileName = TEST_RESULTS_PATH . 'Details.html';
             $content = '<html>';
             $content .= '<table border="1" width="100%">'                               . "\n";
             $content .= '<tr>'                                                          . "\n";
@@ -448,22 +484,117 @@
             {
                 if (!$handle = fopen($fileName, 'w'))
                 {
-                     echo "Cannot open file ($fileName)";
-                     exit;
+                    echo "Cannot open file ($fileName)";
+                    exit;
                 }
 
                 // Write $somecontent to our opened file.
                 if (fwrite($handle, $content) === false)
                 {
-                    echo "Cannot write to file ($filename)";
-                    exit;
+                echo "Cannot write to file ($fileName)";
+                exit;
+                        }
+                        fclose($handle);
                 }
-                fclose($handle);
+                else
+                {
+                    echo "The file $fileName is not writable";
             }
-            else
+        }
+
+        protected static function makeResultsSummaryFile($data)
+        {
+            $content = '<html>';
+            $content .= '<table border="1" width="100%">'                               . "\n";
+            $content .= '<tr>'                                                          . "\n";
+            $content .= '<td>Status</td>'                                               . "\n";
+            $content .= '<td>Browser</td>'                                              . "\n";
+            $content .= '<td>Date</td>'                                                 . "\n";
+            $content .= '<td>Test Passed</td>'                                          . "\n";
+            $content .= '<td>Tests Failed</td>'                                         . "\n";
+            $content .= '<td>Details</td>'                                              . "\n";
+            $content .= '</tr>'                                                         . "\n";
+
+            $link = '<a href="' . TEST_RESULTS_URL . 'Details.html">Details</a>';
+
+            $allBrowsersStats = array();
+            foreach ($data as $info)
             {
-                echo "The file $fileName is not writable";
+                if (count($allBrowsersStats) == 0 || !in_array($info['browser'], $allBrowsersStats))
+                {
+                    $allBrowsersStats[$info['browser']] = array();
+                    $allBrowsersStats[$info['browser']]['testsPassed'] = 0;
+                    $allBrowsersStats[$info['browser']]['testsFailed'] = 0;
+                    $allBrowsersStats[$info['browser']]['modifiedDate'] = 0;
+                }
             }
+
+            foreach ($data as $info)
+            {
+                if ($info['status']=='status_passed')
+                {
+                    $allBrowsersStats[$info['browser']]['testsPassed']++;
+                }
+                else
+                {
+                    $allBrowsersStats[$info['browser']]['testsFailed']++;
+                }
+
+                if (strtotime($allBrowsersStats[$info['browser']]['modifiedDate']) < strtotime($info['modifiedDate']))
+                {
+                    $allBrowsersStats[$info['browser']]['modifiedDate'] = $info['modifiedDate'];
+                }
+            }
+
+            foreach ($allBrowsersStats as $browser => $browserStats)
+            {
+                if ($browserStats['testsFailed'] > 0 || $browserStats['testsPassed'] <= 0)
+                {
+                    $status = 'status_failed';
+                }
+                else
+                {
+                    $status = 'status_passed';
+                }
+                $statusColor = 'bgcolor="red"';
+                if ($status == 'status_passed')
+                {
+                    $statusColor = 'bgcolor="green"';
+                }
+
+                $content .= '<tr>'                                              . "\n";
+                $content .= '<td ' . $statusColor . '>' . $status   . '</td>'   . "\n";
+                $content .= '<td>' . $browser                       . '</td>'   . "\n";
+                $content .= '<td>' . $browserStats['modifiedDate']  . '</td>'   . "\n";
+                $content .= '<td>' . $browserStats['testsPassed']   . '</td>'   . "\n";
+                $content .= '<td>' . $browserStats['testsFailed']   . '</td>'   . "\n";
+                $content .= '<td>' . $link                          . '</td>'   . "\n";
+                $content .= '</tr>'                                             . "\n";
+            }
+                $content .= '</table>'                                          . "\n";
+                $content .= '</html>'                                           . "\n";
+
+                $fileName = TEST_RESULTS_PATH . 'Summary.html';
+                if (is_writable(TEST_RESULTS_PATH))
+                {
+                    if (!$handle = fopen($fileName, 'w'))
+                    {
+                        echo "Cannot open file ($fileName)";
+                        exit;
+                    }
+
+                    // Write $somecontent to our opened file.
+                    if (fwrite($handle, $content) === false)
+                    {
+                        echo "Cannot write to file ($fileName)";
+                        exit;
+                    }
+                    fclose($handle);
+                }
+                else
+                {
+                    echo "The file $fileName is not writable";
+                }
         }
 
         /**
@@ -478,14 +609,14 @@
                 echo "Invalid db control url";
                 exit;
             }
-            if (isset($params['action']) && in_array($params['action'], array('restore')))
+            if (isset($params['action']) && in_array($params['action'], array('restore', 'backupRemovePerInstance', 'restorePerInstance')))
             {
                 $url = $url . "?action=" . urlencode($params['action']);
             }
             elseif (isset($params['clearCache']) && $params['clearCache'] == '1' &&
                     isset($params['ignoreBrowserCheck']) && $params['ignoreBrowserCheck'] == '1')
             {
-                $url = $url . "index.php?r=zurmo/default/login&clearCache=1&ignoreBrowserCheck=1"; // Not Coding Standard
+                $url = $url . "index.php/zurmo/default/login?clearCache=1&ignoreBrowserCheck=1"; // Not Coding Standard
             }
             else
             {
@@ -514,6 +645,25 @@
             {
                 echo $error_info;
                 exit;
+            }
+        }
+
+        /**
+         * Determine is suite is installation test suite.
+         * @param string $path
+         * @return boolen
+         */
+        protected static function isInstallationTest($path)
+        {
+            $position = strpos($path, 'InstallationTestSuite.html');
+
+            if ($position !== false)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,8 +30,15 @@
      */
     class LeadConvertAccountSkipView extends MetadataView
     {
-        public function __construct()
+        protected $controllerId;
+
+        protected $moduleId;
+
+        public function __construct($controllerId, $moduleId, $modelId)
         {
+            $this->controllerId   = $controllerId;
+            $this->moduleId       = $moduleId;
+            $this->modelId        = $modelId;
         }
 
         /**
@@ -68,7 +75,16 @@
             $content .= '</tr>';
             $content .= '</tbody>';
             $content .= '</table>';
-            $content .= CHtml::submitButton(Yii::t('Default', 'Complete Conversion'), array('name' => 'AccountSkip'));
+            $cancelLink = new CancelConvertLinkActionElement($this->controllerId, $this->moduleId, $this->modelId);
+            $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">';
+            $content .= $cancelLink->render() . '&#160;';
+            $element  =   new SaveButtonActionElement($this->controllerId, $this->moduleId,
+                                                      null,
+                                                      array('htmlOptions' =>
+                                                          array('name'   => 'AccountSkip', 'id' => 'AccountSkip'),
+                                                                'label'  => Yii::t('Default', 'Complete Conversion')));
+            $content .= $element->render();
+            $content .= '</div></div>';
             return $content;
         }
     }

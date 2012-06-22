@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,21 +28,53 @@
     {
         protected function renderControlEditable()
         {
-            $content = null;
-            $content .= $this->form->listBox(
-                $this->model->{$this->attribute},
-                'value',
-                $this->getDropDownArray(),
-                $this->getEditableHtmlOptions()
-            );
+            $multipleValuesCustomField = $this->model->{$this->attribute};
+            assert('$multipleValuesCustomField instanceof MultipleValuesCustomField');
+            $content  = null;
+            $content .= CHtml::listBox($this->getNameForSelectInput(),
+                                       static::getSelectedValuesByModel($multipleValuesCustomField),
+                                       $this->getDropDownArray(),
+                                       $this->getEditableHtmlOptions());
             return $content;
+        }
+
+        /**
+         * (non-PHPdoc)
+         * @see DropDownElement::renderControlNonEditable()
+         */
+        protected function renderControlNonEditable()
+        {
+            $multipleValuesCustomField = $this->model->{$this->attribute};
+            assert('$multipleValuesCustomField instanceof MultipleValuesCustomField');
+            return Yii::app()->format->text(strval($multipleValuesCustomField));
         }
 
         protected function getEditableHtmlOptions()
         {
             $htmlOptions = parent::getEditableHtmlOptions();
             $htmlOptions['multiple'] = true;
+            $htmlOptions['class'] = 'multiple';
             return $htmlOptions;
+        }
+
+        protected static function getSelectedValuesByModel(MultipleValuesCustomField $model)
+        {
+            $selectedValues = array();
+            foreach ($model->values as $customFieldValue)
+            {
+                $selectedValues[] = $customFieldValue->value;
+            }
+            return $selectedValues;
+        }
+
+        public function getIdForSelectInput()
+        {
+            return $this->getEditableInputId($this->attribute, 'values');
+        }
+
+        protected function getNameForSelectInput()
+        {
+            return $this->getEditableInputName($this->attribute, 'values');
         }
     }
 ?>

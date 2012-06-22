@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -36,7 +36,7 @@
         protected function checkService()
         {
             return $this->checkServiceAndSetMessagesByMethodNameAndDisplayLabel('checkMemcache',
-                                                                                Yii::t('Default', 'Memcache'));
+                                                                                Yii::t('Default', 'Memcache extension'));
         }
 
         /**
@@ -73,13 +73,13 @@
                 }
                 else
                 {
-                    $this->message  = $displayLabel . ' ' . Yii::t('Default', 'is not installed');
+                    $this->message  = $displayLabel . ' ' . Yii::t('Default', 'is not installed.');
                 }
                 if ($this->message != null)
                 {
                     $this->message .= "\n";
                 }
-                $this->message .= Yii::t('Default', 'Minimum version required:') . ' ' . $minimumVersionLabel;
+                $this->message .= Yii::t('Default', 'Minimum version required:') . ' ' . $minimumVersionLabel . '.';
                 return false;
             }
         }

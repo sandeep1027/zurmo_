@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -49,13 +49,29 @@
         public static function checkWebServer(array $minimumRequiredVersions, /* out */ &$actualVersion)
         {
             $matches = array();
-            if (preg_match('/([^\/]+)\/(\d+\.\d+(.\d+))?/', $_SERVER['SERVER_SOFTWARE'], $matches)) // Not Coding Standard
+            $serverName = $_SERVER['SERVER_SOFTWARE'];
+            if (strrpos($serverName, 'Microsoft-IIS') !== false && strrpos($serverName, 'Microsoft-IIS') >= 0)
             {
-                $serverName    = strtolower($matches[1]);
-                $actualVersion =            $matches[2];
-                if (array_key_exists($serverName, $minimumRequiredVersions))
+                if (preg_match('/([^\/]+)\/(\d+\.\d)?/', $_SERVER['SERVER_SOFTWARE'], $matches)) // Not Coding Standard
                 {
-                    return self::checkVersion($minimumRequiredVersions[$serverName], $actualVersion);
+                    $serverName = strtolower($matches[1]);
+                    $actualVersion = $matches[2];
+                    if (array_key_exists($serverName, $minimumRequiredVersions))
+                    {
+                        return self::checkVersion($minimumRequiredVersions[$serverName], $actualVersion);
+                    }
+                }
+            }
+            elseif (strrpos($serverName, 'Apache') !== false && strrpos($serverName, 'Apache') >= 0)
+            {
+                if (preg_match('/([^\/]+)\/(\d+\.\d+(.\d+))?/', $_SERVER['SERVER_SOFTWARE'], $matches)) // Not Coding Standard
+                {
+                    $serverName = strtolower($matches[1]);
+                    $actualVersion = $matches[2];
+                    if (array_key_exists($serverName, $minimumRequiredVersions))
+                    {
+                        return self::checkVersion($minimumRequiredVersions[$serverName], $actualVersion);
+                    }
                 }
             }
             return false;
@@ -166,13 +182,15 @@
                                             $databaseHostname,
                                             $databaseUsername,
                                             $databasePassword,
+                                            $databasePort,
                                             $minimumRequiredVersion,
                                             /* out */ &$actualVersion)
         {
             $actualVersion = DatabaseCompatibilityUtil::getDatabaseVersion($databaseType,
                                                                            $databaseHostname,
                                                                            $databaseUsername,
-                                                                           $databasePassword);
+                                                                           $databasePassword,
+                                                                           $databasePort);
             return self::checkVersion($minimumRequiredVersion, $actualVersion);
         }
 
@@ -190,11 +208,73 @@
         }
 
         /**
-         * @returns true, or the Soap version if less than required, or false if not installed.
+         * @returns true if Soap extension is loaded, or false if not loaded.
          */
         public static function checkSoap()
         {
-            return in_array('soap', get_loaded_extensions());
+            return extension_loaded("soap");
+        }
+
+        /**
+        * @returns true if SPL extension is loaded, or false if not loaded.
+        * Required by Yii framework.
+        */
+        public static function checkSPL()
+        {
+            return extension_loaded("SPL");
+        }
+
+        /**
+        * @returns true if PCRE extension is loaded, or false if not loaded.
+        * Required by Yii framework.
+        */
+        public static function checkPCRE()
+        {
+            return extension_loaded("pcre");
+        }
+
+        /**
+        * @returns true if Ctype extension is loaded, or false if not loaded.
+        */
+        public static function checkCtype()
+        {
+            return extension_loaded("ctype");
+        }
+
+        /**
+        * @returns true if all $_SERVER variable are loaded correctly, otherwise return false.
+        * Required by Yii framework.
+        */
+        public static function checkServerVariable(&$error)
+        {
+            $vars = array('HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT');
+            $missing = array();
+            foreach ($vars as $var)
+            {
+                if (!isset($_SERVER[$var]))
+                {
+                    $missing[] = $var;
+                }
+            }
+            if (!empty($missing))
+            {
+                $error = Yii::t('Default', '$_SERVER does not have {vars}.', array('{vars}' => implode(', ', $missing)));
+                return false;
+            }
+
+            if (!isset($_SERVER["REQUEST_URI"]) && isset($_SERVER["QUERY_STRING"]))
+            {
+                $error = Yii::t('Default', 'Either $_SERVER["REQUEST_URI"] or $_SERVER["QUERY_STRING"] must exist.');
+                return false;
+            }
+
+            if (!isset($_SERVER["PATH_INFO"]) && strpos($_SERVER["PHP_SELF"], $_SERVER["SCRIPT_NAME"]) !== 0)
+            {
+                $error = Yii::t('Default', 'Unable to determine URL path info. Please make sure $_SERVER["PATH_INFO"]' .
+                                           ' (or $_SERVER["PHP_SELF"] and $_SERVER["SCRIPT_NAME"]) contains proper value.');
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -286,10 +366,14 @@
             return array($errorNumber, $errorString);
         }
 
+        /**
+        * Check database max_allowed_packet_size value.
+        */
         public static function checkDatabaseMaxAllowedPacketsSize($databaseType,
                                                                 $databaseHostname,
                                                                 $databaseUsername,
                                                                 $databasePassword,
+                                                                $databasePort,
                                                                 $minimumRequireBytes,
                                                                 /* out */ & $actualBytes)
         {
@@ -297,14 +381,19 @@
             $actualBytes = DatabaseCompatibilityUtil::getDatabaseMaxAllowedPacketsSize($databaseType,
                                                                                        $databaseHostname,
                                                                                        $databaseUsername,
-                                                                                       $databasePassword);
+                                                                                       $databasePassword,
+                                                                                       $databasePort);
             return $minimumRequireBytes <= $actualBytes;
         }
 
+        /**
+        * Check database max_sp_recursion_depth value.
+        */
         public static function checkDatabaseMaxSpRecursionDepth($databaseType,
                                                               $databaseHostname,
                                                               $databaseUsername,
                                                               $databasePassword,
+                                                              $databasePort,
                                                               $minimumRequiredMaxSpRecursionDepth,
                                                               /* out */ & $maxSpRecursionDepth)
         {
@@ -312,17 +401,61 @@
             $maxSpRecursionDepth = DatabaseCompatibilityUtil::getDatabaseMaxSpRecursionDepth($databaseType,
                                                                                              $databaseHostname,
                                                                                              $databaseUsername,
-                                                                                             $databasePassword);
+                                                                                             $databasePassword,
+                                                                                             $databasePort);
             return $minimumRequiredMaxSpRecursionDepth <= $maxSpRecursionDepth;
         }
 
+        /**
+        * Check database thread_stack value.
+        */
+        public static function checkDatabaseThreadStackValue($databaseType,
+                                                             $databaseHostname,
+                                                             $databaseUsername,
+                                                             $databasePassword,
+                                                             $databasePort,
+                                                             $minimumRequiredThreadStackValue,
+                                                             /* out */ & $threadStackValue)
+        {
+            assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
+            $threadStackValue = DatabaseCompatibilityUtil::getDatabaseThreadStackValue($databaseType,
+                                                                                       $databaseHostname,
+                                                                                       $databaseUsername,
+                                                                                       $databasePassword,
+                                                                                       $databasePort);
+            return $minimumRequiredThreadStackValue <= $threadStackValue;
+        }
+
+        /**
+        * Check database optimizer_search_depth value.
+        */
+        public static function checkDatabaseOptimizerSearchDepthValue($databaseType,
+                                                                      $databaseHostname,
+                                                                      $databaseUsername,
+                                                                      $databasePassword,
+                                                                      $databasePort,
+                                                                      /* out */ & $optimizerSearchDepth)
+        {
+            assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
+            $optimizerSearchDepth = DatabaseCompatibilityUtil::getDatabaseOptimizerSearchDepthValue($databaseType,
+                                                                                                    $databaseHostname,
+                                                                                                    $databaseUsername,
+                                                                                                    $databasePassword,
+                                                                                                    $databasePort);
+            return $optimizerSearchDepth == 0;
+        }
+
+        /**
+        * Check database default collation.
+        */
         public static function checkDatabaseDefaultCollation($databaseType,
-                                                           $databaseHostname,
-                                                           $databaseName,
-                                                           $databaseUsername,
-                                                           $databasePassword,
-                                                           $notAllowedDatabaseCollations,
-                                                           /* out */ & $databaseDefaultCollation)
+                                                             $databaseHostname,
+                                                             $databaseName,
+                                                             $databaseUsername,
+                                                             $databasePassword,
+                                                             $databasePort,
+                                                             $notAllowedDatabaseCollations,
+                                                             /* out */ & $databaseDefaultCollation)
         {
             assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
             assert('is_array($notAllowedDatabaseCollations)');
@@ -330,21 +463,76 @@
                                                                                                $databaseHostname,
                                                                                                $databaseName,
                                                                                                $databaseUsername,
-                                                                                               $databasePassword);
+                                                                                               $databasePassword,
+                                                                                               $databasePort);
             return !in_array($databaseDefaultCollation, $notAllowedDatabaseCollations);
+        }
+
+        /**
+        * Check if log_bin is turned off.
+        */
+        public static function checkDatabaseLogBinValue($databaseType,
+                                                        $databaseHostname,
+                                                        $databaseUsername,
+                                                        $databasePassword,
+                                                        $databasePort,
+                                                        /* out */ & $logBinValue)
+        {
+            assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
+            $logBinValue = DatabaseCompatibilityUtil::getDatabaseLogBinValue($databaseType,
+                                                                             $databaseHostname,
+                                                                             $databaseUsername,
+                                                                             $databasePassword,
+                                                                             $databasePort);
+            if (strtolower($logBinValue) == 'on' || $logBinValue == '1')
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        /**
+        * Check if log_bin_trust_function_creators is turned on.
+        * We check this only when log_bin is turned on.
+        */
+        public static function checkDatabaseLogBinTrustFunctionCreatorsValue($databaseType,
+                                                                             $databaseHostname,
+                                                                             $databaseUsername,
+                                                                             $databasePassword,
+                                                                             $databasePort,
+                                                                             /* out */ & $logBinTrustFunctionCreatorsValue)
+        {
+            assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
+            $logBinTrustFunctionCreatorsValue = DatabaseCompatibilityUtil::getDatabaseLogBinTrustFunctionCreatorsValue(
+                                                                            $databaseType,
+                                                                            $databaseHostname,
+                                                                            $databaseUsername,
+                                                                            $databasePassword,
+                                                                            $databasePort);
+            if (strtolower($logBinTrustFunctionCreatorsValue) == 'on' || $logBinTrustFunctionCreatorsValue == '1')
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /**
          * Connects to the database.
          */
-        public static function connectToDatabase($databaseType, $host, $databaseName, $username, $password)
+        public static function connectToDatabase($databaseType, $host, $databaseName, $username, $password, $port)
         {
             assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
             assert('is_string($host)         && $host         != ""');
             assert('is_string($databaseName) && $databaseName != ""');
             assert('is_string($username)     && $username     != ""');
             assert('is_string($password)');
-            $connectionString = "$databaseType:host=$host;dbname=$databaseName"; // Not Coding Standard
+            $connectionString = "$databaseType:host=$host;port=$port;dbname=$databaseName"; // Not Coding Standard
             self::connectToDatabaseWithConnectionString($connectionString, $username, $password);
         }
 
@@ -395,11 +583,14 @@
         }
 
         /**
-         * Auto builds the database.
+         * Auto builds the database.  Must manually set AuditEvent first to avoid issues building the AuditEvent
+         * table. This is because AuditEvent is specially optimized during this build process to reduce how
+         * long this takes to do.
          */
         public static function autoBuildDatabase(& $messageLogger)
         {
-            $rootModels = array();
+            $rootModels   = array();
+            $rootModels[] = 'AuditEvent';
             foreach (Module::getModuleObjects() as $module)
             {
                 $moduleAndDependenciesRootModelNames = $module->getRootModelNamesIncludingDependencies();
@@ -428,10 +619,11 @@
          * Writes configuration to debug.php and phpInstance.php.
          */
         public static function writeConfiguration($instanceRoot,
-                                                  $databaseType, $databaseHost, $databaseName, $username, $password,
+                                                  $databaseType, $databaseHost, $databaseName, $username, $password, $port,
                                                   $memcacheHost = null, $memcachePort = null, $minifyScripts = true,
                                                   $language,
-                                                  $perInstanceFilename = 'perInstance.php', $debugFilename = 'debug.php')
+                                                  $perInstanceFilename = 'perInstance.php', $debugFilename = 'debug.php',
+                                                  $hostInfo, $scriptUrl)
         {
             assert('is_dir($instanceRoot)');
             assert('in_array($databaseType, self::getSupportedDatabaseTypes())');
@@ -439,15 +631,18 @@
             assert('is_string($databaseName) && $databaseName != ""');
             assert('is_string($username)     && $username     != ""');
             assert('is_string($password)');
+            assert('is_string($port) || is_int($port)');
             assert('is_string($memcacheHost) || $memcacheHost == null');
             assert('(is_int   ($memcachePort) && $memcachePort >= 1024) || $memcachePort == null');
             assert('is_string($language)     && $language     != ""');
+            assert('is_string($hostInfo)     || $hostInfo     == ""');
+            assert('is_string($scriptUrl)    || $scriptUrl    == ""');
 
             $perInstanceConfigFileDist = "$instanceRoot/protected/config/perInstanceDIST.php";
-            $debugConfigFileDist = "$instanceRoot/protected/config/debugDIST.php";
+            $debugConfigFileDist       = "$instanceRoot/protected/config/debugDIST.php";
 
             $perInstanceConfigFile     = "$instanceRoot/protected/config/$perInstanceFilename";
-            $debugConfigFile     = "$instanceRoot/protected/config/$debugFilename";
+            $debugConfigFile           = "$instanceRoot/protected/config/$debugFilename";
 
             copy($perInstanceConfigFileDist, $perInstanceConfigFile);
             copy($debugConfigFileDist, $debugConfigFile);
@@ -462,17 +657,25 @@
             $contents = preg_replace('/\$forceNoFreeze\s*=\s*true;/',
                                      '$forceNoFreeze = false;',
                                      $contents);
-            if ($minifyScripts)
+
+            $setIncludePathServiceHelper = new SetIncludePathServiceHelper();
+            if ($minifyScripts && $setIncludePathServiceHelper->runCheckAndGetIfSuccessful())
             {
                 $contents = preg_replace('/\$minifyScripts\s*=\s*false;/',
                                          '$minifyScripts = true;',
                                          $contents);
             }
-            if ($memcacheHost == null && $memcachePort == null)
+            // Check if user setup memcache host and port
+            if ($memcacheHost && $memcachePort)
             {
-                $contents = preg_replace('/\$memcacheLevelCaching\s*=\s*true;/',
-                                                     '$memcacheLevelCaching = false;',
-                                         $contents);
+                // Check if memcache extension is installed
+                $memcacheServiceHelper = new MemcacheServiceHelper();
+                if ($memcacheServiceHelper->runCheckAndGetIfSuccessful())
+                {
+                    $contents = preg_replace('/\$memcacheLevelCaching\s*=\s*false;/',
+                                             '$memcacheLevelCaching = true;',
+                                             $contents);
+                }
             }
             file_put_contents($debugConfigFile, $contents);
 
@@ -480,8 +683,8 @@
             $contents = preg_replace('/\$language\s*=\s*\'[a-z]+\';/', // Not Coding Standard
                                      "\$language         = '$language';",
                                      $contents);
-            $contents = preg_replace('/\$connectionString\s*=\s*\'[a-z]+:host=[^;]+;dbname=[^;]+;/', // Not Coding Standard
-                                   "\$connectionString = '$databaseType:host=$databaseHost;dbname=$databaseName';", // Not Coding Standard
+            $contents = preg_replace('/\$connectionString\s*=\s*\'[a-z]+:host=[^;]+;port=[^;]+;dbname=[^;]+;/', // Not Coding Standard
+                                   "\$connectionString = '$databaseType:host=$databaseHost;port=$port;dbname=$databaseName';", // Not Coding Standard
                                      $contents);
             $contents = preg_replace('/\$username\s*=\s*\'[^\']+\';/', // Not Coding Standard
                                      "\$username         = '$username';",
@@ -494,6 +697,12 @@
                             array(
                                 'host'   => '$memcacheHost',
                                 'port'   => $memcachePort, ",
+                                     $contents);
+            $contents = preg_replace('/\/\/\$instanceConfig\[\'components\'\]\[\'request\'\]\[\'hostInfo\'\]\s*=\s*\'.*?\';/', // Not Coding Standard
+                                     "\$instanceConfig['components']['request']['hostInfo']         = '$hostInfo';",
+                                     $contents);
+            $contents = preg_replace('/\/\/\$instanceConfig\[\'components\'\]\[\'request\'\]\[\'scriptUrl\'\]\s*=\s*\'.*?\';/', // Not Coding Standard
+                                     "\$instanceConfig['components']['request']['scriptUrl']         = '$scriptUrl';",
                                      $contents);
             $contents = preg_replace('/\s+\/\/ REMOVE THE REMAINDER OF THIS FILE FOR PRODUCTION.*?>/s', // Not Coding Standard
                                      "\n?>",
@@ -569,7 +778,10 @@
         protected static function checkVersion($minimumRequiredVersion, $actualVersion)
         {
             assert('self::isVersion($minimumRequiredVersion)');
-            assert('self::isVersion($actualVersion)');
+            if (!self::isVersion($actualVersion))
+            {
+                return false;
+            }
             if (preg_match('/^\d+\.\d+$/', $actualVersion) == 1) // Not Coding Standard
             {
                 $actualVersion .= '.0';
@@ -608,6 +820,7 @@
             }
             else
             {
+                @set_time_limit(1200);
                 $perInstanceFilename     = "perInstance.php";
                 $debugFilename     = "debug.php";
             }
@@ -617,7 +830,8 @@
                                             $form->databaseHostname,
                                             $form->databaseName,
                                             $form->databaseUsername,
-                                            $form->databasePassword);
+                                            $form->databasePassword,
+                                            $form->databasePort);
             ForgetAllCacheUtil::forgetAllCaches();
             $messageStreamer->add(Yii::t('Default', 'Dropping existing tables.'));
             InstallUtil::dropAllTables();
@@ -641,15 +855,37 @@
                                             $form->databaseName,
                                             $form->databaseUsername,
                                             $form->databasePassword,
+                                            $form->databasePort,
                                             $form->memcacheHostname,
                                             (int)$form->memcachePortNumber,
                                             true,
                                             Yii::app()->language,
                                             $perInstanceFilename,
-                                            $debugFilename);
+                                            $debugFilename,
+                                            $form->hostInfo,
+                                            $form->scriptUrl);
             $messageStreamer->add(Yii::t('Default', 'Setting up default data.'));
             DefaultDataUtil::load($messageLogger);
             Yii::app()->custom->runAfterInstallationDefaultDataLoad($messageLogger);
+
+            // Send notification to super admin to delete test.php file in case if this
+            // installation is used in production mode.
+            $message                    = new NotificationMessage();
+            $message->textContent       = Yii::t('Default', 'If this website is in production mode, please remove the app/test.php file.');
+            $rules                      = new RemoveApiTestEntryScriptFileNotificationRules();
+            NotificationsUtil::submit($message, $rules);
+
+            // If minify is disabled, inform user that they should fix issues and enable minify
+            $setIncludePathServiceHelper = new SetIncludePathServiceHelper();
+            if (!$setIncludePathServiceHelper->runCheckAndGetIfSuccessful())
+            {
+                $message                    = new NotificationMessage();
+                $message->textContent       = Yii::t('Default', 'Minify is disabled. Try to fix issues related to it, and enable it.');
+                $rules                      = new EnableMinifyNotificationRules();
+                NotificationsUtil::submit($message, $rules);
+            }
+
+            ZurmoModule::setZurmoToken();
             $messageStreamer->add(Yii::t('Default', 'Installation Complete.'));
         }
 
@@ -685,28 +921,99 @@
             $form->databaseName      = $args[1];
             $form->databaseUsername  = $args[2];
             $form->databasePassword  = $args[3];
-            $form->superUserPassword = $args[4];
+            $form->databasePort      = $args[4];
+            $form->superUserPassword = $args[5];
 
             InstallUtil::runInstallation($form, $messageStreamer);
-            if (isset($args[5]))
+            if (isset($args[6]))
             {
                 $messageStreamer->add(Yii::t('Default', 'Starting to load demo data.'));
                 $messageLogger = new MessageLogger($messageStreamer);
 
-                if (isset($args[6]))
+                if (isset($args[7]))
                 {
-                    DemoDataUtil::load($messageLogger, intval($args[6]));
+                    DemoDataUtil::load($messageLogger, intval($args[7]));
                 }
                 else
                 {
-                    DemoDataUtil::load($messageLogger, 3);
+                    DemoDataUtil::load($messageLogger, 6);
                 }
-
                 $messageStreamer->add(Yii::t('Default', 'Finished loading demo data.'));
             }
+            // Send notification to super admin that need to setup hostInfo and scriptUrl params in perInstance.php
+            $message                    = new NotificationMessage();
+            $message->textContent       = Yii::t('Default', 'The system has detected that the hostInfo and/or scriptUrl are ' .
+                                                            'not set up. Please open the perInstance.php config file and ' .
+                                                            'set up these parameters.');
+            $rules                      = new HostInfoAndScriptUrlNotSetupNotificationRules();
+            NotificationsUtil::submit($message, $rules);
+
             $messageStreamer->add(Yii::t('Default', 'Locking Installation.'));
             InstallUtil::writeInstallComplete(INSTANCE_ROOT);
             $messageStreamer->add(Yii::t('Default', 'Installation Complete.'));
+        }
+
+        /**
+         * From the command line, run the autobuild method which will effectively update
+         * the database schema.
+         */
+        public static function runAutoBuildFromUpdateSchemaCommand($messageLogger)
+        {
+            assert('$messageLogger instanceof MessageLogger');
+            ForgetAllCacheUtil::forgetAllCaches();
+            $unfreezeWhenDone     = false;
+            if (RedBeanDatabase::isFrozen())
+            {
+                RedBeanDatabase::unfreeze();
+                $freezeWhenDone = true;
+            }
+
+            self::autoBuildDatabase($messageLogger);
+
+            if ($freezeWhenDone)
+            {
+                RedBeanDatabase::freeze();
+            }
+
+            // Send notification to super admin to clean assets folder(optional).
+            $message                    = new NotificationMessage();
+            $message->textContent       = Yii::t('Default', 'Please delete all files from assets folder on server.');
+            $rules                      = new ClearAssetsFolderNotificationRules();
+            NotificationsUtil::submit($message, $rules);
+            return true;
+        }
+
+        public static function getDefaultHostInfo()
+        {
+            $hostInfo = "";
+            if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !='')
+            {
+                $hostInfo = 'http://' . $_SERVER['HTTP_HOST'];
+            }
+            elseif (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] != '')
+            {
+                $hostInfo = 'http://' . $_SERVER['SERVER_NAME'];
+            }
+            return $hostInfo;
+        }
+
+        public static function getDefaultScriptUrl($route = '')
+        {
+            if (isset($_SERVER['PHP_SELF']))
+            {
+                $url = rtrim($_SERVER['PHP_SELF'], '/');
+                $route = rtrim($route, '/');
+
+                if ($route != '')
+                {
+                    $url = rtrim($url, $route);
+                }
+                return $url;
+            }
+            else
+            {
+                return '';
+            }
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class AccountTest extends BaseTest
+    class AccountTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -85,9 +85,9 @@
 
             $account = Account::getById($id);
             $this->assertEquals   (1,     $account->primaryEmail->optOut);
-            $this->assertNotEquals(true,  $account->primaryEmail->optOut);
+            $this->assertNotSame(true,  $account->primaryEmail->optOut);
             $this->assertEquals   (0,     $account->secondaryEmail->optOut);
-            $this->assertNotEquals(false, $account->secondaryEmail->optOut);
+            $this->assertNotSame(false, $account->secondaryEmail->optOut);
 
             $account->primaryEmail->optOut = 0;
             $this->assertTrue($account->save());
@@ -95,7 +95,7 @@
 
             $account = Account::getById($id);
             $this->assertEquals   (0,     $account->primaryEmail->optOut);
-            $this->assertNotEquals(false, $account->primaryEmail->optOut);
+            $this->assertNotSame(false, $account->primaryEmail->optOut);
 
             $account->primaryEmail->optOut = 3;
             $this->assertFalse($account->save());

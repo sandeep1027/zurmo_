@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -23,24 +23,19 @@
      * You can contact Zurmo, Inc. with a mailing address at 113 McHenry Road Suite 207,
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
-    define ('IS_TEST', true);
+    if (!defined('IS_TEST'))
+    {
+        define('IS_TEST', true);
+    }
     $common_config = CMap::mergeArray(
         require('main.php'),
         array(
             'import' => array(
-                'application.extensions.zurmoinc.framework.tests.common.*',
-                'application.extensions.zurmoinc.framework.tests.unit.*',
-                'application.extensions.zurmoinc.framework.tests.unit.components.*',
-                'application.extensions.zurmoinc.framework.tests.unit.forms.*',
-                'application.extensions.zurmoinc.framework.tests.unit.models.*',
-                'application.extensions.zurmoinc.framework.tests.unit.modules.*',
-                'application.extensions.zurmoinc.framework.tests.unit.views.*',
-                'application.modules.zurmo.tests.components.*',
                 'application.tests.unit.*',
-////////////////////////////////////////////////////////////////////////////////
-// Temporary - See Readme.txt in the app/protected/tests/unit/notSupposedToBeHere directory.
+    ////////////////////////////////////////////////////////////////////////////////
+    // Temporary - See Readme.txt in the app/protected/tests/unit/notSupposedToBeHere directory.
                 'application.tests.unit.notSupposedToBeHere.*',
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
             ),
             'components' => array(
                 'fixture' => array(
@@ -54,6 +49,7 @@
             ),
         )
     );
+
     //override and use test specific begin behavior
     $common_config['behaviors']['onBeginRequest'] = array(
         'class' => 'application.tests.BeginRequestTestBehavior'
@@ -66,6 +62,12 @@
     $common_config['components']['request']['class']                  = 'application.tests.HttpRequestForTesting';
     $common_config['components']['request']['enableCsrfValidation']   = false; //todo: get this working, since for production this is true.
     $common_config['components']['request']['enableCookieValidation'] = false;
-
+    $common_config['components']['emailHelper']['class']              = 'application.tests.EmailHelperForTesting';
+    //Set the GeoCodeApiKey to null which will work for localhost requests. If this is not running on
+    //localhost, then modify perInstanceConfig.php with an updated key.
+    if (!isset($common_config['params']['testGoogleGeoCodeApiKey']))
+    {
+        $common_config['params']['testGoogleGeoCodeApiKey'] = null;
+    }
     return $common_config;
 ?>

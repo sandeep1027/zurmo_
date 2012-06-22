@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -90,6 +90,164 @@
             );
             $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
             $this->assertEquals($testArray, $newArray);
+
+            //Now test various empty and 0 combinations
+            $_GET['testing'] = array(
+                'a' => null,
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => null), $newArray);
+
+            $_GET['testing'] = array(
+                'a' => '',
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => null), $newArray);
+
+            $_GET['testing'] = array(
+                'a' => 0,
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => null), $newArray);
+
+            $_GET['testing'] = array(
+                'a' => '0',
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => '0'), $newArray);
+        }
+
+        public function testResolveSearchAttributesFromGetArrayForAnyMixedAttributeScopeName()
+        {
+            $_GET['testing'] = array(
+                'a' => '0',
+                SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME => 'something',
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => '0'), $newArray);
+
+            $_GET['testing'] = array(
+                'a' => '0',
+                SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME => null,
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => '0'), $newArray);
+
+            $_GET['testing'] = array(
+                'a' => '0',
+                SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME => array(),
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => '0'), $newArray);
+
+            $_GET['testing'] = array(
+                'a' => '0',
+                SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME => array('a' => 'b'),
+            );
+            $newArray = SearchUtil::resolveSearchAttributesFromGetArray('testing');
+            $this->assertEquals(array('a' => '0'), $newArray);
+        }
+
+        /**
+         * This test is for testing the method SearchUtil::changeEmptyArrayValuesToNull.
+         * if a value in the search array for multiselect attribute has an empty element it is removed(eliminated).
+         */
+        public function testGetSearchAttributesFromSearchArrayChangeEmptyArrayValuesToNull()
+        {
+            $searchArray = array('testMultiSelectDropDown' => array('values' => array(0 => '')));
+            $resultArray = array('testMultiSelectDropDown' => array('values' => array()));
+            $newArray = SearchUtil::getSearchAttributesFromSearchArray($searchArray);
+            $this->assertEquals($resultArray, $newArray);
+
+            $searchArray = array('testMultiSelectDropDown' => array('values' => array(0 => null)));
+            $newArray = SearchUtil::getSearchAttributesFromSearchArray($searchArray);
+            $this->assertEquals($resultArray, $newArray);
+        }
+
+        public function testGetSearchAttributesFromSearchArrayForSavingExistingSearchCriteria()
+        {
+            $searchArray = array(
+                'a' => 'apple',
+                'b' => '',
+            );
+            $testArray = array(
+                'a' => 'apple',
+                'b' => null,
+            );
+            $newArray = SearchUtil::getSearchAttributesFromSearchArrayForSavingExistingSearchCriteria($searchArray);
+            $this->assertEquals($testArray, $newArray);
+
+            $searchArray = array(
+                'a' => 'apple',
+                'b' => '',
+            );
+            $newArray = SearchUtil::getSearchAttributesFromSearchArrayForSavingExistingSearchCriteria($searchArray);
+            $this->assertEquals($testArray, $newArray);
+
+            //Now test various empty and 0 combinations
+            $searchArray = array(
+                'a' => null,
+            );
+            $newArray = SearchUtil::getSearchAttributesFromSearchArrayForSavingExistingSearchCriteria($searchArray);
+            $this->assertEquals(array('a' => null), $newArray);
+
+            $searchArray = array(
+                'a' => '',
+            );
+            $newArray = SearchUtil::getSearchAttributesFromSearchArrayForSavingExistingSearchCriteria($searchArray);
+            $this->assertEquals(array('a' => null), $newArray);
+
+            $searchArray = array(
+                'a' => 0,
+            );
+            $newArray = SearchUtil::getSearchAttributesFromSearchArrayForSavingExistingSearchCriteria($searchArray);
+            $this->assertEquals(array('a' => 0), $newArray);
+
+            $searchArray = array(
+                'a' => '0',
+            );
+            $newArray = SearchUtil::getSearchAttributesFromSearchArrayForSavingExistingSearchCriteria($searchArray);
+            $this->assertEquals(array('a' => '0'), $newArray);
+        }
+
+        public function testAdaptSearchAttributesToSetInRedBeanModel()
+        {
+            $model = new ASearchFormTestModel(new A(false));
+            $searchAttributes = array(
+                'differentOperatorB' => array('value' => 'thiswillstay'),
+                'a'                  => array('value' => 'thiswillgo'),
+                'differentOperatorB' => 'something',
+                'name'               => array('value' => 'thiswillstay'),
+            );
+            $adaptedSearchAttributes = SearchUtil::adaptSearchAttributesToSetInRedBeanModel($searchAttributes, $model);
+            $compareData = array(
+                'differentOperatorB' => array('value' => 'thiswillstay'),
+                'a'                  => 'thiswillgo',
+                'differentOperatorB' => 'something',
+                'name'               => array('value' => 'thiswillstay'),
+            );
+            $this->assertEquals($compareData, $adaptedSearchAttributes);
+        }
+
+        public function testResolveAnyMixedAttributesScopeForSearchModelFromGetArray()
+        {
+            $searchModel  = new ASearchFormTestModel(new A());
+            $getArrayName = 'someArray';
+            SearchUtil::resolveAnyMixedAttributesScopeForSearchModelFromGetArray($searchModel, $getArrayName);
+            $this->assertNull($searchModel->getAnyMixedAttributesScope());
+
+            //Test passing a value in the GET
+            $_GET['someArray'][SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME] = 'notAnArray';
+            SearchUtil::resolveAnyMixedAttributesScopeForSearchModelFromGetArray($searchModel, $getArrayName);
+            $this->assertNull($searchModel->getAnyMixedAttributesScope());
+
+            $_GET['someArray'][SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME] = array('All');
+            SearchUtil::resolveAnyMixedAttributesScopeForSearchModelFromGetArray($searchModel, $getArrayName);
+            $this->assertNull($searchModel->getAnyMixedAttributesScope());
+
+            $_GET['someArray'][SearchUtil::ANY_MIXED_ATTRIBUTES_SCOPE_NAME] = array('A', 'B', 'C');
+            SearchUtil::resolveAnyMixedAttributesScopeForSearchModelFromGetArray($searchModel, $getArrayName);
+            $this->assertEquals(array('A', 'B', 'C'), $searchModel->getAnyMixedAttributesScope());
         }
     }
 ?>

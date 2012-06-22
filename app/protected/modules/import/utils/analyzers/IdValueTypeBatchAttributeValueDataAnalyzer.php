@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -94,7 +94,6 @@
             assert('is_string($columnName)');
             assert('is_string($mappingRuleType)');
             assert('is_array($mappingRuleData)');
-            assert('is_int($mappingRuleData["type"])');
             $this->ensureTypeValueIsValid($mappingRuleData["type"]);
             $this->type = $mappingRuleData["type"];
             if ($this->type == IdValueTypeMappingRuleForm::EXTERNAL_SYSTEM_ID)

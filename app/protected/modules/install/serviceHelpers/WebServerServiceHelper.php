@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,11 +29,19 @@
      */
     class WebServerServiceHelper extends ServiceHelper
     {
-        protected $minimumVersion = array('apache' => '2.2.16');
+        protected $minimumVersion = array('microsoft-iis' => '5.0.0', 'apache' => '2.2.1');
 
         protected function checkService()
         {
-            return $this->checkServiceAndSetMessagesByMethodNameAndDisplayLabel('checkWebServer', Yii::t('Default', 'Apache'));
+            $serverName = $_SERVER['SERVER_SOFTWARE'];
+            if (strrpos($serverName, 'Apache') !== false && strrpos($serverName, 'Apache') >= 0)
+            {
+                return $this->checkServiceAndSetMessagesByMethodNameAndDisplayLabel('checkWebServer', Yii::t('Default', 'Apache'));
+            }
+            if (strrpos($serverName, 'Microsoft-IIS') !== false && strrpos($serverName, 'Microsoft-IIS') >= 0)
+            {
+                return $this->checkServiceAndSetMessagesByMethodNameAndDisplayLabel('checkWebServer', Yii::t('Default', 'Microsoft-IIS'));
+            }
         }
 
         /**
@@ -68,7 +76,7 @@
                     }
                     else
                     {
-                        $this->message  = $displayLabel . ' ' . Yii::t('Default', 'is not installed');
+                        $this->message  = $displayLabel . ' ' . Yii::t('Default', 'is not installed.');
                     }
                 }
                 else
@@ -84,7 +92,15 @@
         protected function getMinimumVersionLabel()
         {
             assert('is_array($this->minimumVersion)');
-            return $this->minimumVersion['apache'];
+            $serverName = $_SERVER['SERVER_SOFTWARE'];
+            if (strrpos($serverName, 'Microsoft-IIS') !== false && strrpos($serverName, 'Microsoft-IIS') >= 0)
+            {
+                return $this->minimumVersion['microsoft-iis'];
+            }
+            elseif (strrpos($serverName, 'Apache') !== false && strrpos($serverName, 'Apache') >= 0)
+            {
+                return $this->minimumVersion['apache'];
+            }
         }
     }
 ?>

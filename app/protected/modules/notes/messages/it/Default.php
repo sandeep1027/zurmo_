@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,24 +30,28 @@
     // DON'T MAKE A MESS!
     return array(
         'Access NotesModulePluralLabel'
-            => '??',
+            => 'Accesso NotesModulePluralLabel',
         'Add a NotesModuleSingularLabel about'
-            => '??',
+            => 'Aggiungi una NotesModuleSingularLabel su',
         'Create NotesModulePluralLabel'
-            => '??',
+            => 'Crea NotesModulePluralLabel',
+        'Create NotesModuleSingularLabel'
+            => 'Crea NotesModuleSingularLabel',
         'Delete NotesModulePluralLabel'
-            => '??',
+            => 'Elimina NotesModulePluralLabel',
         'Note'
-            => '??',
+            => 'Nota',
         'Notes'
-            => '??',
+            => 'Note',
         'NotesModulePluralLabel'
-            => 'NotesModulePluralLabel',
+            => 'NotesModulePluralLabel', // Same Word Translated
         'NotesModuleSingularLabel'
-            => 'NotesModuleSingularLabel',
+            => 'NotesModuleSingularLabel', // Same Word Translated
         'Occurred On'
-            => '??',
+            => 'Avvenuto',
         'The NotesModulePluralLabel form cannot be displayed.'
-            => '??',
+            => 'Non si può visualizzare il formulario di NotesModulePluralLabel.',
+        '{n} NotesModuleSingularLabel created|{n} NotesModulePluralLabel created'
+            => '{n} NotesModuleSingularLabel create|{n} NotesModulePluralLabel creati',
     );
 ?>

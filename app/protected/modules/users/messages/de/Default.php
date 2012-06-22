@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,70 +30,76 @@
     // DON'T MAKE A MESS!
     return array(
         'A user field'
-            => '??',
+            => 'Ein Benutzer Feld',
         'Access Users Tab'
-            => '??',
+            => 'Zugang Benutzer Tab',
         'Change Password'
-            => '??',
+            => 'Kennwort ändern',
         'Change User Passwords'
-            => '??',
+            => 'Ändern Kennwörter von Benutzern',
         'Confirm Password'
-            => '??',
+            => 'Kennwort bestätigen',
         'Create User'
-            => '??',
+            => 'Benutzer erstellen',
         'Create Users'
-            => '??',
+            => 'Benutzern erstellen',
         'day(s)'
-            => '??',
+            => 'Tag(e)',
         'Enforce Strong Passwords'
-            => '??',
+            => 'Erzwingen sicherer Kennwörter',
         'Hash'
-            => '??',
+            => 'Hash', // Same Word Translated
+        'Hide welcome page'
+            => 'Startseite verstecken',
         'Inactive users cannot log in using the web, mobile or web API. Login for active users is controlled by group rights.'
-            => '??',
+            => 'Inaktive Benutzer können sich nicht anmelden über die Web-, Mobil-oder Web-API. Anmeldung für aktive Benutzer wird durch Gruppenrechte kontrolliert.',
         'Inherited Value:'
-            => '??',
-        'Login Via Mobile'
-            => '??',
-        'Login Via Web'
-            => '??',
-        'Login Via Web API'
-            => '??',
+            => 'Vererbte Wert:',
         'Manage Users'
-            => '??',
+            => 'Benutzer verwalten',
         'Manager'
-            => '??',
+            => 'Manager', // Same Word Translated
         'Minimum Password Length'
-            => '??',
+            => 'Minimale Kennwortlänge',
         'Minimum Username Length'
-            => '??',
+            => 'Minimale Länge des Benutzernamens',
+        'My Profile'
+            => 'Mein Profil',
         'Password Expires'
-            => '??',
+            => 'Kennwort abläuft',
         'Password Expiry Days'
-            => '??',
+            => 'Kennwort Ablauf Tage',
         'Profile'
-            => '??',
+            => 'Profil',
+        'Sign in Via Mobile'
+            => 'Anmelden via Mobile',
+        'Sign in Via Web'
+            => 'Anmelden via Web',
+        'Sign in Via Web API'
+            => 'Anmelden via Web API',
         'The password is too short. Minimum length is {minimumLength}.'
-            => '??',
+            => 'Das Kennwort ist zu kurz. Minimale Länge ist {minimumLength}.',
         'The password must have at least one lowercase letter'
-            => '??',
+            => 'Das Kennwort muss mindestens einen Kleinbuchstaben enthalten',
         'The password must have at least one number and one letter'
-            => '??',
+            => 'Das Kennwort muss mindestens eine Zahl und einen Buchstaben enthalten',
         'The password must have at least one uppercase letter'
-            => '??',
+            => 'Das Kennwort muss mindestens einen Großbuchstaben enthalten',
         'The time zone is invalid.'
-            => '??',
+            => 'Die Zeitzone ist ungültig.',
         'The username is too short. Minimum length is {minimumLength}.'
-            => '??',
+            => 'Der Benutzername ist zu kurz. Minimale Länge ist {minimumLength}.',
         'Time Zone'
-            => '??',
+            => 'Zeitzone',
         'User'
-            => '??',
+            => 'Benutzer',
         'User configuration saved successfully.'
-            => '??',
+            => 'Benutzerkonfiguration erfolgreich gespeichert.',
         'User Search'
-            => '??',
+            => 'Benutzer Suche',
         'Users'
-            => '??',
+            => 'Benutzern',
+        'Users Home'
+            => 'Startseite Benutzerkonto',
     );
 ?>

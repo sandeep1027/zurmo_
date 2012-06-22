@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,34 +30,40 @@
     // DON'T MAKE A MESS!
     return array(
         'Access TasksModulePluralLabel'
-            => '??',
+            => 'Accesso TasksModulePluralLabel',
+        'Close Task Check Box'
+            => 'Chiude Compito check box',
         'Completed'
-            => '??',
+            => 'Completato',
         'Completed On'
-            => '??',
+            => 'Data chiusura',
         'Create TasksModulePluralLabel'
-            => '??',
+            => 'Crea TasksModulePluralLabel',
+        'Create TasksModuleSingularLabel'
+            => 'Crea TasksModuleSingularLabel',
         'Delete TasksModulePluralLabel'
-            => '??',
+            => 'Elimina TasksModulePluralLabel',
         'Due On'
-            => '??',
+            => 'Data scadenza',
         'My Open TasksModulePluralLabel'
-            => '??',
+            => 'I miei TasksModulePluralLabel aperti',
         'Open TasksModulePluralLabel'
-            => '??',
+            => 'TasksModulePluralLabel aperti',
         'Task'
-            => '??',
+            => 'Compito',
         'Tasks'
-            => '??',
+            => 'Compiti',
         'TasksModulePluralLabel'
-            => 'TasksModulePluralLabel',
+            => 'TasksModulePluralLabel', // Same Word Translated
         'TasksModulePluralLabel For AccountsModuleSingularLabel'
-            => '??',
+            => 'TasksModulePluralLabel per AccountsModuleSingularLabel',
         'TasksModulePluralLabel For ContactsModuleSingularLabel'
-            => '??',
+            => 'TasksModulePluralLabel per ContactsModuleSingularLabel',
         'TasksModulePluralLabel For OpportunitiesModuleSingularLabel'
-            => '??',
+            => 'TasksModulePluralLabel per OpportunitiesModuleSingularLabel?',
         'TasksModuleSingularLabel'
-            => 'TasksModuleSingularLabel',
+            => 'TasksModuleSingularLabel', // Same Word Translated
+        '{n} TasksModuleSingularLabel created|{n} TasksModulePluralLabel created'
+            => '{n} TasksModuleSingularLabel create|{n} TasksModulePluralLabel creati',
     );
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -118,17 +118,18 @@
                                         $importRules::getType(), $columnMappingData['attributeIndexOrDerivedType']);
                 $valueReadyToSanitize = static::
                                         resolveValueToSanitizeByValueAndColumnType($rowBean->$idColumnName,
-                                                                                   $columnMappingData['columnType']);
+                                                                                   $columnMappingData['type']);
                 $attributeValueData   = $attributeImportRules->resolveValueForImport($valueReadyToSanitize,
-                                                                                             $columnMappingData,
-                                                                                             $importSanitizeResultsUtil);
+                                                                                     $columnMappingData,
+                                                                                     $importSanitizeResultsUtil);
                 assert('count($attributeValueData) == 0 || count($attributeValueData) == 1');
-                if ($attributeValueData['id'] != null)
+                if (isset($attributeValueData['id']) && $attributeValueData['id'] != null)
                 {
                     $model        = $modelClassName::getById($attributeValueData['id']);
                     $makeNewModel = false;
                 }
-                elseif ($attributeValueData[ExternalSystemIdUtil::EXTERNAL_SYSTEM_ID_COLUMN_NAME] != null)
+                elseif (isset($attributeValueData[ExternalSystemIdUtil::EXTERNAL_SYSTEM_ID_COLUMN_NAME]) &&
+                        $attributeValueData[ExternalSystemIdUtil::EXTERNAL_SYSTEM_ID_COLUMN_NAME] != null)
                 {
                     $externalSystemId = $attributeValueData
                                         [ExternalSystemIdUtil::EXTERNAL_SYSTEM_ID_COLUMN_NAME];
@@ -144,7 +145,8 @@
             foreach ($mappingData as $columnName => $columnMappingData)
             {
                 if ($columnMappingData['attributeIndexOrDerivedType'] != null &&
-                    $columnMappingData['attributeIndexOrDerivedType'] != 'owner')
+                    $columnMappingData['attributeIndexOrDerivedType'] != 'owner' &&
+                    $idColumnName != $columnName)
                 {
                     static::sanitizeValueAndPopulateModel($rowBean, $importRules, $model, $columnName, $modelClassName,
                                                           $columnMappingData, $importSanitizeResultsUtil,
@@ -156,7 +158,8 @@
             foreach ($mappingData as $columnName => $columnMappingData)
             {
                 if ($columnMappingData['attributeIndexOrDerivedType'] != null &&
-                    $columnMappingData['attributeIndexOrDerivedType'] == 'owner')
+                    $columnMappingData['attributeIndexOrDerivedType'] == 'owner' &&
+                    $idColumnName != $columnName)
                 {
                     static::sanitizeValueAndPopulateModel($rowBean, $importRules, $model, $columnName, $modelClassName,
                                                           $columnMappingData, $importSanitizeResultsUtil,
@@ -381,8 +384,14 @@
                                                                                  $importSanitizeResultsUtil);
             foreach ($attributeValueData as $attributeName => $value)
             {
-                assert('$model->isAttribute($attributeName)');
-                static::resolveReadOnlyAndSetValueToAttribute($model, $attributeName, $value);
+                if ( $model->$attributeName instanceof RedBeanManyToManyRelatedModels)
+                {
+                    static::resolveValueThatIsManyModelsRelationToAttribute($model, $attributeName, $value);
+                }
+                elseif ($model->isAttribute($attributeName))
+                {
+                    static::resolveReadOnlyAndSetValueToAttribute($model, $attributeName, $value);
+                }
             }
         }
 
@@ -437,7 +446,7 @@
                                   ImportSanitizeResultsUtil $importSanitizeResultsUtil)
         {
             assert('is_array($afterSaveActionsData)');
-            assert('$attributeImportRules instanceof AfterSaveActionDerivedAttributeImportRules');
+            assert('$attributeImportRules instanceof AfterSaveActionNonDerivedAttributeImportRules');
             assert('is_array($columnMappingData)');
             $attributeValueData   = $attributeImportRules->resolveValueForImport($valueReadyToSanitize,
                                                                                  $columnMappingData,
@@ -447,6 +456,7 @@
                 $afterSaveActionsData[] = array(get_class($attributeImportRules), $attributeValueData);
             }
         }
+
         protected static function resolveModelForModelDerivedAttribute(
                                   RedBeanModel $model,
                                   $importRulesType,
@@ -483,6 +493,17 @@
                 $model->isAllowedToSetReadOnlyAttribute($attributeName)))
             {
                 $model->$attributeName = $value;
+            }
+        }
+
+        protected static function resolveValueThatIsManyModelsRelationToAttribute($model, $attributeName, $value)
+        {
+            assert('is_string($attributeName)');
+            assert('$model->$attributeName instanceof RedBeanManyToManyRelatedModels');
+            assert('$value == null || $value instanceof RedBeanModel');
+            if ($value != null && !$model->$attributeName->contains($value))
+            {
+                $model->$attributeName->add($value);
             }
         }
 

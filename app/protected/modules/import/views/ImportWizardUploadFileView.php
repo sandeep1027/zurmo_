@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -39,22 +39,21 @@
         {
             assert('$form instanceof ZurmoActiveForm');
             $fileUploadElement                         = new ImportFileUploadElement($this->model, null, $form);
-            $fileUploadElement->editableTemplate       = '{label}<br/>{content}';
+            $fileUploadElement->editableTemplate       = '{label}{content}';
 
             $firstRowIsHeaderElement                   = new CheckBoxElement($this->model, 'firstRowIsHeaderRow', $form);
             $firstRowIsHeaderElement->editableTemplate = '{content}{label}';
             $content  = $form->errorSummary($this->model);
             $content .= '<table>'     . "\n";
             $content .= '<tbody>'     . "\n";
-            $content .= '<tr><td>'    . "\n";
+            //$content .= '<tr><td>'    . "\n";
             $content .= $fileUploadElement->render();
-            $content .= '</td></tr>'  . "\n";
+            //$content .= '</td></tr>'  . "\n";
             $content .= '<tr><td>'    . "\n";
             $content .= $firstRowIsHeaderElement->render();
             $content .= '</td></tr>'  . "\n";
             $content .= '</tbody>'    . "\n";
             $content .= '</table>'    . "\n";
-            $content .= $this->renderActionLinksContent();
             return $content;
         }
 

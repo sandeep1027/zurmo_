@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -95,7 +95,7 @@
                 $rowContent = null;
                 if ($this->rows > 1)
                 {
-                    $rowContent .= "<div>\n";
+                    //$rowContent .= "<div>\n";
                 }
                 $totalColumnsWidth = null;
                 for ($column = 0; $column < $this->columns; $column++)
@@ -119,24 +119,24 @@
                         }
                         if (count($styles) > 0)
                         {
-                            $style = ' style="' . join($styles, ' ') . '"';
+                           // $style = ' style="' . join($styles, ' ') . '"';
                         }
                         else
                         {
                             $style = '';
                         }
-                        $columnContent .= "<div$style>\n";
+                      //  $columnContent .= "<div$style>\n";
                     }
                     $columnContent .= $this->containedViews[$row][$column]->render();
                     if ($this->columns > 1)
                     {
-                        $columnContent .= "</div>\n";
+                       // $columnContent .= "</div>\n";
                     }
                     $rowContent .= $columnContent;
                 }
                 if ($this->rows > 1)
                 {
-                    $rowContent .= "</div>\n";
+                  //  $rowContent .= "</div>\n";
                 }
                 $content .= $rowContent;
             }

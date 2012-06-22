@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -47,38 +47,50 @@
                     'clientOptions' => array(
                         'validateOnSubmit' => true,
                         'validateOnChange' => false,
+                        'beforeValidate'   => 'js:beforeValidateAction',
+                        'afterValidate'    => 'js:afterValidateAction',
                     ),
                 )
             );
             $usernameLabel      = $form->label        ($this->formModel, 'username');
             $usernameTextField  = $form->textField    ($this->formModel, 'username');
             $usernameError      = $form->error        ($this->formModel, 'username');
-
             $passwordLabel      = $form->label        ($this->formModel, 'password');
             $passwordField      = $form->passwordField($this->formModel, 'password');
             $passwordError      = $form->error        ($this->formModel, 'password');
-
             $rememberMeCheckBox = $form->checkBox     ($this->formModel, 'rememberMe');
             $rememberMeLabel    = $form->label        ($this->formModel, 'rememberMe');
             $rememberMeError    = $form->error        ($this->formModel, 'rememberMe');
-
-            $submitButton       = CHtml::submitButton(Yii::t('Default', 'Login'),
-                                                      array('name' => 'Login', 'id' => 'Login'));
-
+            $element            = new SaveButtonActionElement($this->controller->getId(),
+                                                              $this->controller->getModule()->getId(),
+                                                              null,
+                                                              array('htmlOptions' => array('name'   => 'Login',
+                                                                                           'id'     => 'Login'),
+                                                                      'label'     => Yii::t('Default', 'Sign in')));
+            $submitButton        = $element->render();
             $fieldsRequiredLabel = Yii::t('Default', 'Fields with') . ' <span class="required">*</span> ' .
                                    Yii::t('Default', 'are required.');
-
-            $formEnd = $this->controller->renderEndWidget();
+            $formEnd             = $this->controller->renderEndWidget();
 
             $content  = $this->extraHeaderContent;
             $content .= "<div class=\"form\">$formStart"                                            .
                        "<div>$usernameLabel$usernameTextField$usernameError</div>"                 .
                        "<div>$passwordLabel$passwordField$passwordError</div>"                     .
-                       "<div style = 'float:left; padding-right:3px;'>$rememberMeCheckBox</div>"   .
-                       "<div>$rememberMeLabel$rememberMeError</div>"                               .
-                       "<div style = 'clear:both;'>$submitButton</div>"                            .
+                       "<div class=\"remember-me\">$rememberMeCheckBox$rememberMeLabel$rememberMeError</div>"   .
+                       //"<div class=\"clearfix\">$rememberMeLabel$rememberMeError</div>"                               .
+                       "<div>$submitButton</div>"                            .
                        "$formEnd</div>";
 
+            Yii::app()->clientScript->registerScript('submitLoginFormOnKeyPressEnterOnPassword', "
+                $('#LoginForm_password').keypress(function(e)
+                {
+                    c = e.which ? e.which : e.keyCode;
+                    if(c == 13)
+                    {
+                        $(this).closest('form').submit();
+                    }
+                });
+            ", CClientScript::POS_END);
             return $content;
         }
     }

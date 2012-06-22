@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -49,7 +49,10 @@
                             array(
                                 'rows' => array(
                                     array(
-                                        'type' => 'ContactNoteInlineEditAndLatestActivtiesForPortlet'
+                                        'type' => 'NoteInlineEditForPortlet'
+                                    ),
+                                    array(
+                                        'type' => 'ContactLatestActivtiesForPortlet'
                                     ),
                                 )
                             )
@@ -60,7 +63,7 @@
                             array(
                                 'rows' => array(
                                     array(
-                                        'type' => 'UpcomingMeetingsForContactRelatedList',
+                                        'type' => 'UpcomingMeetingsForContactCalendar',
                                     ),
                                     array(
                                         'type' => 'OpenTasksForContactRelatedList',

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -61,6 +61,51 @@
                 return false;
             }
             return ActionSecurityUtil::canCurrentUserPerformAction($element->getActionType(), $this->model);
+        }
+
+        protected function renderRightSideFormLayoutForEdit($form)
+        {
+            assert('$form instanceof ZurmoActiveForm');
+            $content = parent::renderRightSideFormLayoutForEdit($form);
+            if ($this->getModel() instanceof OwnedSecurableItem)
+            {
+                $content .= "<h3>".Yii::t('Default', 'Rights and Permissions') . '</h3><div id="owner-box">';
+                $element  = new UserElement($this->getModel(), 'owner', $form);
+                $element->editableTemplate = '{label}{content}{error}';
+                $content .= $element->render().'</div>';
+                $element  = new DerivedExplicitReadWriteModelPermissionsElement($this->getModel(), 'null', $form);
+                $element->editableTemplate = '{label}{content}{error}';
+                $content .= $element->render();
+            }
+            return $content;
+        }
+
+        protected function renderAfterFormLayoutForDetailsContent()
+        {
+            $content = parent::renderAfterFormLayoutForDetailsContent();
+            if ($this->getModel() instanceof OwnedSecurableItem)
+            {
+                if ($content != null)
+                {
+                    $content .= '<br/>';
+                }
+                $element  = new DateTimeModifiedUserElement($this->getModel(), 'null');
+                $element->nonEditableTemplate = '{label} {content}';
+                $content .= $element->render();
+                $content .= '&#160;|&#160;';
+                $element  = new DateTimeCreatedUserElement($this->getModel(), 'null');
+                $element->nonEditableTemplate = '{label} {content}';
+                $content .= $element->render();
+                $content .= '<br/>';
+                $element  = new UserElement($this->getModel(), 'owner');
+                $element->nonEditableTemplate = '{label} {content}';
+                $content .= $element->render();
+                $content .= '&#160;|&#160;';
+                $element  = new DerivedExplicitReadWriteModelPermissionsElement($this->getModel(), 'null');
+                $element->nonEditableTemplate = '{label} {content}';
+                $content .= $element->render();
+            }
+            return $content;
         }
     }
 ?>

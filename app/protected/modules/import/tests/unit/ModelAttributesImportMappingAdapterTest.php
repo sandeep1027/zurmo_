@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -157,6 +157,14 @@
                     'attributeImportRulesType' => 'Text',
                     'isRequired' => true,
                   ),
+              'tagCloud' =>
+                  array (
+                    'attributeLabel' => 'Tag Cloud',
+                    'attributeName' => 'tagCloud',
+                    'relationAttributeName' => null,
+                    'attributeImportRulesType' => 'TagCloud',
+                    'isRequired' => false,
+                  ),
               'textArea' =>
                   array (
                     'attributeLabel' => 'Text Area',
@@ -187,6 +195,14 @@
                     'attributeName' => 'dropDown',
                     'relationAttributeName' => null,
                     'attributeImportRulesType' => 'DropDown',
+                    'isRequired' => false,
+                  ),
+              'multiDropDown' =>
+                  array (
+                    'attributeLabel' => 'Multi Drop Down',
+                    'attributeName' => 'multiDropDown',
+                    'relationAttributeName' => null,
+                    'attributeImportRulesType' => 'MultiSelectDropDown',
                     'isRequired' => false,
                   ),
               'radioDropDown' =>
@@ -285,6 +301,14 @@
                     'attributeImportRulesType' => 'Text',
                     'isRequired' => false,
                   ),
+              'primaryAddress__invalid' =>
+                  array (
+                    'attributeLabel' => 'Primary Address - Invalid',
+                    'attributeName' => 'primaryAddress',
+                    'relationAttributeName' => 'invalid',
+                    'attributeImportRulesType' => 'CheckBox',
+                    'isRequired' => false,
+                  ),
               'primaryAddress__latitude' =>
                   array (
                     'attributeLabel' => 'Primary Address - Latitude',
@@ -299,6 +323,30 @@
                     'attributeName' => 'primaryAddress',
                     'relationAttributeName' => 'longitude',
                     'attributeImportRulesType' => 'Decimal',
+                    'isRequired' => false,
+                  ),
+              'secondaryEmail__emailAddress' =>
+                  array (
+                    'attributeLabel' => 'Secondary Email - Email Address',
+                    'attributeName' => 'secondaryEmail',
+                    'relationAttributeName' => 'emailAddress',
+                    'attributeImportRulesType' => 'Email',
+                    'isRequired' => false,
+                  ),
+              'secondaryEmail__optOut' =>
+                  array (
+                    'attributeLabel' => 'Secondary Email - Opt Out',
+                    'attributeName' => 'secondaryEmail',
+                    'relationAttributeName' => 'optOut',
+                    'attributeImportRulesType' => 'CheckBox',
+                    'isRequired' => false,
+                  ),
+              'secondaryEmail__isInvalid' =>
+                  array (
+                    'attributeLabel' => 'Secondary Email - Is Invalid',
+                    'attributeName' => 'secondaryEmail',
+                    'relationAttributeName' => 'isInvalid',
+                    'attributeImportRulesType' => 'CheckBox',
                     'isRequired' => false,
                   ),
             );

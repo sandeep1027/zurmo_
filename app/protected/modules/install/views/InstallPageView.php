@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,9 +26,16 @@
 
     class InstallPageView extends ZurmoPageView
     {
-        public function __construct(CController $controller, View $view)
+        public function __construct(View $view)
         {
-            parent::__construct(new InstallView($controller, $view));
+            parent::__construct(new InstallView($view));
+        }
+
+            protected function renderContent()
+        {
+            $content    = parent::renderContent();
+            $footerView = new FooterView();
+            return CHtml::tag('div', array('class' => 'AppContainer'), $content) . $footerView->render();
         }
 
         protected function getSubtitle()

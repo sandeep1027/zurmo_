@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class ZurmoModuleTest extends BaseTest
+    class ZurmoModuleTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -41,7 +41,7 @@
         public function testGetModelClassNames()
         {
             $modelClassNames = ZurmoModule::getModelClassNames();
-            $this->assertEquals(22, count($modelClassNames));
+            $this->assertEquals(23, count($modelClassNames));
             $this->assertEquals('Address', $modelClassNames[0]);
             $this->assertEquals('AuditEvent', $modelClassNames[1]);
             $this->assertEquals('Currency', $modelClassNames[2]);
@@ -55,15 +55,16 @@
             $this->assertEquals('NamedSecurableItem', $modelClassNames[10]);
             $this->assertEquals('OwnedCustomField', $modelClassNames[11]);
             $this->assertEquals('OwnedModel', $modelClassNames[12]);
-            $this->assertEquals('OwnedSecurableItem', $modelClassNames[13]);
-            $this->assertEquals('Permission', $modelClassNames[14]);
-            $this->assertEquals('Permitable', $modelClassNames[15]);
-            $this->assertEquals('Person', $modelClassNames[16]);
-            $this->assertEquals('Policy', $modelClassNames[17]);
-            $this->assertEquals('Right', $modelClassNames[18]);
-            $this->assertEquals('Role', $modelClassNames[19]);
-            $this->assertEquals('SecurableItem', $modelClassNames[20]);
-            $this->assertEquals('ZurmoModelSearch', $modelClassNames[21]);
+            $this->assertEquals('OwnedMultipleValuesCustomField', $modelClassNames[13]);
+            $this->assertEquals('OwnedSecurableItem', $modelClassNames[14]);
+            $this->assertEquals('Permission', $modelClassNames[15]);
+            $this->assertEquals('Permitable', $modelClassNames[16]);
+            $this->assertEquals('Person', $modelClassNames[17]);
+            $this->assertEquals('Policy', $modelClassNames[18]);
+            $this->assertEquals('Right', $modelClassNames[19]);
+            $this->assertEquals('Role', $modelClassNames[20]);
+            $this->assertEquals('SecurableItem', $modelClassNames[21]);
+            $this->assertEquals('ZurmoModelSearch', $modelClassNames[22]);
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -35,7 +35,7 @@
          * Constructs a rights view specifying the controller as
          * well as the model that will have its details displayed.
          */
-        public function __construct($renderType, $controllerId, $moduleId, $model, $modelId, $metadata)
+        public function __construct($renderType, $controllerId, $moduleId, $model, $modelId, $metadata, $title = null)
         {
             assert('$renderType == "Edit" || $renderType == "Details"');
             assert('$controllerId != null');
@@ -43,6 +43,7 @@
             assert('$model instanceof RightsForm');
             assert('$modelId != null');
             assert('is_array($metadata) && !empty($metadata)');
+            assert('is_string($title) || $title == null');
             $this->renderType     = $renderType;
             $this->controllerId   = $controllerId;
             $this->moduleId       = $moduleId;
@@ -50,6 +51,15 @@
             $this->modelClassName = get_class($model);
             $this->modelId        = $modelId;
             $this->metadata       = $metadata;
+            $this->title          = $title;
+        }
+
+        protected function renderTitleContent()
+        {
+            if ($this->title != null)
+            {
+                return '<h1>' . $this->title . "</h1>";
+            }
         }
 
         public static function getDefaultMetadata()

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -33,8 +33,12 @@
          * Is set in order to properly route action elements in view.
          */
         public $userId;
+
         public $listPageSize;
+
         public $subListPageSize;
+
+        public $hideWelcomeView = false;
 
         public function __construct($userId)
         {
@@ -60,6 +64,7 @@
                 array('subListPageSize',          'required'),
                 array('subListPageSize',          'type',      'type' => 'integer'),
                 array('subListPageSize',          'numerical', 'min' => 1),
+                array('hideWelcomeView',          'boolean'),
             );
         }
 
@@ -68,6 +73,7 @@
             return array(
                 'listPageSize'              => Yii::t('Default', 'List page size'),
                 'subListPageSize'           => Yii::t('Default', 'Sublist page size'),
+                'hideWelcomeView'           => Yii::t('Default', 'Hide welcome page'),
             );
         }
     }

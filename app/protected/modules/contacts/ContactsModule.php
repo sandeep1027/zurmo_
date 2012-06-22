@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -56,6 +56,19 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'designerMenuItems' => array(
+                    'showFieldsLink' => true,
+                    'showGeneralLink' => true,
+                    'showLayoutsLink' => true,
+                    'showMenusLink' => true,
+                ),
+                'globalSearchAttributeNames' => array(
+                    'fullName',
+                    'anyEmail',
+                    'officePhone',
+                    'mobilePhone',
+                ),
+                'startingState' => 1,
                 'tabMenuItems' => array(
                     array(
                         'label' => 'ContactsModulePluralLabel',
@@ -75,18 +88,12 @@
                         ),
                     ),
                 ),
-                'designerMenuItems' => array(
-                    'showFieldsLink' => true,
-                    'showGeneralLink' => true,
-                    'showLayoutsLink' => true,
-                    'showMenusLink' => true,
-                ),
-                'startingState' => 1,
-                'globalSearchAttributeNames' => array(
-                    'fullName',
-                    'anyEmail',
-                    'officePhone',
-                    'mobilePhone',
+                'shortcutsCreateMenuItems' => array(
+                    array(
+                        'label' => 'ContactsModuleSingularLabel',
+                        'url'   => array('/contacts/default/create'),
+                        'right' => self::RIGHT_CREATE_CONTACTS,
+                    ),
                 )
             );
             return $metadata;
@@ -185,6 +192,11 @@
         public static function getGlobalSearchFormClassName()
         {
             return 'ContactsSearchForm';
+        }
+
+        public static function hasPermissions()
+        {
+            return true;
         }
     }
 ?>

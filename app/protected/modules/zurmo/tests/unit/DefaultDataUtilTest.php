@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,7 +28,7 @@
      * This test is in the application instead of the framework so it can be tested when the database is frozen or
      * unfrozen.
      */
-    class DefaultDataUtilTest extends BaseTest
+    class DefaultDataUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {

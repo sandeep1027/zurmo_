@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,6 +50,7 @@
                                                  $value,
                                                  $dropDownArray,
                                                  $htmlOptions);
+            $content       = CHtml::tag('div', array('class' => 'beforeToolTip'), $content);
             $content      .= self::renderTooltipContent();
             return $content;
         }
@@ -64,11 +65,9 @@
         {
             $title       = Yii::t('Default', 'Inactive users cannot log in using the web, mobile or web API. Login for' .
                                              ' active users is controlled by group rights.');
-            $content     = '&#160;<span id="user-status-tooltip" class="tooltip"  title="' . $title . '">';
-            $content    .= Yii::t('Default', 'What is this?') . '</span>';
-
-            Yii::import('application.extensions.qtip.QTip');
-            $qtip = new QTip();
+            $content     = '<span id="user-status-tooltip" class="tooltip"  title="' . $title . '">';
+            $content    .= '?</span>';
+            $qtip = new ZurmoTip(array('options' => array('position' => array('my' => 'bottom right', 'at' => 'top left'))));
             $qtip->addQTip("#user-status-tooltip");
             return $content;
         }

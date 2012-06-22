@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -51,7 +51,7 @@
             {
                 return Yii::t('Default', '(None)');
             }
-            return $this->value;
+            return strval($this->value);
         }
 
         public static function getDefaultMetadata()
@@ -59,19 +59,19 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'value',
                     'rateToBase',
+                    'value',
                 ),
                 'relations' => array(
                     'currency' => array(RedBeanModel::HAS_ONE, 'Currency'),
                 ),
                 'rules' => array(
+                    array('currency',    'required'),
+                    array('rateToBase',  'required'),
+                    array('rateToBase',  'type', 'type' => 'float'),
                     array('value',       'required'),
                     array('value',       'type',    'type' => 'float'),
                     array('value',       'default', 'value' => 0),
-                    array('rateToBase',  'required'),
-                    array('rateToBase',  'type', 'type' => 'float'),
-                    array('currency',    'required'),
                 ),
                 'defaultSortAttribute' => 'value'
             );
@@ -83,6 +83,11 @@
             return true;
         }
 
+        /**
+         * Given an id of a currency model, determine if any currency values are using this currency.
+         * @return true if at least one currency value model is using this currency.
+         * @param integer $currencyId
+         */
         public static function isCurrencyInUseById($currencyId)
         {
             assert('is_int($currencyId)');

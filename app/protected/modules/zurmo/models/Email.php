@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,13 +41,13 @@
             $metadata[__CLASS__] = array(
                 'members' => array(
                     'emailAddress',
-                    'optOut',
                     'isInvalid',
+                    'optOut',
                 ),
                 'rules' => array(
                     array('emailAddress', 'email'),
-                    array('optOut',       'boolean'),
                     array('isInvalid',    'boolean'),
+                    array('optOut',       'boolean'),
                 ),
                 'defaultSortAttribute' => 'emailAddress'
             );

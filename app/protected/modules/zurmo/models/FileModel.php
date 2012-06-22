@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -32,22 +32,23 @@
             $metadata[__CLASS__] = array(
                 'members' => array(
                     'name',
-                    'type',
                     'size',
+                    'type',
                 ),
                 'relations' => array(
                     'fileContent' => array(RedBeanModel::HAS_ONE,  'FileContent', RedBeanModel::OWNED),
                 ),
                 'rules' => array(
-                    array('name',        'required'),
-                    array('type',        'required'),
-                    array('size',        'required'),
                     array('fileContent', 'required'),
+                    array('name',        'required'),
                     array('name', 'type', 'type' => 'string'),
                     array('name', 'length',  'min'  => 3, 'max' => 64),
+                    array('size',        'required'),
+                    array('size', 'type', 'type' => 'integer'),
+                    array('type',        'required'),
                     array('type', 'type', 'type' => 'string'),
                     array('type', 'length',  'min'  => 3, 'max' => 64),
-                    array('size', 'type', 'type' => 'integer'),
+
                 ),
                 'defaultSortAttribute' => 'name',
                 'noAudit' => array(

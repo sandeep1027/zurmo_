@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -52,11 +52,50 @@
             $this->shouldRenderCoreScripts = $value;
         }
 
+        public function isAjaxMode()
+        {
+            return !$this->shouldRenderCoreScripts;
+        }
+
         public function renderCoreScripts()
         {
             if ($this->shouldRenderCoreScripts)
             {
                 parent::renderCoreScripts();
+            }
+        }
+
+        /**
+         * Method override to call @see removeAllPageLoadedScriptFilesWhenRenderingInAjaxMode
+         * (non-PHPdoc)
+         * @see CClientScript::render()
+         */
+        public function render(& $output)
+        {
+            if ($this->isAjaxMode())
+            {
+                $this->removeAllPageLoadedScriptFilesWhenRenderingInAjaxMode();
+            }
+            parent::render($output);
+        }
+
+        /**
+         * When the page is loading in ajax mode, it is assumed certain script files have always
+         * been loaded by the main page.  These need to therefore be removed from the scriptFiles
+         * array.
+         */
+        protected function removeAllPageLoadedScriptFilesWhenRenderingInAjaxMode()
+        {
+            $filesToRemove = PageView::getScriptFilesThatLoadOnAllPages();
+            foreach ($this->scriptFiles as $position => $data)
+            {
+                foreach ($data as $key => $scriptFile)
+                {
+                    if (in_array($scriptFile, $filesToRemove))
+                    {
+                        unset($this->scriptFiles[$position][$key]);
+                    }
+                }
             }
         }
     }

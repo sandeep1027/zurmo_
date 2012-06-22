@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,12 +34,12 @@
             $allPassed = false;
             if (InstallUtil::checkPhpTimezoneSetting())
             {
-                $this->message = Yii::t('Default', 'PHP Timezone is set.');
+                $this->message = Yii::t('Default', 'PHP date.timezone is set.');
                 return true;
             }
             else
             {
-                $this->message = Yii::t('Default', 'PHP Timezone is not set.');
+                $this->message = Yii::t('Default', 'PHP date.timezone is not set.');
                 return true;
             }
         }

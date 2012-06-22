@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -73,13 +73,14 @@
                 foreach ($columnPortlets as $position => $portlet)
                 {
                     $juiPortletsWidgetItems[$column][$position] = array(
-                        'id'        => $portlet->id,
-                        'uniqueId'  => $portlet->getUniquePortletPageId(),
-                        'title'     => $portlet->getTitle(),
-                        'content'   => $portlet->renderContent(),
-                        'editable'  => $portlet->isEditable(),
-                        'collapsed' => $portlet->collapsed,
-                        'removable' => $this->arePortletsRemovable(),
+                        'id'          => $portlet->id,
+                        'uniqueId'    => $portlet->getUniquePortletPageId(),
+                        'title'       => $portlet->getTitle(),
+                        'content'     => $portlet->renderContent(),
+                        'editable'    => $portlet->isEditable(),
+                        'collapsed'   => $portlet->collapsed,
+                        'removable'   => $this->arePortletsRemovable(),
+                        'uniqueClass' => get_class($portlet->getView())
                     );
                 }
             }

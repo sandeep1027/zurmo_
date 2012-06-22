@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -103,9 +103,9 @@
             $fullNameSql = DatabaseCompatibilityUtil::concat(array('person.firstname',
                                                                    '\' \'',
                                                                    'person.lastname'));
-            return "      (person.firstname      like lower('$partialName%') or "    .
-                   "       person.lastname       like lower('$partialName%') or "    .
-                   "       $fullNameSql like lower('$partialName%')) ";
+            return "      (person.firstname      like '$partialName%' or "    .
+                   "       person.lastname       like '$partialName%' or "    .
+                   "       $fullNameSql like '$partialName%') ";
         }
     }
 ?>

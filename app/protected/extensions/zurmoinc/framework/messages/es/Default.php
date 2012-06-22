@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,16 +37,28 @@
             => 'Añadir archivos',
         'Add Item'
             => 'Añadir elemento',
+        'Advanced'
+            => 'Avanzada',
         'Advanced Search'
             => 'Búsqueda Avanzada',
         'After'
             => 'Después',
         'All'
             => 'Todo',
+        'All Results'
+            => 'Lista completa',
+        'and'
+            => 'y',
         'Basic Search'
             => 'Búsqueda básica',
+        'Basic Search Fields'
+            => 'Campos de Búsqueda simple',
         'Before'
             => 'Antes',
+        'Between'
+            => 'Entre',
+        'Bulk insert failed. There was a row with an incorrect column quantity'
+            => 'Error en la operación BULK INSERT. Una línea contiene una serie de columnas malas',
         'by'
             => 'de',
         'Cancel'
@@ -59,8 +71,8 @@
             => 'Registro de Cambios',
         'Changed'
             => 'Cambiado',
-        'Clear Search'
-            => 'Restablecer Búsqueda',
+        'Clear'
+            => 'Borrar',
         'Create'
             => 'Crear',
         'Created By User'
@@ -92,17 +104,27 @@
         'Edit Portlet'
             => 'Modificar portlet',
         'Error'
-            => 'Error',
+            => 'Error', // Same Word Translated
+        'Export'
+            => 'Exportar',
         'Fahrenheit'
-            => 'Fahrenheit',
+            => 'Fahrenheit', // Same Word Translated
+        'Fewer Details'
+            => 'Menos detalles',
+        'Fewer Options'
+            => 'Menos opciones',
         'Filtered Lists'
             => 'Lista filtrada',
+        'First character must be a lower case letter'
+            => 'El primer carácter debe ser una letra minúscula.',
+        'First select the {attributeLabel}'
+            => 'Primero, seleccione el / la {attributeLabel}',
         'firstDateTime must occur after secondDateTime'
             => 'firstDateTime debe ocurrir después secondDateTime',
         'firstDateTime must occur before secondDateTime'
             => 'firstDateTime debe ocurrir antes secondDateTime',
         'Float'
-            => 'Float',
+            => 'Float', // Same Word Translated
         'from'
             => 'de',
         'Full Name'
@@ -112,7 +134,7 @@
         'Hour'
             => 'Hora',
         'Info'
-            => 'Info',
+            => 'Info', // Same Word Translated
         'Inline Edit View'
             => 'Formulario de inscripción inline',
         'Integer'
@@ -137,6 +159,8 @@
             => 'Max tamaño de subida: {maxSize}',
         'Minute'
             => 'Minuto',
+        'Missing the attribute labels.'
+            => 'Carece las etiquetas de los atributos.',
         'Model Class Name'
             => 'Nombre de la clase de modelo',
         'Model Id'
@@ -155,30 +179,40 @@
             => 'Mi vista de lista',
         'Name'
             => 'Nombre',
+        'Name must not contain spaces or special characters'
+            => 'El nombre no puede contener caracteres especiales ni espacios.',
         'Next 7 Days'
             => 'Próximos 7 días',
         'No'
-            => 'No',
+            => 'No', // Same Word Translated
         'No import processes found.'
             => 'Ningún procesos de importación encontrado',
+        'No {moduleLabelPluralLowerCase} found'
+            => 'No se encontraron resultados',
         'None'
             => 'Ninguno',
         'Now'
             => 'Ahora',
         'of'
             => 'de',
+        'Off{visibility}'
+            => 'Apagado',
+        'On{date}'
+            => 'El',
+        'On{visibility}'
+            => 'Encendido',
         'Opted Out'
             => 'Excluido',
+        'Options'
+            => 'Opciones',
         'or'
             => 'o',
         'Panel'
-            => 'Panel',
+            => 'Panel', // Same Word Translated
         'Panel Settings'
             => 'Configuración de panel',
         'Panel Title'
             => 'Título de panel',
-        'Perform Action'
-            => 'Realizar accíon',
         'Radio Drop Down'
             => 'Elementos del botón radio',
         'record'
@@ -199,6 +233,8 @@
             => 'Seconde',
         'Select'
             => 'Seleccionar',
+        'Selected'
+            => 'Seleccionado',
         'selected for updating.'
             => 'seleccionado por actualización',
         'Serialized Data'
@@ -209,8 +245,10 @@
                'Trate de cambiar los registros que usó primero.',
         'Start'
             => 'Empezar',
+        'Start typing to search'
+            => 'Escriba su búsqueda aquí',
         'Tab'
-            => 'Tab',
+            => 'Tab', // Same Word Translated
         'The file did not exist'
             => 'El archivo no existe',
         'There was an error uploading the file.'
@@ -234,13 +272,15 @@
         'Tomorrow'
             => 'Mañana',
         'total'
-            => 'total',
+            => 'total', // Same Word Translated
         'Type'
             => 'Tipo',
+        'Type to find a tag'
+            => 'Escriba para encontrar una etiqueta',
         'Unknown'
             => 'Desconocido',
-        'Update Selected'
-            => 'Actualización Seleccionada',
+        'Update'
+            => 'Actualización',
         'updated successfully.'
             => 'Actualizado con éxito',
         'Updating'

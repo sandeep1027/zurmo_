@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -48,6 +48,7 @@
                 'htmlOptions' => array(
                     'id'              => $this->getEditableInputId(),
                     'name'            => $this->getEditableInputName(),
+                    'style'           => 'position:relative;z-index:10000;'
                 ),
                 'options'    => array(
                     'stepMinute'      => 5,
@@ -58,8 +59,8 @@
                     'currentText'     => Yii::t('Default', 'Now'),
                     'closeText'       => Yii::t('Default', 'Done'),
                     'showOn'          => 'both',
-                    'buttonImage'     => $themePath . '/images/jqueryui/calendar.gif',
-                    'buttonImageOnly' => true,
+                    'buttonImageOnly' => false,
+                    'buttonText'      => '<span>Date</span>',
                     'dateFormat'      => YiiToJqueryUIDatePickerLocalization::resolveDateFormat(
                                             DateTimeUtil::getLocaleDateFormat()),
                     'timeFormat'      => YiiToJqueryUIDatePickerLocalization::resolveTimeFormat(
@@ -69,7 +70,8 @@
                 ),
             ));
             $cClipWidget->endClip();
-            return $cClipWidget->getController()->clips['EditableDateTimeElement'];
+            $content = $cClipWidget->getController()->clips['EditableDateTimeElement'];
+            return CHtml::tag('div', array('class' => 'has-date-select'), $content);
         }
 
         /**
@@ -80,7 +82,9 @@
         {
             if ($this->model->{$this->attribute} != null)
             {
-                $content = Yii::app()->dateFormatter->formatDateTime($this->model->{$this->attribute}, 'short', 'short');
+                $content = DateTimeUtil::
+                           convertDbFormattedDateTimeToLocaleFormattedDisplay(
+                               $this->model->{$this->attribute});
                 return CHtml::encode($content);
             }
         }

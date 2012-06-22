@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,10 +34,7 @@
             assert('$attributeName != ""');
             try
             {
-                // This will defer to the parent until the Database
-                // has been set up (so that it can still be used normally
-                // before a controller first talks to the datbase.
-                if (RedBeanDatabase::isSetup() && $this->userModel === null)
+                if ($attributeName != 'isGuest' && $this->userModel === null)
                 {
                     $username = parent::__get('username');
                     $this->userModel = User::getByUsername($username);
@@ -53,6 +50,15 @@
                 else
                 {
                     return parent::__get($attributeName);
+                }
+            }
+            catch (NotFoundException $e)
+            {
+                if (Yii::app()->isApplicationInstalled())
+                {
+                    //Perhaps the username has changed, clear session and logout user.
+                    Yii::app()->getSession()->destroy();
+                    Yii::app()->request->redirect(Yii::app()->homeUrl);
                 }
             }
             catch (CException $e)
@@ -80,12 +86,77 @@
         protected function afterLogin($fromCookie)
         {
             AuditEvent::logAuditEvent('UsersModule', UsersModule::AUDIT_EVENT_USER_LOGGED_IN);
+            if ($this->hasEventHandler('onAfterLogin'))
+            {
+                $this->onAfterLogin(new CEvent($this));
+            }
+        }
+
+        /**
+         * Raised right AFTER the login is completed for a WebUser
+         * @param CEvent $event the event parameter
+         */
+        public function onAfterLogin($event)
+        {
+            $this->raiseEvent('onAfterLogin', $event);
         }
 
         protected function beforeLogout()
         {
             AuditEvent::logAuditEvent('UsersModule', UsersModule::AUDIT_EVENT_USER_LOGGED_OUT);
             return true;
+        }
+
+        /**
+        * Initializes the application component.
+        * This method overrides the parent implementation by starting session,
+        * performing cookie-based authentication if enabled, and updating the flash variables.
+        */
+        public function init()
+        {
+            CApplicationComponent::init();
+
+            if (Yii::app()->apiRequest->isApiRequest())
+            {
+                if ($sessionId = Yii::app()->apiRequest->getSessionId())
+                {
+                    Yii::app()->session->setSessionID($sessionId);
+                    Yii::app()->session->open();
+                    $session = Yii::app()->getSession();
+                    if ($session['token'] != Yii::app()->apiRequest->getSessionToken() || $session['token'] == '')
+                    {
+                        Yii::app()->session->clear();
+                        Yii::app()->session->destroy();
+                    }
+                }
+                else
+                {
+                    Yii::app()->session->open();
+                    $sessionId = Yii::app()->session->getSessionID();
+                    $userPassword = Yii::app()->apiRequest->getPassword();
+                    $token = ZurmoSession::createSessionToken($sessionId, $userPassword);
+                    $session = Yii::app()->getSession();
+                    $session['token'] = $token;
+                }
+            }
+            else
+            {
+                Yii::app()->getSession()->open();
+                if ($this->getIsGuest() && $this->allowAutoLogin)
+                {
+                    $this->restoreFromCookie();
+                }
+                elseif ($this->autoRenewCookie && $this->allowAutoLogin)
+                {
+                    $this->renewCookie();
+                }
+            }
+
+            if ($this->autoUpdateFlash)
+            {
+                $this->updateFlash();
+            }
+            $this->updateAuthStatus();
         }
     }
 ?>

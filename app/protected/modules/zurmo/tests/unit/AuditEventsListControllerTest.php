@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,7 +28,7 @@
      * Unit test for AuditEventsListControllerUtil
      * To-Do: walkthrough test for AuditEventsListControllerUtil::renderList() action
      */
-    class AuditEventsListControllerTest extends BaseTest
+    class AuditEventsListControllerTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -40,6 +40,13 @@
         {
             parent::setUp();
             Yii::app()->user->userModel = User::getByUsername('super');
+            AuditEvent::$isTableOptimized = false;
+        }
+
+        public function teardown()
+        {
+            AuditEvent::$isTableOptimized = false;
+            parent::teardown();
         }
 
         public function testMakeSearchAttributeDataByAuditedModel()

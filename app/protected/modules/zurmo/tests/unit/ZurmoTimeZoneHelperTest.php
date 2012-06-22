@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class ZurmoTimeZoneHelperTest extends BaseTest
+    class ZurmoTimeZoneHelperTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -70,24 +70,38 @@
 
         /**
          * @depends testGetAndSetByUser
-         * @expectedException Exception
          */
         public function testSettingMalformedTimeZone()
         {
-            $timeZoneHelper = new ZurmoTimeZoneHelper();
-            $timeZoneHelper->setTimeZone('AFakeTimeZone');
+            try
+            {
+                $timeZoneHelper = new ZurmoTimeZoneHelper();
+                $timeZoneHelper->setTimeZone('AFakeTimeZone');
+                $this->assertFail();
+            }
+            catch (Exception $e)
+            {
+                //ok good, an Exception is expected to be thrown.
+            }
         }
 
         /**
          * @depends testSettingMalformedTimeZone
-         * @expectedException Exception
          */
         public function testSettingMalformedTimeZoneByUser()
         {
-            $timeZoneHelper = new ZurmoTimeZoneHelper();
-            $billy =  User::getByUsername('billy');
-            $billy->timeZone = 'AnotherFakePlace';
-            $this->assertFalse($billy->save());
+            try
+            {
+                $timeZoneHelper = new ZurmoTimeZoneHelper();
+                $billy =  User::getByUsername('billy');
+                $billy->timeZone = 'AnotherFakePlace';
+                $this->assertFalse($billy->save());
+                $this->assertFail();
+            }
+            catch (Exception $e)
+            {
+                //ok good, an Exception is expected to be thrown.
+            }
         }
 
         public function testSetGetGlobalValue()
@@ -97,6 +111,41 @@
             $this->assertEquals('Pacific/Guam', $timeZoneHelper->getGlobalValue());
             $timeZoneHelper->setGlobalValue('America/New_York');
             $this->assertEquals('America/New_York', $timeZoneHelper->getGlobalValue());
+        }
+
+        public function testSettingCreatedAndModifiedDateTimeInItem()
+        {
+            Yii::app()->user->userModel =  User::getByUsername('super');
+            $tz   = date_default_timezone_get();
+            $time = time();
+            date_default_timezone_set('America/New_York');
+            $account        = new Account();
+            $account->name  = 'test';
+            $account->owner = Yii::app()->user->userModel;
+            $this->assertTrue($account->save());
+
+            //Test to make sure the createdDateTime is actually GMT
+            date_default_timezone_set('GMT');
+            $createdTimeStamp  = strtotime( $account->createdDateTime);
+            $modifiedTimeStamp = strtotime( $account->modifiedDateTime);
+            date_default_timezone_set('America/New_York');
+            $this->assertWithinTolerance($time, $createdTimeStamp, 2);
+            $this->assertWithinTolerance($time, $modifiedTimeStamp, 2);
+            date_default_timezone_set($tz);
+        }
+
+        public function testIsCurrentUsersTimeZoneConfirmed()
+        {
+            Yii::app()->user->userModel =  User::getByUsername('super');
+            $timeZoneHelper = new ZurmoTimeZoneHelper();
+            $this->assertFalse($timeZoneHelper->isCurrentUsersTimeZoneConfirmed());
+            $timeZoneHelper->confirmCurrentUsersTimeZone();
+            $this->assertTrue($timeZoneHelper->isCurrentUsersTimeZoneConfirmed());
+            Yii::app()->user->userModel =  User::getByUsername('billy');
+            $timeZoneHelper = new ZurmoTimeZoneHelper();
+            $this->assertFalse($timeZoneHelper->isCurrentUsersTimeZoneConfirmed());
+            $timeZoneHelper->confirmCurrentUsersTimeZone();
+            $this->assertTrue($timeZoneHelper->isCurrentUsersTimeZoneConfirmed());
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -39,6 +39,8 @@
             => 'Catégorie',
         'Create MeetingsModulePluralLabel'
             => 'Créer MeetingsModulePluralLabel',
+        'Create MeetingsModuleSingularLabel'
+            => 'Créer MeetingsModuleSingularLabel',
         'Delete MeetingsModulePluralLabel'
             => 'Supprimer MeetingsModulePluralLabel',
         'End Time'
@@ -50,15 +52,19 @@
         'Meetings'
             => 'Rendez-vous',
         'MeetingsModulePluralLabel'
-            => 'MeetingsModulePluralLabel',
+            => 'MeetingsModulePluralLabel', // Same Word Translated
         'MeetingsModulePluralLabel For AccountsModuleSingularLabel'
             => 'MeetingsModulePluralLabel pour AccountsModuleSingularLabel',
         'MeetingsModulePluralLabel For ContactsModuleSingularLabel'
             => 'MeetingsModulePluralLabel pour ContactsModuleSingularLabel',
         'MeetingsModulePluralLabel For OpportunitiesModuleSingularLabel'
             => 'MeetingsModulePluralLabel pour OpportunitiesModuleSingularLabel',
+        'MeetingsModulePluralLabel On {displayStringTime}'
+            => 'MeetingsModulePluralLabel Le {displayStringTime}',
         'MeetingsModuleSingularLabel'
-            => 'MeetingsModuleSingularLabel',
+            => 'MeetingsModuleSingularLabel', // Same Word Translated
+        'MeetingsModuleSingularLabel Day Summary'
+            => 'Sommaire des MeetingsModulePluralLabel',
         'My Upcoming MeetingsModulePluralLabel'
             => 'Mes Prochains MeetingsModulePluralLabel',
         'Related ContactsModulePluralLabel and LeadsModulePluralLabel'
@@ -69,5 +75,13 @@
             => 'Tapez un ContactsModuleSingularLowerCaseLabel ou LeadsModuleSingularLowerCaseLabel: nom ou adresse email',
         'Upcoming MeetingsModulePluralLabel'
             => 'Prochains MeetingsModulePluralLabel',
+        '{n} Call created|{n} Calls created'
+            => '{n} Appel crée|{n} Appels crées',
+        '{n} MeetingsModuleSingularLabel created|{n} MeetingsModulePluralLabel created'
+            => '{n} MeetingsModuleSingularLabel crée|{n} MeetingsModulePluralLabel crées',
+        '{quantity} MeetingsModulePluralLabel'
+            => '{quantity} MeetingsModulePluralLabel', // Same Word Translated
+        '{quantity} MeetingsModuleSingularLabel'
+            => '{quantity} MeetingsModuleSingularLabel', // Same Word Translated
     );
 ?>

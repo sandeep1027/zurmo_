@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,38 +28,143 @@
     {
         public function attach($owner)
         {
-            $owner->attachEventHandler('onBeginRequest', array($this, 'handleLibraryCompatibilityCheck'));
-            $owner->attachEventHandler('onBeginRequest', array($this, 'handleStartPerformanceClock'));
-            $owner->attachEventHandler('onBeginRequest', array($this, 'handleBrowserCheck'));
-            if (!Yii::app()->isApplicationInstalled())
+            if (Yii::app()->apiRequest->isApiRequest())
             {
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleInstallCheck'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadLanguage'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadTimeZone'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleApplicationCache'));
+                $owner->detachEventHandler('onBeginRequest', array(Yii::app()->request, 'validateCsrfToken'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleImports'));
+
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleSetupDatabaseConnection'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleDisableGamification'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleBeginApiRequest'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleLibraryCompatibilityCheck'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleStartPerformanceClock'));
+
+                if (Yii::app()->isApplicationInstalled())
+                {
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleClearCache'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadLanguage'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadTimeZone'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleCheckAndUpdateCurrencyRates'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleResolveCustomData'));
+                }
             }
             else
             {
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleBeginRequest'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleSetupDatabaseConnection'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleClearCache'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadLanguage'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadTimeZone'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleCheckAndUpdateCurrencyRates'));
-                $owner->attachEventHandler('onBeginRequest', array($this, 'handleResolveCustomData'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleApplicationCache'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleImports'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleLibraryCompatibilityCheck'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleStartPerformanceClock'));
+                $owner->attachEventHandler('onBeginRequest', array($this, 'handleBrowserCheck'));
+
+                if (!Yii::app()->isApplicationInstalled())
+                {
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleInstanceFolderCheck'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleInstallCheck'));
+                    //$owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadLanguage'));
+                    //$owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadTimeZone'));
+                }
+                else
+                {
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleSetupDatabaseConnection'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleBeginRequest'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleClearCache'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadLanguage'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadTimeZone'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleUserTimeZoneConfirmed'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadActivitiesObserver'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleLoadGamification'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleCheckAndUpdateCurrencyRates'));
+                    $owner->attachEventHandler('onBeginRequest', array($this, 'handleResolveCustomData'));
+                }
+            }
+        }
+
+        /**
+        * Load memcache extension if memcache extension is
+        * loaded and if memcache server is avalable
+        * @param $event
+        */
+        public function handleApplicationCache($event)
+        {
+            if (MEMCACHE_ON)
+            {
+                $memcacheServiceHelper = new MemcacheServiceHelper();
+                if ($memcacheServiceHelper->runCheckAndGetIfSuccessful())
+                {
+                    $cacheComponent = Yii::createComponent('CMemCache',
+                        array('servers' => Yii::app()->params['memcacheServers']));
+                    Yii::app()->setComponent('cache', $cacheComponent);
+                }
+            }
+        }
+
+        /**
+        * Import all files that need to be included(for lazy loading)
+        * @param $event
+        */
+        public function handleImports($event)
+        {
+            try
+            {
+                $filesToInclude = GeneralCache::getEntry('filesToInclude');
+            }
+            catch (NotFoundException $e)
+            {
+                $filesToInclude   = FileUtil::getFilesFromDir(Yii::app()->basePath . '/modules', Yii::app()->basePath . '/modules', 'application.modules');
+                $filesToIncludeFromFramework = FileUtil::getFilesFromDir(Yii::app()->basePath . '/extensions/zurmoinc/framework', Yii::app()->basePath . '/extensions/zurmoinc/framework', 'application.extensions.zurmoinc.framework');
+                $totalFilesToIncludeFromModules = count($filesToInclude);
+
+                foreach ($filesToIncludeFromFramework as $key => $file)
+                {
+                    $filesToInclude[$totalFilesToIncludeFromModules + $key] = $file;
+                }
+                GeneralCache::cacheEntry('filesToInclude', $filesToInclude);
+            }
+            foreach ($filesToInclude as $file)
+            {
+                Yii::import($file);
+            }
+        }
+
+        /**
+        * This check is required during installation since if runtime, assets and data folders are missing
+        * yii web application can not be started correctly.
+        * @param $event
+        */
+        public function handleInstanceFolderCheck($event)
+        {
+            $instanceFoldersServiceHelper = new InstanceFoldersServiceHelper();
+            if (!$instanceFoldersServiceHelper->runCheckAndGetIfSuccessful())
+            {
+                echo $instanceFoldersServiceHelper->getMessage();
+                Yii::app()->end(0, false);
             }
         }
 
         public function handleInstallCheck($event)
         {
-            if (!array_key_exists('r', $_GET) ||
-            !in_array($_GET['r'], array('zurmo/default/unsupportedBrowser',
-                                        'install/default',
-                                        'install/default/welcome',
-                                        'install/default/checkSystem',
-                                        'install/default/settings',
-                                        'install/default/runInstallation',
-                                        'install/default/installDemoData',
-                                        'min/serve')))
+            $allowedInstallUrls = array (
+                Yii::app()->createUrl('zurmo/default/unsupportedBrowser'),
+                Yii::app()->createUrl('install/default'),
+                Yii::app()->createUrl('install/default/welcome'),
+                Yii::app()->createUrl('install/default/checkSystem'),
+                Yii::app()->createUrl('install/default/settings'),
+                Yii::app()->createUrl('install/default/runInstallation'),
+                Yii::app()->createUrl('install/default/installDemoData'),
+                Yii::app()->createUrl('min/serve')
+            );
+            $reqestedUrl = Yii::app()->getRequest()->getUrl();
+            $redirect = true;
+            foreach ($allowedInstallUrls as $allowedUrl)
+            {
+                if (strpos($reqestedUrl, $allowedUrl) === 0)
+                {
+                    $redirect = false;
+                    break;
+                }
+            }
+            if ($redirect)
             {
                 $url = Yii::app()->createUrl('install/default');
                 Yii::app()->request->redirect($url);
@@ -93,16 +198,84 @@
             }
         }
 
+        /**
+         * Called if installed, and logged in.
+         * @param CEvent $event
+         */
+        public function handleUserTimeZoneConfirmed($event)
+        {
+            if (!Yii::app()->user->isGuest && !Yii::app()->timeZoneHelper->isCurrentUsersTimeZoneConfirmed())
+            {
+                $allowedTimeZoneConfirmBypassUrls = array (
+                    Yii::app()->createUrl('users/default/confirmTimeZone'),
+                    Yii::app()->createUrl('min/serve'),
+                );
+                $reqestedUrl = Yii::app()->getRequest()->getUrl();
+                $isUrlAllowedToByPass = false;
+                foreach ($allowedTimeZoneConfirmBypassUrls as $url)
+                {
+                    if (strpos($reqestedUrl, $url) === 0)
+                    {
+                        $isUrlAllowedToByPass = true;
+                    }
+                }
+                if (!$isUrlAllowedToByPass)
+                {
+                    $url = Yii::app()->createUrl('users/default/confirmTimeZone');
+                    Yii::app()->request->redirect($url);
+                }
+            }
+        }
+
         public function handleBeginRequest($event)
         {
-            if (!array_key_exists('r', $_GET) ||
-                !in_array($_GET['r'], array('zurmo/default/unsupportedBrowser',
-                                            'zurmo/default/login',
-                                            'min/serve')))
+            if (Yii::app()->user->isGuest)
             {
-                if (Yii::app()->user->isGuest)
+                $allowedGuestUserUrls = array (
+                    Yii::app()->createUrl('zurmo/default/unsupportedBrowser'),
+                    Yii::app()->createUrl('zurmo/default/login'),
+                    Yii::app()->createUrl('min/serve'),
+                );
+                $reqestedUrl = Yii::app()->getRequest()->getUrl();
+                $isUrlAllowedToGuests = false;
+                foreach ($allowedGuestUserUrls as $url)
+                {
+                    if (strpos($reqestedUrl, $url) === 0)
+                    {
+                        $isUrlAllowedToGuests = true;
+                    }
+                }
+                if (!$isUrlAllowedToGuests)
                 {
                     Yii::app()->user->loginRequired();
+                }
+            }
+        }
+
+        public function handleBeginApiRequest($event)
+        {
+            if (Yii::app()->user->isGuest)
+            {
+                $allowedGuestUserUrls = array (
+                    Yii::app()->createUrl('zurmo/api/login'),
+                    Yii::app()->createUrl('zurmo/api/logout'),
+                );
+                $isUrlAllowedToGuests = false;
+                foreach ($allowedGuestUserUrls as $url)
+                {
+                    if (ZurmoUrlManager::getPositionOfPathInUrl($url) !== false)
+                    {
+                        $isUrlAllowedToGuests = true;
+                        break;
+                    }
+                }
+
+                if (!$isUrlAllowedToGuests)
+                {
+                    $message = Yii::t('Default', 'Sign in required.');
+                    $result = new ApiResult(ApiResponse::STATUS_FAILURE, null, $message, null);
+                    Yii::app()->apiHelper->sendResponse($result);
+                    exit;
                 }
             }
         }
@@ -166,9 +339,19 @@
 
         public function handleLoadLanguage($event)
         {
-            if (isset($_GET['lang']) && $_GET['lang'] != null)
+            if (!Yii::app()->apiRequest->isApiRequest())
             {
-                Yii::app()->languageHelper->setActive($_GET['lang']);
+                if (isset($_GET['lang']) && $_GET['lang'] != null)
+                {
+                    Yii::app()->languageHelper->setActive($_GET['lang']);
+                }
+            }
+            else
+            {
+                if ($lang = Yii::app()->apiRequest->getLanguage())
+                {
+                    Yii::app()->languageHelper->setActive($lang);
+                }
             }
             Yii::app()->languageHelper->load();
         }
@@ -190,5 +373,23 @@
                 Yii::app()->custom->resolveIsCustomDataLoaded();
             }
         }
-    }
+
+        public function handleLoadActivitiesObserver($event)
+        {
+            $activitiesObserver = new ActivitiesObserver();
+            $activitiesObserver->init(); //runs init();
+        }
+
+
+        public function handleLoadGamification($event)
+        {
+            Yii::app()->gameHelper;
+            Yii::app()->gamificationObserver; //runs init();
+        }
+
+        public function handleDisableGamification($event)
+        {
+            Yii::app()->gamificationObserver->enabled = false;
+        }
+     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -27,11 +27,9 @@
     class InstallView extends View
     {
         private $verticalGridView;
-        protected $controller;
 
-        public function __construct($controller, View $view)
+        public function __construct(View $view)
         {
-            $this->controller = $controller;
             $horizontalGridView = new GridView(1, 1);
             $horizontalGridView->setView($view, 0, 0);
             $this->verticalGridView  = new GridView(1, 1);

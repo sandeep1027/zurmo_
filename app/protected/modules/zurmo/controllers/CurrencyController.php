@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -58,14 +58,15 @@
                             $currency,
                             Currency::getAll(),
                             $messageBoxContent);
-            $view = new ZurmoConfigurationPageView($this, $view);
+            $view = new ZurmoConfigurationPageView(ZurmoDefaultAdminViewUtil::
+                                         makeStandardViewForCurrentUser($this, $view));
             echo $view->render();
         }
 
         /**
          * Override to support getting the rate of the currency to the base currency by a web-service.
          */
-        protected function attemptToSaveModelFromPost($model, $redirectUrlParams = null)
+        protected function attemptToSaveModelFromPost($model, $redirectUrlParams = null, $redirect = true)
         {
             assert('$redirectUrlParams == null || is_array($redirectUrlParams)');
             $postVariableName = get_class($model);
@@ -122,8 +123,7 @@
                 }
                 if (!$atLeastOneCurrencyIsActive)
                 {
-                    return HtmlNotifyUtil::renderAlertBoxByMessage(
-                                           Yii::t('Default', 'You must have at least one active currency.'));
+                    Yii::app()->user->setFlash('notification', Yii::t('Default', 'You must have at least one active currency.'));
                 }
                 else
                 {
@@ -141,8 +141,7 @@
                         $saved = $currency->save();
                         assert('$saved');
                     }
-                    return HtmlNotifyUtil::renderHighlightBoxByMessage(
-                                           Yii::t('Default', 'Changes to active currencies changed successfully.'));
+                    Yii::app()->user->setFlash('notification', Yii::t('Default', 'Changes to active currencies saved successfully.'));
                 }
             }
         }
@@ -159,9 +158,7 @@
             }
             else
             {
-                Yii::app()->user->setFlash('notification',
-                        Yii::t('Default', 'The currency was not removed because it is in use.')
-                );
+                Yii::app()->user->setFlash('notification', Yii::t('Default', 'The currency was not removed because it is in use.'));
             }
             $this->redirect(array($this->getId() . '/configurationList'));
         }

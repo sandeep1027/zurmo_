@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,9 +50,10 @@
 
         public static function saveOriginalAttributeValue($auditableModel, $attributeName, $value)
         {
-            assert('$auditableModel instanceof Item          ||
-                    $auditableModel instanceof OwnedModel    ||
-                    $auditableModel instanceof OwnedCustomField');
+            assert('$auditableModel instanceof Item             ||
+                    $auditableModel instanceof OwnedModel       ||
+                    $auditableModel instanceof OwnedCustomField ||
+                    $auditableModel instanceof OwnedMultipleValuesCustomField');
             assert('property_exists($auditableModel, "originalAttributeValues")');
             if (!array_key_exists($attributeName, $auditableModel->originalAttributeValues))
             {
@@ -91,6 +92,11 @@
                     if (!$attributeModel->isRelation($attributeName))
                     {
                         $newValue = $attributeModel->$attributeName;
+                    }
+                    elseif ($attributeModel->$attributeName instanceof RedBeanOneToManyRelatedModels)
+                    {
+                            $newValue = $attributeModel->$attributeName->getStringifiedData();
+                            assert('$oldValue != $newValue');
                     }
                     else
                     {
@@ -139,14 +145,15 @@
                                   // so we can safely ignore them.
                     }
                     if ($ownedModel instanceof OwnedModel ||
-                        $ownedModel instanceof OwnedCustomField)
+                        $ownedModel instanceof OwnedCustomField ||
+                        $ownedModel instanceof OwnedMultipleValuesCustomField)
                     {
                         $ownedModels = array($ownedModel);
                     }
                     else
                     {
                         assert('$ownedModel instanceof RedBeanModels');
-                        $ownedModels = $ownedModel;
+                        $ownedModels = array();
                     }
                     foreach ($ownedModels as $ownedModel)
                     {
@@ -173,6 +180,10 @@
                     $value = Yii::t('Default', '(None)');
                 }
                 $s = $value;
+            }
+            elseif ($attributeModel->$attributeName instanceof RedBeanOneToManyRelatedModels)
+            {
+                $s = $attributeModel->stringifyOneToManyRelatedModelsValues($value);
             }
             else
             {
@@ -224,7 +235,8 @@
                         continue;
                     }
                     if ($ownedModel instanceof OwnedModel ||
-                        $ownedModel instanceof OwnedCustomField)
+                        $ownedModel instanceof OwnedCustomField ||
+                        $ownedModel instanceof OwnedMultipleValuesCustomField)
                     {
                         $ownedModels = array($ownedModel);
                     }
@@ -246,7 +258,8 @@
         {
             assert('$auditableModel instanceof Item       ||
                     $auditableModel instanceof OwnedModel ||
-                    $auditableModel instanceof OwnedCustomField');
+                    $auditableModel instanceof OwnedCustomField ||
+                    $auditableModel instanceof OwnedMultipleValuesCustomField');
             $noAuditAttributes = array();
             $metadata = $auditableModel->getMetadata();
             foreach ($metadata as $notUsed => $classMetadata)

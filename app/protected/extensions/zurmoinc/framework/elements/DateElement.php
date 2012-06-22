@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -51,15 +51,16 @@
                 ),
                 'options'             => array(
                     'showOn'          => 'both',
+                    'buttonText'      => '<span>Date</span>',
                     'showButtonPanel' => true,
-                    'buttonImage'     => $themePath . '/images/jqueryui/calendar.gif',
-                    'buttonImageOnly' => true,
+                    'buttonImageOnly' => false,
                     'dateFormat'      => YiiToJqueryUIDatePickerLocalization::resolveDateFormat(
                                             DateTimeUtil::getLocaleDateFormat()),
                 ),
             ));
             $cClipWidget->endClip();
-            return $cClipWidget->getController()->clips['EditableDateElement'];
+            $content = $cClipWidget->getController()->clips['EditableDateElement'];
+            return CHtml::tag('div', array('class' => 'has-date-select'), $content);
         }
 
         /**

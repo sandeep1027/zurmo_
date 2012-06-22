@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,7 +26,7 @@
 
     /*********************************************************************************
     * Zurmo is a customer relationship management program developed by
-    * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+    * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
     *
     * Zurmo is free software; you can redistribute it and/or modify it under
     * the terms of the GNU General Public License version 3 as published by the
@@ -156,7 +156,6 @@
 
             //Test create field list.
             $this->setGetArray(array('moduleClassName' => 'OpportunitiesModule'));
-            $this->runControllerWithNoExceptionsAndGetContent('designer/default/attributeCreate');
 
             //View creation screen, then create custom field for each custom field type.
             $this->createCheckBoxCustomFieldByModule            ('OpportunitiesModule', 'checkbox');
@@ -165,8 +164,14 @@
             $this->createDateTimeCustomFieldByModule            ('OpportunitiesModule', 'datetime');
             $this->createDecimalCustomFieldByModule             ('OpportunitiesModule', 'decimal');
             $this->createDropDownCustomFieldByModule            ('OpportunitiesModule', 'picklist');
+            $this->createDependentDropDownCustomFieldByModule   ('OpportunitiesModule', 'countrypicklist');
+            $this->createDependentDropDownCustomFieldByModule   ('OpportunitiesModule', 'statepicklist');
+            $this->createDependentDropDownCustomFieldByModule   ('OpportunitiesModule', 'citypicklist');
             $this->createIntegerCustomFieldByModule             ('OpportunitiesModule', 'integer');
             $this->createMultiSelectDropDownCustomFieldByModule ('OpportunitiesModule', 'multiselect');
+            $this->createTagCloudCustomFieldByModule            ('OpportunitiesModule', 'tagcloud');
+            $this->createCalculatedNumberCustomFieldByModule    ('OpportunitiesModule', 'calculatednumber');
+            $this->createDropDownDependencyCustomFieldByModule  ('OpportunitiesModule', 'dropdowndependency');
             $this->createPhoneCustomFieldByModule               ('OpportunitiesModule', 'phone');
             $this->createRadioDropDownCustomFieldByModule       ('OpportunitiesModule', 'radio');
             $this->createTextCustomFieldByModule                ('OpportunitiesModule', 'text');
@@ -289,6 +294,11 @@
                             'datetime'                          => $datetime,
                             'decimal'                           => '123',
                             'picklist'                          => array('value' => 'a'),
+                            'multiselect'                       => array('values' => array('ff', 'rr')),
+                            'tagcloud'                          => array('values' => array('writing', 'gardening')),
+                            'countrypicklist'                   => array('value'  => 'bbbb'),
+                            'statepicklist'                     => array('value'  => 'bbb1'),
+                            'citypicklist'                      => array('value'  => 'bb1'),
                             'integer'                           => '12',
                             'phone'                             => '259-784-2169',
                             'radio'                             => array('value' => 'd'),
@@ -331,6 +341,17 @@
             $this->assertEquals($opportunity->text                       , 'This is a test Text');
             $this->assertEquals($opportunity->textarea                   , 'This is a test TextArea');
             $this->assertEquals($opportunity->url                        , 'http://wwww.abc.com');
+            $this->assertEquals($opportunity->countrypicklist->value     , 'bbbb');
+            $this->assertEquals($opportunity->statepicklist->value       , 'bbb1');
+            $this->assertEquals($opportunity->citypicklist->value        , 'bb1');
+            $this->assertContains('ff'                                   , $opportunity->multiselect->values);
+            $this->assertContains('rr'                                   , $opportunity->multiselect->values);
+            $this->assertContains('writing'                              , $opportunity->tagcloud->values);
+            $this->assertContains('gardening'                            , $opportunity->tagcloud->values);
+            $metadata            = CalculatedDerivedAttributeMetadata::
+                                   getByNameAndModelClassName('calculatednumber', 'Opportunity');
+            $testCalculatedValue = CalculatedNumberUtil::calculateByFormulaAndModel($metadata->getFormula(), $opportunity);
+            $this->assertEquals(1476                                     , $testCalculatedValue);
         }
 
         /**
@@ -365,9 +386,14 @@
                                                 'text'               => 'This is a test Text',
                                                 'textarea'           => 'This is a test TextArea',
                                                 'url'                => 'http://wwww.abc.com',
-                                                'checkbox'           => array('value'  =>  '0'),
+                                                'checkbox'           => array('value'  =>  '1'),
                                                 'currency'           => array('value'  =>  45),
                                                 'picklist'           => array('value'  =>  'a'),
+                                                'multiselect'        => array('values' => array('ff', 'rr')),
+                                                'tagcloud'           => array('values' => array('writing', 'gardening')),
+                                                'countrypicklist'    => array('value'  => 'bbbb'),
+                                                'statepicklist'      => array('value'  => 'bbb1'),
+                                                'citypicklist'       => array('value'  => 'bb1'),
                                                 'radio'              => array('value'  =>  'd'),
                                                 'date__Date'         => array('type'   =>  'Today'),
                                                 'datetime__DateTime' => array('type'   =>  'Today')),
@@ -376,14 +402,14 @@
 
             //Check if the opportunity name exits after the search is performed on the basis of the
             //custom fields added to the opportunities module.
-            $this->assertTrue(strpos($content, "Displaying 1-1 of 1 result(s).") > 0);
+            //$this->assertTrue(strpos($content, "Displaying 1-1 of 1 result(s).") > 0); //removed until we show the count again in the listview.
             $this->assertTrue(strpos($content, "myNewOpportunity") > 0);
         }
 
         /**
          * @depends testWhetherSearchWorksForTheCustomFieldsPlacedForOpportunitiesModuleAfterCreatingTheOpportunity
          */
-        public function testEditOfTheOpportunityForTheCustomFieldsPlacedForOpportunitiesModule()
+        public function testEditOfTheOpportunityForTheTagCloudFieldAfterRemovingAllTagsPlacedForOpportunitiesModule()
         {
             $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
 
@@ -398,7 +424,9 @@
             $accountId                        = self::getModelIdByModelNameAndName ('Account', 'superAccount');
             $superUserId                      = $super->id;
             $explicitReadWriteModelPermission = ExplicitReadWriteModelPermissionsUtil::MIXED_TYPE_EVERYONE_GROUP;
-            $opportunityId                    = self::getModelIdByModelNameAndName('Opportunity', 'myNewOpportunity');
+            $opportunity   = Opportunity::getByName('myNewOpportunity');
+            $opportunityId = $opportunity[0]->id;
+            $this->assertEquals(2, $opportunity[0]->tagcloud->values->count());
 
             //Edit a new Opportunity based on the custom fields.
             $this->setGetArray(array('id' => $opportunityId));
@@ -422,7 +450,12 @@
                             'decimal'                           => '12',
                             'date'                              => $date,
                             'datetime'                          => $datetime,
-                            'picklist'                          => array('value' => 'b'),
+                            'picklist'                          => array('value'  => 'b'),
+                            'multiselect'                       => array('values' =>  array('gg', 'hh')),
+                            'tagcloud'                          => array('values' =>  array()),
+                            'countrypicklist'                   => array('value'  => 'aaaa'),
+                            'statepicklist'                     => array('value'  => 'aaa1'),
+                            'citypicklist'                      => array('value'  => 'ab1'),
                             'integer'                           => '11',
                             'phone'                             => '259-784-2069',
                             'radio'                             => array('value' => 'e'),
@@ -467,6 +500,122 @@
             $this->assertEquals($opportunity->url                        , 'http://wwww.abc-edit.com');
             $this->assertEquals($opportunity->date                       , $dateAssert);
             $this->assertEquals($opportunity->datetime                   , $datetimeAssert);
+            $this->assertEquals($opportunity->countrypicklist->value     , 'aaaa');
+            $this->assertEquals($opportunity->statepicklist->value       , 'aaa1');
+            $this->assertEquals($opportunity->citypicklist->value        , 'ab1');
+            $this->assertContains('gg'                                   , $opportunity->multiselect->values);
+            $this->assertContains('hh'                                   , $opportunity->multiselect->values);
+            $this->assertEquals(0                                        , $opportunity->tagcloud->values->count());
+            $metadata            = CalculatedDerivedAttributeMetadata::
+                                   getByNameAndModelClassName('calculatednumber', 'Opportunity');
+            $testCalculatedValue = CalculatedNumberUtil::calculateByFormulaAndModel($metadata->getFormula(), $opportunity);
+            $this->assertEquals(132                                      , $testCalculatedValue);
+        }
+
+        /**
+         * @depends testEditOfTheOpportunityForTheTagCloudFieldAfterRemovingAllTagsPlacedForOpportunitiesModule
+         */
+        public function testEditOfTheOpportunityForTheCustomFieldsPlacedForOpportunitiesModule()
+        {
+            $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
+
+            //Set the date and datetime variable values here.
+            $date           = Yii::app()->dateFormatter->format(DateTimeUtil::getLocaleDateFormat(), time());
+            $dateAssert     = date('Y-m-d');
+            $datetime       = Yii::app()->dateFormatter->format(DateTimeUtil::getLocaleDateTimeFormat(), time());
+            $datetimeAssert = date('Y-m-d H:i:')."00";
+            $baseCurrency   = Currency::getByCode(Yii::app()->currencyHelper->getBaseCode());
+
+            //Retrieve the account id, the super user id and opportunity Id.
+            $accountId                        = self::getModelIdByModelNameAndName ('Account', 'superAccount');
+            $superUserId                      = $super->id;
+            $explicitReadWriteModelPermission = ExplicitReadWriteModelPermissionsUtil::MIXED_TYPE_EVERYONE_GROUP;
+            $opportunity                      = Opportunity::getByName('myEditOpportunity');
+            $opportunityId                    = $opportunity[0]->id;
+
+            //Edit a new Opportunity based on the custom fields.
+            $this->setGetArray(array('id' => $opportunityId));
+            $this->setPostArray(array('Opportunity' => array(
+                            'name'                              => 'myEditOpportunity',
+                            'amount'                            => array('value' => 288000,
+                                                                         'currency' => array(
+                                                                         'id' => $baseCurrency->id)),
+                            'account'                           => array('id' => $accountId),
+                            'probability'                       => '2',
+                            'closeDate'                         => $date,
+                            'stage'                             => array('value' => 'Qualification'),
+                            'source'                            => array('value' => 'Inbound Call'),
+                            'description'                       => 'This is the Edit Description',
+                            'owner'                             => array('id' => $superUserId),
+                            'explicitReadWriteModelPermissions' => array('type' => $explicitReadWriteModelPermission),
+                            'checkbox'                          => '0',
+                            'currency'                          => array('value'   => 40,
+                                                                         'currency' => array(
+                                                                         'id' => $baseCurrency->id)),
+                            'decimal'                           => '12',
+                            'date'                              => $date,
+                            'datetime'                          => $datetime,
+                            'picklist'                          => array('value'  => 'b'),
+                            'multiselect'                       => array('values' =>  array('gg', 'hh')),
+                            'tagcloud'                          => array('values' =>  array('reading', 'surfing')),
+                            'countrypicklist'                   => array('value'  => 'aaaa'),
+                            'statepicklist'                     => array('value'  => 'aaa1'),
+                            'citypicklist'                      => array('value'  => 'ab1'),
+                            'integer'                           => '11',
+                            'phone'                             => '259-784-2069',
+                            'radio'                             => array('value' => 'e'),
+                            'text'                              => 'This is a test Edit Text',
+                            'textarea'                          => 'This is a test Edit TextArea',
+                            'url'                               => 'http://wwww.abc-edit.com')));
+            $this->runControllerWithRedirectExceptionAndGetUrl('opportunities/default/edit');
+
+            //Check the details if they are saved properly for the custom fields.
+            $opportunityId = self::getModelIdByModelNameAndName('Opportunity', 'myEditOpportunity');
+            $opportunity   = Opportunity::getById($opportunityId);
+
+            //Retrieve the permission of the opportunity.
+            $explicitReadWriteModelPermissions = ExplicitReadWriteModelPermissionsUtil::
+                                                 makeBySecurableItem($opportunity);
+            $readWritePermitables              = $explicitReadWriteModelPermissions->getReadWritePermitables();
+            $readOnlyPermitables               = $explicitReadWriteModelPermissions->getReadOnlyPermitables();
+
+            $this->assertEquals($opportunity->name                       , 'myEditOpportunity');
+            $this->assertEquals($opportunity->amount->value              , '288000');
+            $this->assertEquals($opportunity->amount->currency->id       , $baseCurrency->id);
+            $this->assertEquals($opportunity->account->id                , $accountId);
+            $this->assertEquals($opportunity->probability                , '2');
+            $this->assertEquals($opportunity->stage->value               , 'Qualification');
+            $this->assertEquals($opportunity->source->value              , 'Inbound Call');
+            $this->assertEquals($opportunity->description                , 'This is the Edit Description');
+            $this->assertEquals($opportunity->owner->id                  , $superUserId);
+            $this->assertEquals(1                                        , count($readWritePermitables));
+            $this->assertEquals(0                                        , count($readOnlyPermitables));
+            $this->assertEquals($opportunity->checkbox                   , '0');
+            $this->assertEquals($opportunity->currency->value            , 40);
+            $this->assertEquals($opportunity->currency->currency->id     , $baseCurrency->id);
+            $this->assertEquals($opportunity->date                       , $dateAssert);
+            $this->assertEquals($opportunity->datetime                   , $datetimeAssert);
+            $this->assertEquals($opportunity->decimal                    , '12');
+            $this->assertEquals($opportunity->picklist->value            , 'b');
+            $this->assertEquals($opportunity->integer                    , 11);
+            $this->assertEquals($opportunity->phone                      , '259-784-2069');
+            $this->assertEquals($opportunity->radio->value               , 'e');
+            $this->assertEquals($opportunity->text                       , 'This is a test Edit Text');
+            $this->assertEquals($opportunity->textarea                   , 'This is a test Edit TextArea');
+            $this->assertEquals($opportunity->url                        , 'http://wwww.abc-edit.com');
+            $this->assertEquals($opportunity->date                       , $dateAssert);
+            $this->assertEquals($opportunity->datetime                   , $datetimeAssert);
+            $this->assertEquals($opportunity->countrypicklist->value     , 'aaaa');
+            $this->assertEquals($opportunity->statepicklist->value       , 'aaa1');
+            $this->assertEquals($opportunity->citypicklist->value        , 'ab1');
+            $this->assertContains('gg'                                   , $opportunity->multiselect->values);
+            $this->assertContains('hh'                                   , $opportunity->multiselect->values);
+            $this->assertContains('reading'                              , $opportunity->tagcloud->values);
+            $this->assertContains('surfing'                              , $opportunity->tagcloud->values);
+            $metadata            = CalculatedDerivedAttributeMetadata::
+                                   getByNameAndModelClassName('calculatednumber', 'Opportunity');
+            $testCalculatedValue = CalculatedNumberUtil::calculateByFormulaAndModel($metadata->getFormula(), $opportunity);
+            $this->assertEquals(132                                      , $testCalculatedValue);
         }
 
         /**
@@ -492,7 +641,7 @@
             $content = $this->runControllerWithNoExceptionsAndGetContent('opportunities/default');
 
             //Assert that the edit Opportunity exits after the edit and is diaplayed on the search page.
-            $this->assertTrue(strpos($content, "Displaying 1-1 of 1 result(s).") > 0);
+            //$this->assertTrue(strpos($content, "Displaying 1-1 of 1 result(s).") > 0); //removed until we show the count again in the listview.
             $this->assertTrue(strpos($content, "myEditOpportunity") > 0);
         }
 
@@ -539,6 +688,49 @@
 
             //Assert that the edit Opportunity does not exits after the search.
             $this->assertTrue(strpos($content, "No results found.") > 0);
+        }
+
+        /**
+         * @depends testWhetherSearchWorksForTheCustomFieldsPlacedForOpportunitiesModuleAfterDeletingTheOpportunity
+         */
+        public function testTypeAheadWorksForTheTagCloudFieldPlacedForOpportunitiesModule()
+        {
+            $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
+
+            //Search a list item by typing in tag cloud attribute.
+            $this->resetPostArray();
+            $this->setGetArray(array('name' => 'tagcloud',
+                                     'term' => 'rea'));
+            $content = $this->runControllerWithNoExceptionsAndGetContent('zurmo/default/autoCompleteCustomFieldData');
+
+            //Check if the returned content contains the expected vlaue
+            $this->assertTrue(strpos($content, "reading") > 0);
+        }
+
+        /**
+         * @depends testTypeAheadWorksForTheTagCloudFieldPlacedForOpportunitiesModule
+         */
+        public function testLabelLocalizationForTheTagCloudFieldPlacedForOpportunitiesModule()
+        {
+            Yii::app()->user->userModel =  User::getByUsername('super');
+            $languageHelper = new ZurmoLanguageHelper();
+            $languageHelper->load();
+            $this->assertEquals('en', $languageHelper->getForCurrentUser());
+            Yii::app()->user->userModel->language = 'fr';
+            $this->assertTrue(Yii::app()->user->userModel->save());
+            $languageHelper->setActive('fr');
+            $this->assertEquals('fr', Yii::app()->user->getState('language'));
+
+            $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
+
+            //Search a list item by typing in tag cloud attribute.
+            $this->resetPostArray();
+            $this->setGetArray(array('name' => 'tagcloud',
+                                     'term' => 'surf'));
+            $content = $this->runControllerWithNoExceptionsAndGetContent('zurmo/default/autoCompleteCustomFieldData');
+
+            //Check if the returned content contains the expected vlaue
+            $this->assertTrue(strpos($content, "surfing fr") > 0);
         }
     }
 ?>

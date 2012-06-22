@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -97,12 +97,13 @@
          * @param integer $pageSize
          * @param User    $user
          */
-        public static function getGlobalSearchResultsByPartialTerm($partialTerm, $pageSize, User $user)
+        public static function getGlobalSearchResultsByPartialTerm($partialTerm, $pageSize, User $user, $scopeData = null)
         {
             assert('is_string($partialTerm)');
             assert('is_int($pageSize)');
             assert('$user->id > 0');
-            $modelClassNamesAndSearchAttributeData = self::makeMmodelClassNamesAndSearchAttributeData($partialTerm, $user);
+            assert('$scopeData == null || is_array($scopeData)');
+            $modelClassNamesAndSearchAttributeData = self::makeModelClassNamesAndSearchAttributeData($partialTerm, $user, $scopeData);
             if (empty($modelClassNamesAndSearchAttributeData))
             {
                 return array(array('href' => '', 'label' => Yii::t('Default', 'No Results Found')));
@@ -128,16 +129,20 @@
             return $autoCompleteResults;
         }
 
-        protected static function makeMmodelClassNamesAndSearchAttributeData($partialTerm, User $user)
+        protected static function makeModelClassNamesAndSearchAttributeData($partialTerm, User $user, $scopeData)
         {
             assert('is_string($partialTerm)');
             assert('$user->id > 0');
+            assert('$scopeData == null || is_array($scopeData)');
             $modelClassNamesAndSearchAttributeData = array();
             $modules = Module::getModuleObjects();
             foreach ($modules as $module)
             {
                 $globalSearchFormClassName = $module::getGlobalSearchFormClassName();
-                if ($globalSearchFormClassName != null && RightsUtil::canUserAccessModule(get_class($module), $user))
+                if (GlobalSearchUtil::resolveIfModuleShouldBeGloballySearched($module) &&
+                    $globalSearchFormClassName != null &&
+                    RightsUtil::canUserAccessModule(get_class($module), $user) &&
+                    ($scopeData == null || in_array($module->getName(), $scopeData)))
                 {
                     $modelClassName                = $module::getPrimaryModelName();
                     $searchAttributes              = MixedTermSearchUtil::
@@ -164,6 +169,33 @@
                 }
             }
             return $modelClassNamesAndSearchAttributeData;
+        }
+
+        /**
+         * Given a name of a customFieldData object and a term to search on return a JSON encoded
+         * array of autocomplete search results.
+         * @param string $customFieldDataName
+         * @param string $partialName
+         */
+        public static function getCustomFieldDataByPartialName($customFieldDataName, $partialName)
+        {
+            assert('is_string($customFieldDataName)');
+            assert('is_string($partialName)');
+            $customFieldData     = CustomFieldData::getByName($customFieldDataName);
+            $dataAndLabels       = CustomFieldDataUtil::
+                                   getDataIndexedByDataAndTranslatedLabelsByLanguage($customFieldData, Yii::app()->language);
+            $autoCompleteResults = array();
+            foreach ($dataAndLabels as $data => $label)
+            {
+                if (stripos($label, $partialName) === 0)
+                {
+                    $autoCompleteResults[] = array(
+                        'id'   => $data,
+                        'name' => $label,
+                    );
+                }
+            }
+            return $autoCompleteResults;
         }
     }
 ?>

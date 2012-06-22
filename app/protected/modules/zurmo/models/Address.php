@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -76,6 +76,11 @@
             return $this->longitude;
         }
 
+        public function getInvalid()
+        {
+            return $this->invalid;
+        }
+
         protected static function getPluralLabel()
         {
             return 'Addresses';
@@ -86,41 +91,87 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'street1',
-                    'street2',
                     'city',
-                    'state',
-                    'postalCode',
+                    'country',
+                    'invalid',
                     'latitude',
                     'longitude',
+                    'postalCode',
+                    'street1',
+                    'street2',
+                    'state',
                     // Todo: make these relations.
-                    'country',
                 ),
                 'rules' => array(
+                    array('city',       'type',      'type'      => 'string'),
+                    array('city',       'length',    'max'       => 32),
+                    array('country',    'type',      'type'      => 'string'),
+                    array('country',    'length',    'max'       => 32),
+                    array('invalid',    'boolean'),
+                    array('latitude',   'type',      'type'      => 'float'),
+                    array('latitude',   'length',    'max'       => 11),
+                    array('latitude',   'numerical', 'precision' => 7),
+                    array('longitude',  'type',      'type'      => 'float'),
+                    array('longitude',  'length',    'max'       => 11),
+                    array('longitude',  'numerical', 'precision' => 7),
+                    array('postalCode', 'type',      'type'      => 'string'),
+                    array('postalCode', 'length',    'max'       => 16),
                     array('street1',    'type',      'type'      => 'string'),
                     array('street1',    'length',    'max'       => 128),
                     array('street2',    'type',      'type'      => 'string'),
                     array('street2',    'length',    'max'       => 128),
-                    array('city',       'type',      'type'      => 'string'),
-                    array('city',       'length',    'max'       => 32),
                     array('state',      'type',      'type'      => 'string'),
                     array('state',      'length',    'max'       => 32),
-                    array('country',    'type',      'type'      => 'string'),
-                    array('country',    'length',    'max'       => 32),
-                    array('postalCode', 'type',      'type'      => 'string'),
-                    array('postalCode', 'length',    'max'       => 16),
-                    array('latitude',   'type',      'type'      => 'float'),
-                    array('latitude',   'length',    'max'       => 10),
-                    array('latitude',   'numerical', 'precision' => 6),
-                    array('longitude',  'type',      'type'      => 'float'),
-                    array('longitude',  'length',    'max'       => 10),
-                    array('longitude',  'numerical', 'precision' => 6),
                 ),
             );
             return $metadata;
         }
 
+        /**
+         * Address model when edited and saved beforeSave method is called
+         * before saving the changes to database to check if specific address
+         * fields have changed.If the address is changed we set lat/long to
+         * null and invalid flag to false and then saved else saved directly.
+         * in this way we can figure out which address were modified.
+         */
+        protected function beforeSave()
+        {
+            if (parent::beforeSave())
+            {
+                $isAddressChanged   = false;
+                $addressCheckFields = array('street1', 'street2', 'city', 'state', 'country', 'postalCode');
+                foreach ($addressCheckFields as $addressField)
+                {
+                    if (array_key_exists($addressField, $this->originalAttributeValues))
+                    {
+                        if ($this->$addressField != $this->originalAttributeValues[$addressField])
+                        {
+                            $isAddressChanged = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ($isAddressChanged && ($this->getScenario() !== 'autoBuildDatabase'))
+                {
+                    $this->latitude     = null;
+                    $this->longitude    = null;
+                    $this->invalid      = false;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static function isTypeDeletable()
+        {
+            return true;
+        }
+
+        public static function canSaveMetadata()
         {
             return true;
         }

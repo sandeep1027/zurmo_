@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -36,13 +36,15 @@
         'A full name value is required but missing.'
             => 'El campo de nombre completo es necesario.',
         'Access Import Tool'
-            => 'acceso a herramienta de importación',
+            => 'Acceso a herramienta de importación',
         'Add Field'
             => 'Agregar campo',
         'All required fields must be mapped or added: {attributesLabelContent}'
             => 'Todos los campos obligatorios deben ser asignados o añadidos: {attributesLabelContent}',
         'Analyzing the import data...'
             => 'Analizando los datos de importación...',
+        'Clear Import tables'
+            => 'Limpiar las tablas de impuestos',
         'Congratulations! Your import is complete.  Below is a summary of the results.'
             => 'Felicitaciones! Tu importación está completa. A continuación hay un resumen de los resultados.',
         'Default Name'
@@ -70,13 +72,15 @@
         'First Row is Header Row'
             => 'La primera fila es la fila de cabecera',
         'Format'
-            => 'Format',
+            => 'Format', // Same Word Translated
         'Header'
             => 'Cabecera',
         'Id'
             => 'ID',
         'Import'
             => 'Importar',
+        'Import Cleanup Job'
+            => ' Eliminación de las tablas de importación',
         'Import complete.  Rows processed: {rowsProcessed}'
             => 'Importación se ha terminado. Filas procesadas: {rowsProcessed}',
         'Import data into Zurmo'
@@ -127,12 +131,14 @@
             => 'Modelo de autorizacón',
         'Module To Import To'
             => 'Módulo para importar a',
+        'Multi-Select Pick list value required, but missing.'
+            => 'El valor de la lista de selección no es completa. El valor es requerida.',
         'Next'
             => 'Próximo',
         'Other Id'
             => 'Otra ID',
         'Pick list is missing corresponding custom field data.'
-            => 'falta la lista desplegable de datos del campo personalizado.',
+            => 'Falta la lista desplegable de datos del campo personalizado.',
         'Pick list value required, but missing.'
             => 'El valor de la lista desplegable es obligatorio pero falta.',
         'Please map the fields you would like to import.'
@@ -208,7 +214,7 @@
         'You can only map each field once.'
             => 'Sólo se puede asignar cada campo una vez.',
         'You do not have permission to create/update this record and/or its related record.'
-            => 'No tiene permiso para actualizar este registro y / o su registro relacionado.',
+            => 'No tiene permiso para actualizar este registro y/o su registro relacionado.',
         'You must map at least one of your import columns.'
             => 'Debe asignar al menos una de las columnas.',
         'Zurmo Field'

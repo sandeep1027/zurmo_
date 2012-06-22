@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -52,13 +52,18 @@
          */
         public static function getAdministrableModuleClassNames()
         {
-            return array(
-                'AccountsModule',
-                'ContactsModule',
-                'MeetingsModule',
-                'OpportunitiesModule',
-                'TasksModule'
-            );
+            $moduleClassNames = array();
+            $modules = Module::getModuleObjects();
+            foreach ($modules as $module)
+            {
+                $classToEvaluate     = new ReflectionClass($module);
+                if (is_subclass_of($module, 'SecurableModule') && !$classToEvaluate->isAbstract() &&
+                    $module::hasPermissions())
+                {
+                    $moduleClassNames[] = get_class($module);
+                }
+            }
+            return $moduleClassNames;
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class MenuUtilTest extends BaseTest
+    class MenuUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -36,22 +36,24 @@
             SecurityTestHelper::createRoles();
         }
 
-        public function testGetAccessibleShortcutsMenuByCurrentUser()
+        public function testGetAccessibleShortcutsCreateMenuByCurrentUser()
         {
             Yii::app()->user->userModel = User::getByUsername('super');
-            $menu = MenuUtil::getAccessibleShortcutsMenuByCurrentUser('UsersModule');
-            $this->assertEquals(1, count($menu));
-            $this->assertEquals(2, count($menu[0]['items']));
+            $menu = MenuUtil::getAccessibleShortcutsCreateMenuByCurrentUser();
+
+            $this->assertEquals(3, count($menu));
+            $this->assertEquals(4, count($menu['items']));
             Yii::app()->user->userModel = User::getByUsername('billy');
-            $menu = MenuUtil::getAccessibleShortcutsMenuByCurrentUser('UsersModule');
+            $menu = MenuUtil::getAccessibleShortcutsCreateMenuByCurrentUser();
             $this->assertEquals(0, count($menu));
             $bill = User::getByUsername('billy');
-            $bill->setRight('UsersModule', UsersModule::RIGHT_ACCESS_USERS);
+            $bill->setRight('OpportunitiesModule', OpportunitiesModule::RIGHT_ACCESS_OPPORTUNITIES);
+            $bill->setRight('OpportunitiesModule', OpportunitiesModule::RIGHT_CREATE_OPPORTUNITIES);
             $saved = $bill->save();
             $this->assertTrue($saved);
-            $menu = MenuUtil::getAccessibleShortcutsMenuByCurrentUser('UsersModule');
-            $this->assertEquals(1, count($menu));
-            $this->assertEquals(1, count($menu[0]['items']));
+            $menu = MenuUtil::getAccessibleShortcutsCreateMenuByCurrentUser();
+            $this->assertEquals(3, count($menu));
+            $this->assertEquals(1, count($menu['items']));
         }
 
         public function testGetAccessibleConfigureMenuByCurrentUser()
@@ -80,7 +82,7 @@
             Yii::app()->user->userModel = User::getByUsername('billy');
             $this->assertEquals(Right::NONE,  Yii::app()->user->userModel->getExplicitActualRight ('AccountsModule', AccountsModule::RIGHT_ACCESS_ACCOUNTS));
             $menu = MenuUtil::getVisibleAndOrderedTabMenuByCurrentUser();
-            $this->assertEquals(1, count($menu));
+            $this->assertEquals(2, count($menu));
             $menu = MenuUtil::getAccessibleModuleTabMenuByUser('AccountsModule', Yii::app()->user->userModel);
             $this->assertEquals(0, count($menu));
             $bill = User::getByUsername('billy');
@@ -93,23 +95,77 @@
             $menu = MenuUtil::getAccessibleModuleTabMenuByUser('AccountsModule', $bill);
             $this->assertEquals(1, count($menu));
             $menu = MenuUtil::getVisibleAndOrderedTabMenuByCurrentUser();
-            $this->assertEquals(3, count($menu));
+            $this->assertEquals(4, count($menu));
         }
 
-        public function testGetAccessibleHeaderMenuByCurrentUser()
+        public function testGetAccessibleHeaderMenuByModuleClassNameForCurrentUser()
         {
             Yii::app()->user->userModel = User::getByUsername('super');
-            $menu = MenuUtil::getAccessibleHeaderMenuByCurrentUser();
-            $this->assertEquals(4, count($menu));
+            $menu = MenuUtil::getOrderedAccessibleHeaderMenuForCurrentUser();
+            $this->assertEquals(8, count($menu));
             Yii::app()->user->userModel = User::getByUsername('billy');
-            $menu = MenuUtil::getAccessibleHeaderMenuByCurrentUser();
+            $menu = MenuUtil::getOrderedAccessibleHeaderMenuForCurrentUser();
             $this->assertEquals(3, count($menu));
             $bill = User::getByUsername('billy');
             $bill->setRight('ZurmoModule', ZurmoModule::RIGHT_ACCESS_ADMINISTRATION);
             $saved = $bill->save();
             $this->assertTrue($saved);
-            $menu = MenuUtil::getAccessibleHeaderMenuByCurrentUser();
+            $menu = MenuUtil::getOrderedAccessibleHeaderMenuForCurrentUser();
             $this->assertEquals(4, count($menu));
+        }
+
+        public function testGetAccessibleOrderedUserHeaderMenuForCurrentUser()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+            $menu = MenuUtil::getAccessibleOrderedUserHeaderMenuForCurrentUser();
+            $this->assertEquals(3, count($menu));
+            Yii::app()->user->userModel = User::getByUsername('billy');
+            $menu = MenuUtil::getAccessibleOrderedUserHeaderMenuForCurrentUser();
+            $this->assertEquals(3, count($menu));
+        }
+
+        public function testResolveMenuItemsForLanguageLocalizationIsRecursive()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+            $metadata                                 = AccountsModule::getMetadata();
+            $backupMetadata                           = $metadata;
+            $metadata['global']['shortcutsCreateMenuItems'] = array(
+                array(
+                    'label' => 'AccountsModuleSingularLabel',
+                    'url'   => array('/accounts/default/create'),
+                    'right' => AccountsModule::RIGHT_CREATE_ACCOUNTS,
+                ),
+            );
+            AccountsModule::setMetadata($metadata);
+            $menuItems = MenuUtil::getAccessibleShortcutsCreateMenuByCurrentUser();
+            $compareData = array(
+                'label' => 'Create',
+                'url'   => null,
+                'items' => array(
+                        array(
+                            'label' => 'Account',
+                            'url'   => array('/accounts/default/create'),
+                            'right' => AccountsModule::RIGHT_CREATE_ACCOUNTS,
+                        ),
+                        array(
+                            'label' => 'Contact',
+                            'url'   => array('/contacts/default/create'),
+                            'right' => ContactsModule::RIGHT_CREATE_CONTACTS,
+                        ),
+                        array(
+                            'label' => 'Lead',
+                            'url'   => array('/leads/default/create'),
+                            'right' => LeadsModule::RIGHT_CREATE_LEADS,
+                        ),
+                        array(
+                            'label' => 'Opportunity',
+                            'url'   => array('/opportunities/default/create'),
+                            'right' => OpportunitiesModule::RIGHT_CREATE_OPPORTUNITIES,
+                        ),
+                ),
+            );
+            $this->assertEquals($compareData, $menuItems);
+            AccountsModule::setMetadata($backupMetadata);
         }
     }
 ?>

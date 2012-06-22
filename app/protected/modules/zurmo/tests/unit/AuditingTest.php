@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class AuditingTest extends BaseTest
+    class AuditingTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -37,6 +37,70 @@
             $user->lastName  = 'Boondog';
             assert($user->save()); // Not Coding Standard
             assert(AuditEvent::getCount() == 4); // Not Coding Standard
+            ContactsModule::loadStartingData();
+            Yii::app()->gameHelper->muteScoringModelsOnSave();
+        }
+
+        public static function tearDownAfterClass()
+        {
+            Yii::app()->gameHelper->unmuteScoringModelsOnSave();
+            parent::tearDownAfterClass();
+        }
+
+        public function testLogAuditForOwnedMultipleValuesCustomField()
+        {
+            Yii::app()->user->userModel = User::getByUsername('jimmy');
+            if (!RedBeanDatabase::isFrozen())
+            {
+                $beforeCount = AuditEvent::getCount();
+                $values = array(
+                    'A',
+                    'B',
+                    'C',
+                    'CC',
+                    'CCC',
+                );
+                $customFieldData = CustomFieldData::getByName('MultipleIndustries');
+                $customFieldData->serializedData = serialize($values);
+                $saved = $customFieldData->save();
+                $this->assertTrue($saved);
+
+                $model = new TestOwnedCustomFieldsModel();
+                $this->assertTrue($model->save());
+                $this->assertEquals($beforeCount + 1, AuditEvent::getCount());
+
+                $model = TestOwnedCustomFieldsModel::getById($model->id);
+                $value = new CustomFieldValue();
+                $value->value = 'C';
+                $model->multipleIndustries->values->removeAll(); //To remove the blank CustomFieldValue. This mimics
+                                                                 //setValues($values) in MultipleValuesCustomField.
+                $model->multipleIndustries->values->add($value);
+                $this->assertTrue($model->save());
+                $this->assertEquals($beforeCount + 2, AuditEvent::getCount());
+
+                $model = TestOwnedCustomFieldsModel::getById($model->id);
+                $value = new CustomFieldValue();
+                $value->value = 'B';
+                $model->multipleIndustries->values->add($value);
+                $this->assertTrue($model->save());
+                $this->assertEquals($beforeCount + 3, AuditEvent::getCount());
+
+                $AuditEventsList = AuditEvent::getTailEvents(3);
+                $this->assertRegExp('/[0-9]+\/[0-9]+\/[0-9]+ [0-9]+:[0-9]+ [AP]M, '   .    // Not Coding Standard
+                                'James Boondog, Item Created, '                       .
+                                'TestOwnedCustomFieldsModel\([0-9]+\), \(None\)/',         // Not Coding Standard
+                                ZurmoModule::stringifyAuditEvent($AuditEventsList[0]));
+                $this->assertRegExp('/[0-9]+\/[0-9]+\/[0-9]+ [0-9]+:[0-9]+ [AP]M, '   .    // Not Coding Standard
+                                'James Boondog, Item Modified, '                      .
+                                'TestOwnedCustomFieldsModel\([0-9]+\), \(None\), '    .    // Not Coding Standard
+                                'Changed Multiple Industries Values from  to C/',  // Not Coding Standard
+                                ZurmoModule::stringifyAuditEvent($AuditEventsList[1]));
+                $this->assertRegExp('/[0-9]+\/[0-9]+\/[0-9]+ [0-9]+:[0-9]+ [AP]M, '   .    // Not Coding Standard
+                                'James Boondog, Item Modified, '                      .
+                                'TestOwnedCustomFieldsModel\([0-9]+\), \(None\), '    .    // Not Coding Standard
+                                'Changed Multiple Industries Values from C to C, B/',      // Not Coding Standard
+                                ZurmoModule::stringifyAuditEvent($AuditEventsList[2]));
+            }
         }
 
         public function testLogAuditEventsListForUser()
@@ -431,13 +495,13 @@
             $this->assertEquals(0, count($auditEvents));
 
             //Now create some audit entries for the Item Viewed event.
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account1), $account1);
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account2), $account2);
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account1), $account1);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account1), 'AccountsModule'), $account1);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account2), 'AccountsModule'), $account2);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account1), 'AccountsModule'), $account1);
 
             //Switch users to add an audit event.
             Yii::app()->user->userModel = User::getByUsername('jimmy');
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account3), $account3);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account3), 'AccountsModule'), $account3);
             Yii::app()->user->userModel = User::getByUsername('super');
 
             $auditEvents = AuditEvent::getTailDistinctEventsByEventName('Item Viewed', Yii::app()->user->userModel, 5);

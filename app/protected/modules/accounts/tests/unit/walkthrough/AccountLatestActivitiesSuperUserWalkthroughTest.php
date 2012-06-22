@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -62,62 +62,28 @@
             $portlets     = Portlet::getAll();
             foreach ($portlets as $portlet)
             {
-                if ($portlet->viewType == 'AccountNoteInlineEditAndLatestActivtiesForPortlet')
+                if ($portlet->viewType == 'AccountLatestActivtiesForPortlet')
                 {
                     $portletToUse = $portlet;
                     break;
                 }
             }
             $this->assertNotNull($portletToUse);
-            $this->assertEquals('AccountNoteInlineEditAndLatestActivtiesForPortletView', get_class($portletToUse->getView()));
+            $this->assertEquals('AccountLatestActivtiesForPortletView', get_class($portletToUse->getView()));
 
-            //Load the portlet details for latest activity for viewType LatestActivitiesView::VIEW_TYPE_LISTVIEW
+            //Load the portlet details for latest activity
             $getData = array('id' => $superAccountId,
                              'portletId' => 2,
                              'uniqueLayoutId' => 'AccountDetailsAndRelationsView_2',
                              'LatestActivitiesConfigurationForm' => array(
                                 'filteredByModelName' => 'all',
-                                'rollup' => false,
-                                'viewType' => LatestActivitiesView::VIEW_TYPE_LISTVIEW,
+                                'rollup' => false
                              ));
             $this->setGetArray($getData);
             $this->resetPostArray();
             $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
 
             //Now add roll up
-            $getData['LatestActivitiesConfigurationForm']['rollup'] = true;
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            //Now filter by meeting, task, and note
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'Meeting';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'Note';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'Task';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            //Now do the same thing with filtering but turn off rollup.
-            $getData['LatestActivitiesConfigurationForm']['rollup'] = true;
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'Meeting';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'Note';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'Task';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-
-            //Repeat everything above but do the summary view.
-            //Load rollup off with SUMMARY view.
-            $getData['LatestActivitiesConfigurationForm']['rollup'] = false;
-            $getData['LatestActivitiesConfigurationForm']['viewType'] = LatestActivitiesView::VIEW_TYPE_SUMMARY;
-            $getData['LatestActivitiesConfigurationForm']['filteredByModelName'] = 'all';
-            $this->setGetArray($getData);
-            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');
-            //Turn rollup on
             $getData['LatestActivitiesConfigurationForm']['rollup'] = true;
             $this->setGetArray($getData);
             $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/defaultPortlet/details');

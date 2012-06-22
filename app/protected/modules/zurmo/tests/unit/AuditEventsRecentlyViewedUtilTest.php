@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,8 +24,20 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class AuditEventsRecentlyViewedUtilTest extends BaseTest
+    class AuditEventsRecentlyViewedUtilTest extends ZurmoBaseTest
     {
+        public function setUp()
+        {
+            parent::setUp();
+            AuditEvent::$isTableOptimized = false;
+        }
+
+        public function teardown()
+        {
+            AuditEvent::$isTableOptimized = false;
+            parent::teardown();
+        }
+
         public static function setUpBeforeClass()
         {
             parent::setUpBeforeClass();
@@ -59,13 +71,13 @@
             $this->assertEquals('There are no recently viewed items.', $content);
 
             //Now create some audit entries for the Item Viewed event.
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account1), $account1);
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account2), $account2);
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account1), $account1);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account1), 'AccountsModule'), $account1);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account2), 'AccountsModule'), $account2);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account1), 'AccountsModule'), $account1);
 
             //Switch users to add an audit event.
             Yii::app()->user->userModel = User::getByUsername('jimmy');
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($account3), $account3);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($account3), 'AccountsModule'), $account3);
             Yii::app()->user->userModel = User::getByUsername('super');
 
             $content = AuditEventsRecentlyViewedUtil::getRecentlyViewedAjaxContentByUser(Yii::app()->user->userModel, 5);

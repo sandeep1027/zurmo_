@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -42,6 +42,10 @@
                                         array(
                                             'element' => 'name',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'officePhone',
                                         ),
@@ -52,9 +56,6 @@
                                         array(
                                             'element' => 'owner',
                                         ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
-                                        ),
                                     )
                                 ),
                                 array('cells' =>
@@ -62,6 +63,10 @@
                                         array(
                                             'element' => 'industry',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'officeFax',
                                         ),
@@ -72,6 +77,10 @@
                                         array(
                                             'element' => 'employees',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'annualRevenue',
                                         ),
@@ -82,6 +91,10 @@
                                         array(
                                             'element' => 'type',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'website',
                                         ),
@@ -92,6 +105,10 @@
                                         array(
                                             'element' => 'primaryEmail',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'secondaryEmail',
                                         ),
@@ -102,6 +119,10 @@
                                         array(
                                             'element' => 'billingAddress',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'shippingAddress',
                                         ),
@@ -113,6 +134,10 @@
                                             'detailViewOnly' => true,
                                             'element' => 'DateTimeCreatedUser',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'detailViewOnly' => true,
                                             'element' => 'DateTimeModifiedUser',
@@ -131,6 +156,10 @@
                                         array(
                                             'element' => 'checkbox',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'currency',
                                         ),
@@ -141,6 +170,10 @@
                                         array(
                                             'element' => 'date',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'datetime',
                                         ),
@@ -151,6 +184,10 @@
                                         array(
                                             'element' => 'decimal',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'picklist',
                                         ),
@@ -161,6 +198,10 @@
                                         array(
                                             'element' => 'integer',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'multiselect',
                                         ),
@@ -169,8 +210,40 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'dropdowndependency',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'dropdowndependency2',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'radio',
                                         ),
@@ -181,6 +254,10 @@
                                         array(
                                             'element' => 'text',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'textarea',
                                         ),
@@ -190,9 +267,6 @@
                                     array(
                                         array(
                                             'element' => 'url',
-                                        ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
                                         ),
                                     )
                                 ),
@@ -215,6 +289,10 @@
                                         array(
                                             'element' => 'checkbox',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'currency',
                                         ),
@@ -225,6 +303,10 @@
                                         array(
                                             'element' => 'date__Date',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'datetime__DateTime',
                                         ),
@@ -235,6 +317,10 @@
                                         array(
                                             'element' => 'decimal',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'picklist',
                                         ),
@@ -245,6 +331,10 @@
                                         array(
                                             'element' => 'integer',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'multiselect',
                                         ),
@@ -253,8 +343,40 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'radio',
                                         ),
@@ -265,6 +387,10 @@
                                         array(
                                             'element' => 'text',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'textarea',
                                         ),
@@ -274,9 +400,6 @@
                                     array(
                                         array(
                                             'element' => 'url',
-                                        ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
                                         ),
                                     )
                                 ),
@@ -291,6 +414,10 @@
                                         array(
                                             'element' => 'name',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'officePhone',
                                         ),
@@ -301,9 +428,6 @@
                                         array(
                                             'element' => 'owner',
                                         ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
-                                        ),
                                     )
                                 ),
                                 array('cells' =>
@@ -311,6 +435,10 @@
                                         array(
                                             'element' => 'industry',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'officeFax',
                                         ),
@@ -321,6 +449,10 @@
                                         array(
                                             'element' => 'employees',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'annualRevenue',
                                         ),
@@ -331,6 +463,10 @@
                                         array(
                                             'element' => 'type',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'website',
                                         ),
@@ -341,6 +477,10 @@
                                         array(
                                             'element' => 'createdDateTime__DateTime',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'modifiedDateTime__DateTime',
                                         ),
@@ -351,6 +491,10 @@
                                         array(
                                             'element' => 'createdByUser',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'modifiedByUser',
                                         ),
@@ -361,6 +505,10 @@
                                         array(
                                             'element' => 'anyCity',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'anyStreet',
                                         ),
@@ -371,6 +519,10 @@
                                         array(
                                             'element' => 'anyState',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'anyPostalCode',
                                         ),
@@ -381,6 +533,10 @@
                                         array(
                                             'element' => 'anyCountry',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'anyEmail',
                                         ),
@@ -391,6 +547,10 @@
                                         array(
                                             'element' => 'anyInvalidEmail',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'anyOptOutEmail',
                                         ),
@@ -603,6 +763,41 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
                                     )
@@ -769,6 +964,34 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
                                     )
@@ -807,35 +1030,83 @@
         public static function fetchAccountsSearchFormGetData()
         {
             return array(
-                            'name'                  =>  'myEditAccount',
-                            'officePhone'           =>  '259-734-2169',
-                            'type'                  =>   array('value'  =>  'Customer'),
-                            'officeFax'             =>  '299-825-7863',
-                            'employees'             =>  '630',
-                            'website'               =>  'http://www.UnnamedEdit.com',
-                            'annualRevenue'         =>  '472000000',
-                            'anyCity'               =>  'San Jose',
-                            'anyState'              =>  'CA',
-                            'anyStreet'             =>  '26378 South Arlington Ave',
-                            'anyPostalCode'         =>  '95131',
-                            'anyCountry'            =>  'USA',
-                            'anyEmail'              =>  'info@myEditAccount.com',
-                            'anyOptOutEmail'        =>  array('value' => null),
-                            'anyInvalidEmail'       =>  array('value' => ''),
-                            'ownedItemsOnly'        =>  '1',
-                            'industry'              =>  array('value' => 'Energy'),
-                            'decimal'               =>  '12',
-                            'integer'               =>  '11',
-                            'phone'                 =>  '259-784-2069',
-                            'text'                  =>  'This is a test Edit Text',
-                            'textarea'              =>  'This is a test Edit TextArea',
-                            'url'                   =>  'http://wwww.abc-edit.com',
-                            'checkbox'              =>  array('value'  =>  '0'),
-                            'currency'              =>  array('value'  =>  40),
-                            'picklist'              =>  array('value'  =>  'b'),
-                            'radio'                 =>  array('value'  =>  'e'),
-                            'date__Date'            =>  array('type'   =>  'Today'),
-                            'datetime__DateTime'    =>  array('type'   =>  'Today'));
+                            'name'               => 'myEditAccount',
+                            'officePhone'        => '259-734-2169',
+                            'type'               => array('value'  =>  'Customer'),
+                            'officeFax'          => '299-825-7863',
+                            'employees'          => '630',
+                            'website'            => 'http://www.UnnamedEdit.com',
+                            'annualRevenue'      => '472000000',
+                            'anyCity'            => 'San Jose',
+                            'anyState'           => 'CA',
+                            'anyStreet'          => '26378 South Arlington Ave',
+                            'anyPostalCode'      => '95131',
+                            'anyCountry'         => 'USA',
+                            'anyEmail'           => 'info@myEditAccount.com',
+                            'anyOptOutEmail'     => array('value' => null),
+                            'anyInvalidEmail'    => array('value' => ''),
+                            'ownedItemsOnly'     => '1',
+                            'industry'           => array('value' => 'Energy'),
+                            'decimal'            => '12',
+                            'integer'            => '11',
+                            'phone'              => '259-784-2069',
+                            'text'               => 'This is a test Edit Text',
+                            'textarea'           => 'This is a test Edit TextArea',
+                            'url'                => 'http://wwww.abc-edit.com',
+                            'checkbox'           => array('value'  => '0'),
+                            'currency'           => array('value'  => 40),
+                            'picklist'           => array('value'  => 'b'),
+                            'multiselect'        => array('values' => array('gg', 'hh')),
+                            'tagcloud'           => array('values' => array('reading', 'surfing')),
+                            'countrypicklist'    => array('value'  => 'aaaa'),
+                            'statepicklist'      => array('value'  => 'aaa1'),
+                            'citypicklist'       => array('value'  => 'ab1'),
+                            'radio'              => array('value'  => 'e'),
+                            'date__Date'         => array('type'   => 'Today'),
+                            'datetime__DateTime' => array('type'   => 'Today'));
+        }
+
+        /**
+         * This function returns the necessary get parameters for the account search form
+         * based on the account edited data but sets the Multi-select to null value.
+         */
+        public static function fetchAccountsSearchFormGetDataWithMultiSelectValueSetToNull()
+        {
+            return array(
+                            'name'               => 'myEditAccount',
+                            'officePhone'        => '259-734-2169',
+                            'type'               => array('value'  =>  'Customer'),
+                            'officeFax'          => '299-825-7863',
+                            'employees'          => '630',
+                            'website'            => 'http://www.UnnamedEdit.com',
+                            'annualRevenue'      => '472000000',
+                            'anyCity'            => 'San Jose',
+                            'anyState'           => 'CA',
+                            'anyStreet'          => '26378 South Arlington Ave',
+                            'anyPostalCode'      => '95131',
+                            'anyCountry'         => 'USA',
+                            'anyEmail'           => 'info@myEditAccount.com',
+                            'anyOptOutEmail'     => array('value' => null),
+                            'anyInvalidEmail'    => array('value' => ''),
+                            'ownedItemsOnly'     => '1',
+                            'industry'           => array('value' => 'Energy'),
+                            'decimal'            => '12',
+                            'integer'            => '11',
+                            'phone'              => '259-784-2069',
+                            'text'               => 'This is a test Edit Text',
+                            'textarea'           => 'This is a test Edit TextArea',
+                            'url'                => 'http://wwww.abc-edit.com',
+                            'checkbox'           => array('value'  => '0'),
+                            'currency'           => array('value'  => 40),
+                            'picklist'           => array('value'  => 'b'),
+                            'multiselect'        => array('values' => array(0 => null)),
+                            'tagcloud'           => array('values' => array('reading', 'surfing')),
+                            'countrypicklist'    => array('value'  => 'aaaa'),
+                            'statepicklist'      => array('value'  => 'aaa1'),
+                            'citypicklist'       => array('value'  => 'ab1'),
+                            'radio'              => array('value'  => 'e'),
+                            'date__Date'         => array('type'   => 'Today'),
+                            'datetime__DateTime' => array('type'   => 'Today'));
         }
     }
 ?>

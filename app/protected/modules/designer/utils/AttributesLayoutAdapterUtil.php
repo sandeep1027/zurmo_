@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -47,6 +47,22 @@
                 AttributesLayoutAdapterUtil::getNonPlaceableLayoutAttributeTypes(
                     $designerRules, $editableMetadata)
             );
+        }
+
+        public static function makeByViewAndModelAndDesignerRules(
+                               $viewClassName, $modelClassName, DesignerRules $designerRules)
+        {
+            assert('is_string($viewClassName)');
+            assert('is_string($modelClassName)');
+            $editableMetadata        = $viewClassName::getMetadata();
+            $modelAttributesAdapter  = DesignerModelToViewUtil::getModelAttributesAdapter($viewClassName, $modelClassName);
+            $attributeCollection     = $modelAttributesAdapter->getAttributes();
+            $attributesLayoutAdapter = AttributesLayoutAdapterUtil::makeAttributesLayoutAdapter(
+                $attributeCollection,
+                $designerRules,
+                $editableMetadata
+            );
+            return $attributesLayoutAdapter;
         }
 
         protected static function getNonPlaceableLayoutAttributeNames($designerRules, $editableMetadata)

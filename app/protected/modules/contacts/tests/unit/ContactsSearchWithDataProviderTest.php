@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -92,10 +92,10 @@
             $joinTablesAdapter   = new RedBeanModelJoinTablesQueryAdapter('Contact');
             $quote        = DatabaseCompatibilityUtil::getQuote();
             $where        = RedBeanModelDataProvider::makeWhere('Contact', $searchAttributeData, $joinTablesAdapter);
-            $compareWhere  = "(({$quote}person{$quote}.{$quote}firstname{$quote} like lower('Jackie Tyler%')) or ";
-            $compareWhere .= "({$quote}person{$quote}.{$quote}lastname{$quote} like lower('Jackie Tyler%')) or ";
+            $compareWhere  = "(({$quote}person{$quote}.{$quote}firstname{$quote} like 'Jackie Tyler%') or ";
+            $compareWhere .= "({$quote}person{$quote}.{$quote}lastname{$quote} like 'Jackie Tyler%') or ";
             $compareWhere .= "(concat({$quote}person{$quote}.{$quote}firstname{$quote}, ' ', ";
-            $compareWhere .= "{$quote}person{$quote}.{$quote}lastname{$quote}) like lower('Jackie Tyler%')))";
+            $compareWhere .= "{$quote}person{$quote}.{$quote}lastname{$quote}) like 'Jackie Tyler%'))";
             $this->assertEquals($compareWhere, $where);
 
             //Now test that the joinTablesAdapter has correct information.

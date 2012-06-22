@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -32,13 +32,29 @@
             return self::getSubset(null, null, null, "name = '$name'");
         }
 
+        /**
+         * @return value of what is considered the 'closed won' stage. It could be in the future named something else
+         * or changed by the user.  This api will be expanded to handle that.  By default it will return 'Closed Won'
+         */
+        public static function getStageClosedWonValue()
+        {
+            return 'Closed Won';
+        }
+
         public function __toString()
         {
-            if (trim($this->name) == '')
+            try
             {
-                return Yii::t('Default', '(Unnamed)');
+                if (trim($this->name) == '')
+                {
+                    return Yii::t('Default', '(Unnamed)');
+                }
+                return $this->name;
             }
-            return $this->name;
+            catch (AccessDeniedSecurityException $e)
+            {
+                return '';
+            }
         }
 
         public static function getModuleClassName()
@@ -81,37 +97,37 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'name',
                     'closeDate',
-                    'probability',
                     'description',
+                    'name',
+                    'probability',
                 ),
                 'relations' => array(
                     'account'       => array(RedBeanModel::HAS_ONE,   'Account'),
-                    'stage'         => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
-                    'source'        => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
                     'amount'        => array(RedBeanModel::HAS_ONE,   'CurrencyValue',    RedBeanModel::OWNED),
                     'contacts'      => array(RedBeanModel::MANY_MANY, 'Contact'),
+                    'stage'         => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                    'source'        => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
                 ),
                 'rules' => array(
+                    array('amount',        'required'),
+                    array('closeDate',     'required'),
+                    array('closeDate',     'type', 'type' => 'date'),
+                    array('description',   'type',    'type' => 'string'),
                     array('name',          'required'),
                     array('name',          'type',    'type' => 'string'),
                     array('name',          'length',  'min'  => 3, 'max' => 64),
-                    array('stage',         'required'),
-                    array('closeDate',     'required'),
-                    array('closeDate',     'type', 'type' => 'date'),
-                    array('amount',        'required'),
                     array('probability',   'type',      'type' => 'integer'),
                     array('probability',   'numerical', 'min' => 0, 'max' => 100),
                     array('probability',   'required'),
                     array('probability',   'default', 'value' => 0),
-                    array('description',   'type',    'type' => 'string'),
+                    array('stage',         'required'),
                 ),
                 'elements' => array(
                     'amount'      => 'CurrencyValue',
+                    'account'     => 'Account',
                     'closeDate'   => 'Date',
                     'description' => 'TextArea',
-                    'account'     => 'Account',
                 ),
                 'customFields' => array(
                     'stage'  => 'SalesStages',
@@ -141,6 +157,11 @@
         public static function hasReadPermissionsOptimization()
         {
             return true;
+        }
+
+        public static function getGamificationRulesType()
+        {
+            return 'OpportunityGamification';
         }
     }
 ?>

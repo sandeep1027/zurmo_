@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,9 +41,13 @@
         {
             assert('$model instanceof RedBeanModel || $model instanceof RedBeanModels || $model instanceof ModelForm');
             assert('is_string($attributeName) && $attributeName != ""');
-            if (get_class($model) == 'CustomField' || $attributeName == 'id')
+            if ($model instanceof CustomField || $attributeName == 'id')
             {
                 return 'equals';
+            }
+            if ($model instanceof MultipleValuesCustomField)
+            {
+                return 'oneOf';
             }
             $metadata = $model->getMetadata();
             foreach ($metadata as $className => $perClassMetadata)

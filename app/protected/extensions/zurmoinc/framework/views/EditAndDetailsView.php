@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -63,31 +63,84 @@
             {
                 return parent::renderContent();
             }
-            $content = '<div class="wide form">';
+            $content  = '<div class="wrapper">';
+            $content .= $this->renderTitleContent();
+            $maxCellsPresentInAnyRow = $this->resolveMaxCellsPresentInAnyRow($this->getFormLayoutMetadata());
+            if ($maxCellsPresentInAnyRow > 1)
+            {
+                $class = "wide double-column form";
+            }
+            else
+            {
+                $class = "wide form";
+            }
+            $content .= '<div class="' . $class . '">';
             $clipWidget = new ClipWidget();
             list($form, $formStart) = $clipWidget->renderBeginWidget(
                                                                 'ZurmoActiveForm',
                                                                 array_merge(
-                                                                    array('id' => 'edit-form',
+                                                                    array('id' => static::getFormId(),
                                                                     'htmlOptions' => $this->resolveFormHtmlOptions()),
                                                                     $this->resolveActiveFormAjaxValidationOptions()
                                                                 )
                                                             );
             $content .= $formStart;
-            $content .= '<div class="view-toolbar">';
-            $content .= $this->renderActionElementBar(true);
-            $content .= '</div>';
+            $content .= '<div class="attributesContainer">';
             $content .= $this->renderFormLayout($form);
+            $content .= $this->renderRightSideContent($form);
+            $content .= '</div>';
             $content .= $this->renderAfterFormLayout($form);
+            $actionElementContent = $this->renderActionElementBar(true);
+            if ($actionElementContent != null)
+            {
+                $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">';
+                $content .= $actionElementContent;
+                $content .= '</div></div>';
+            }
             $formEnd = $clipWidget->renderEndWidget();
             $content .= $formEnd;
 
-            $content .= '</div>';
+            $content .= '</div></div>';
             return $content;
+        }
+
+        protected function renderTitleContent()
+        {
+            if ($this->model->id > 0)
+            {
+                return '<h1>' . strval($this->model) . '</h1>';
+            }
+            return '<h1>' . $this->getNewModelTitleLabel() . '</h1>';
+        }
+
+        protected function renderRightSideContent($form)
+        {
+            assert('$form == null || $form instanceof ZurmoActiveForm');
+            if ($form != null)
+            {
+                $rightSideContent = $this->renderRightSideFormLayoutForEdit($form);
+                if ($rightSideContent != null)
+                {
+                    $content  = '<div id="permissions-module"><div class="buffer"><div>';
+                    $content .= $rightSideContent;
+                    $content .= '</div></div></div>';
+                    return $content;
+                }
+            }
+        }
+
+        protected function renderRightSideFormLayoutForEdit($form)
+        {
         }
 
         protected function renderAfterFormLayout($form)
         {
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/dropDownInteractions.js');
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/jquery.dropkick-1.0.0.js');
         }
 
         protected function resolveActiveFormAjaxValidationOptions()
@@ -128,14 +181,24 @@
             return false;
         }
 
+        protected static function getFormId()
+        {
+            return 'edit-form';
+        }
+
         protected function resolveFormHtmlOptions()
         {
-            $data = array();
+            $data = array('onSubmit' => 'js:return attachLoadingOnSubmit("' . static::getFormId() . '")');
             if ($this->viewContainsFileUploadElement)
             {
                 $data['enctype'] = 'multipart/form-data';
             }
             return $data;
+        }
+
+        protected function getNewModelTitleLabel()
+        {
+            throw new NotImplementedException();
         }
     }
 ?>

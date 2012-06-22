@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -103,19 +103,13 @@
                 $this->controllerId,
                 $this->moduleId,
                 null,
-                array('label' => Yii::t('Default', 'Create New'))
+                array('label' => Yii::t('Default', 'Create'))
             );
 
             $editLink = CHtml::link(Yii::t('Default', 'Edit'), '#',
                 array('class' => 'edit-filter-link')
             );
             $editLinkUrl = Yii::app()->createUrl($this->moduleId . '/filteredList/editFilteredList/');
-            Yii::app()->getClientScript()->registerScriptFile(
-                Yii::app()->getAssetManager()->publish(
-                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets') . '/FormUtils.js'
-                    ),
-                CClientScript::POS_END
-            );
             Yii::app()->clientScript->registerScript('filteredList', "
                 $('.search-link').click( function()
                     {
@@ -146,7 +140,6 @@
                 $('#filtered-list-form').submit(function()
                     {
                         $('#" . $this->gridId . $this->gridIdSuffix . "-selectedIds').val(null);
-                        $('#" . $this->gridId . $this->gridIdSuffix . "-selectAll').val(null);
                         $.fn.yiiGridView.update('" . $this->gridId . $this->gridIdSuffix . "',
                         {
                             data: $(this).serialize() + '&" . $this->listModelClassName . "_page=&" . $this->listModelClassName . "_sort=' " . // Not Coding Standard

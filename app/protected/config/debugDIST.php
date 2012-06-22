@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -70,7 +70,7 @@
     // memcache. A model's related models are not serialized
     // along with it.
     // Check it in as true!
-    $memcacheLevelCaching = true;
+    $memcacheLevelCaching = false;
 
     // Turn this off to test without db level caching of permissions.
     // Check it in as true!
@@ -97,7 +97,7 @@
     $seleniumTestResultsPath        = '';
     $seleniumServerPort             = '4048';
     $seleniumBrowsersToRun          = 'All';
-    $seleniumDbControlUrl           = '';
+    $seleniumControlUrl           = '';
 
     if ($debugOn)
     {

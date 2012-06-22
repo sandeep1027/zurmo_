@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,34 +37,35 @@
                 'global' => array(
                     'toolbar' => array(
                         'elements' => array(
-                            array('type' => 'EditDashboardLink'),
+                            array('type' => 'CreateDashboardLink',
+                                'htmlOptions' => array('class' => 'icon-create')
+                                ),
+                            array('type' => 'EditDashboardLink',
+                                'htmlOptions' => array('class' => 'icon-edit')
+                                ),
                             array('type' => 'AddPortletAjaxLink',
                                 'uniqueLayoutId' => 'eval:$this->uniqueLayoutId',
                                 'ajaxOptions' => array(
                                     'onclick' => '$("#modalContainer").dialog("open"); return false;',
                                     'update' => '#modalContainer',
                                 ),
-                                'htmlOptions' => array('id' => 'AddPortletLink')
+                                'htmlOptions' => array('id' => 'AddPortletLink',
+                                    'class' => 'icon-add'
+                                )
                             ),
                         ),
                     ),
                     'columns' => array(
                         array(
                             'rows' => array(
+                               array(
+                                    'type' => 'MyUpcomingMeetingsCalendar',
+                                ),
                                 array(
-                                    'type' => 'MeetingsMyList',
+                                    'type' => 'AllLatestActivtiesForPortlet',
                                 ),
                                 array(
                                     'type' => 'TasksMyList',
-                                ),
-                                array(
-                                    'type' => 'OpportunitiesMyList',
-                                ),
-                                array(
-                                    'type' => 'LeadsMyList',
-                                ),
-                                array(
-                                    'type' => 'AccountsMyList',
                                 ),
                             )
                         ),

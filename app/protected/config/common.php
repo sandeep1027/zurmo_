@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -27,7 +27,7 @@
     $common_config = array(
         'basePath'          => COMMON_ROOT . DIRECTORY_SEPARATOR . 'protected',
         'name'              => 'ZurmoCRM',
-        'defaultController' => 'home/default',
+        'defaultController' => 'home/default/welcome',
         'sourceLanguage'    => 'en',
 
         'behaviors' => array(
@@ -40,18 +40,21 @@
         ),
 
         'components' => array(
+            'apiRequest' => array(
+                'class' => 'application.modules.api.components.ApiRequest',
+            ),
+            'apiHelper' => array(
+                'class' => 'application.modules.api.components.ZurmoApiHelper',
+            ),
             'assetManager' => array(
+                'class' => 'ZurmoAssetManager',
                 'basePath' => INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'assets/',
             ),
             'browser' => array(
-                'class'          => 'application.extensions.zurmoinc.framework.components.Browser',
+                'class' => 'application.extensions.zurmoinc.framework.components.Browser',
             ),
             'clientScript' => array(
                 'class' => 'ClientScript',
-            ),
-            'cache' => array(
-                'class' => 'CMemCache',
-                'servers' => $memcacheServers,
             ),
             'currencyHelper' => array(
                 'class' => 'application.modules.zurmo.components.ZurmoCurrencyHelper',
@@ -65,6 +68,9 @@
                 'emulatePrepare' => true,
                 'charset'        => 'utf8',
             ),
+            'emailHelper' => array(
+                'class'       => 'application.modules.emailMessages.components.EmailHelper',
+            ),
             'errorHandler' => array(
                 'errorAction' => 'zurmo/default/error',
             ),
@@ -74,11 +80,16 @@
             'fusioncharts' => array(
                 'class' => 'application.extensions.fusioncharts.fusionCharts',
             ),
+            'gameHelper' => array(
+                'class' => 'application.modules.gamification.components.GameHelper',
+            ),
+            'gamificationObserver' => array(
+                'class' => 'application.modules.gamification.observers.GamificationObserver',
+            ),
             'minScript' => array(
                 'class' => 'application.extensions.zurmoinc.framework.components.ZurmoExtMinScript',
                 'groupMap' => array(
                     'css' => array(
-                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/screen.css',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/theme.css',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/cgrid-view.css',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/designer.css',
@@ -87,6 +98,9 @@
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/main.css',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/mbmenu.css',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/widget-juiportlets.css',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/newui.css',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes/THEME_NAME/css/jquery-multiselect.css',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/timepicker/assets/jquery-ui-timepicker-addon.css'
                     ),
 
                     'js' => array(
@@ -94,15 +108,54 @@
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . '/../yii/framework/web/js/source/jquery.yii.js',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . '/../yii/framework/web/js/source/jquery.ba-bbq.js',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . '/../yii/framework/web/js/source/jui/js/jquery-ui.min.js',
-                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/qtip/assets/jquery.qtip-1.0.0-rc3.min.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . '/../yii/framework/web/js/source/jquery.yiiactiveform.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/qtip/assets/jquery.qtip-2.min.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/extendedGridView/jquery.yiigridview.js',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/fusionChart/jquery.fusioncharts.js',
-
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/elements/assets/Modal.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/views/assets/FormUtils.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/views/assets/ListViewUtils.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/views/assets/interactions.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/views/assets/dropDownInteractions.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/views/assets/jquery.dropkick-1.0.0.js',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/rssReader/jquery.zrssfeed.min.js',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/juiportlets/JuiPortlets.js',
                         INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/jnotify/jquery.jnotify.js',
-                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/designer/Designer.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/juiMultiSelect/jquery.multiselect.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/fileUpload/jquery.fileupload.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/fileUpload/jquery.fileupload-ui.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/fileUpload/jquery.tmpl.min.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/fileUpload/jquery.iframe-transport.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/timepicker/assets/jquery-ui-timepicker-addon.min.js',
+                        INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'protected/extensions/zurmoinc/framework/widgets/assets/calendar/Calendar.js'
                     )
-                )
+                ),
+                //Add scripts here that do not need to load when using an ajax request such as a modal search box.  The scripts
+                //are already loaded in the minified script that loads on every page.
+                'usingAjaxShouldNotIncludeJsPathAliasesAndFileNames' => array(
+                    array('system.web.js.source',                                       '/jquery.min.js'),
+                    array('system.web.js.source',                                       '/jquery.yii.js'),
+                    array('system.web.js.source',                                       '/jquery.ba-bbq.js'),
+                    array('system.web.js.source',                                       '/jui/js/jquery-ui.min.js'),
+                    array('system.web.js.source',                                       '/jquery.yiiactiveform.js'),
+                    array('application.extensions.qtip.assets',                         '/jquery.qtip-2.min.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/extendedGridView/jquery.yiigridview.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/fusionChart/jquery.fusioncharts.js'),
+                    array('application.extensions.zurmoinc.framework.elements.assets',  '/Modal.js'),
+                    array('application.extensions.zurmoinc.framework.views.assets',     '/FormUtils.js'),
+                    array('application.extensions.zurmoinc.framework.views.assets',     '/ListViewUtils.js'),
+                    array('application.extensions.zurmoinc.framework.views.assets',     '/interactions.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/rssReader/jquery.zrssfeed.min.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/juiportlets/JuiPortlets.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/jnotify/jquery.jnotify.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/juiMultiSelect/jquery.multiselect.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/fileUpload/jquery.fileupload.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/fileUpload/jquery.fileupload-ui.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/fileUpload/jquery.tmpl.min.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/fileUpload/jquery.iframe-transport.js'),
+                    array('application.extensions.timepicker.assets',                   '/jquery-ui-timepicker-addon.min.js'),
+                    array('application.extensions.zurmoinc.framework.widgets.assets',   '/calendar/Calendar.js')
+                ),
             ),
             'languageHelper' => array(
                 'class'          => 'application.modules.zurmo.components.ZurmoLanguageHelper',
@@ -116,6 +169,9 @@
                     ),
                 ),
             ),
+            'mappingHelper' => array(
+                'class' => 'application.modules.maps.components.ZurmoMappingHelper',
+            ),
             'pagination' => array(
                 'class' => 'application.modules.zurmo.components.ZurmoPaginationHelper',
                 'listPageSize'             => 10,
@@ -125,6 +181,8 @@
                 'autoCompleteListPageSize' => 5,
                 'importPageSize'           => 50,
                 'dashboardListPageSize'    => 5,
+                'apiListPageSize'          => 10,
+                'unlimitedPageSize'        => 1000000000
             ),
             'performance' => array(
                 'class'          => 'application.extensions.zurmoinc.framework.components.PerformanceMeasurement',
@@ -134,6 +192,10 @@
                 'sanitizeGet'    => false, //off for now
                 'sanitizePost'   => false, //off for now
                 'sanitizeCookie' => false, //off for now
+            ),
+            'session' => array(
+                'class'     => 'application.modules.zurmo.components.ZurmoSession',
+                'autoStart' => false,
             ),
             'themeManager' => array(
                 'basePath' => INSTANCE_ROOT . DIRECTORY_SEPARATOR . 'themes',
@@ -146,10 +208,37 @@
                 'enableCsrfValidation' => true,
                 'enableCookieValidation' => false, //keep off until we can fix it on linux/windows servers.
             ),
+            'statePersister' => array(
+                'class'     => 'application.modules.zurmo.components.ZurmoDbStatePersister',
+            ),
+            'urlManager' => array (
+                'urlFormat' => 'path',
+                'caseSensitive' => true,
+                'showScriptName' => true,
+                'rules' => array(
+                    // API REST patterns
+                    array('zurmo/api/logout',      'pattern' => 'zurmo/api/logout',                    'verb' => 'GET'),    // Not Coding Standard
+                    array('<module>/api/read',     'pattern' => '<module:\w+>/api/read/<id:\d+>',      'verb' => 'GET'),    // Not Coding Standard
+                    array('<module>/api/list',     'pattern' => '<module:\w+>/api/list/*',             'verb' => 'GET'),    // Not Coding Standard
+                    array('<module>/api/update',   'pattern' => '<module:\w+>/api/update/<id:\d+>',    'verb' => 'PUT'),    // Not Coding Standard
+                    array('<module>/api/delete',   'pattern' => '<module:\w+>/api/delete/<id:\d+>',    'verb' => 'DELETE'), // Not Coding Standard
+                    array('<module>/api/create',   'pattern' => '<module:\w+>/api/create/',            'verb' => 'POST'),   // Not Coding Standard
+
+                    array('zurmo/<model>Api/read', 'pattern' => 'zurmo/<model:\w+>/api/read/<id:\d+>', 'verb' => 'GET'),    // Not Coding Standard
+                    array('zurmo/<model>Api/read', 'pattern' => 'zurmo/<model:\w+>/api/read/<id:\w+>', 'verb' => 'GET'),    // Not Coding Standard
+                    array('zurmo/<model>Api/list', 'pattern' => 'zurmo/<model:\w+>/api/list/*',        'verb' => 'GET'),    // Not Coding Standard
+                    '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',                       // Not Coding Standard
+                )
+            ),
             'user' => array(
                 'allowAutoLogin' => true,
                 'class'          => 'WebUser',
                 'loginUrl'       => array('zurmo/default/login'),
+        'behaviors' => array(
+            'onAfterLogin' => array(
+                'class' => 'application.modules.gamification.behaviors.WebUserAfterLoginGamificationBehavior'
+            ),
+        ),
             ),
             'widgetFactory' => array(
                 'widgets' => array(
@@ -178,43 +267,38 @@
             'min' => 'application.extensions.minscript.controllers.ExtMinScriptController',
         ),
         'import' => array(
-            'application.extensions.zurmoinc.framework.adapters.*',
-            'application.extensions.zurmoinc.framework.adapters.columns.*',
-            'application.extensions.zurmoinc.framework.adapters.dataproviders.*',
-            'application.extensions.zurmoinc.framework.configuration.*',
-            'application.extensions.zurmoinc.framework.components.*',
-            'application.extensions.zurmoinc.framework.controllers.*',
-            'application.extensions.zurmoinc.framework.dataproviders.*',
-            'application.extensions.zurmoinc.framework.elements.*',
-            'application.extensions.zurmoinc.framework.elements.actions.*',
-            'application.extensions.zurmoinc.framework.elements.derived.*',
-            'application.extensions.zurmoinc.framework.exceptions.*',
-            'application.extensions.zurmoinc.framework.forms.*',
-            'application.extensions.zurmoinc.framework.interfaces.*',
-            'application.extensions.zurmoinc.framework.models.*',
-            'application.extensions.zurmoinc.framework.models.validators.*',
-            'application.extensions.zurmoinc.framework.modules.*',
-            'application.extensions.zurmoinc.framework.portlets.*',
-            'application.extensions.zurmoinc.framework.portlets.rules.*',
-            'application.extensions.zurmoinc.framework.rules.*',
-            'application.extensions.zurmoinc.framework.utils.*',
-            'application.extensions.zurmoinc.framework.validators.*',
-            'application.extensions.zurmoinc.framework.views.*',
-            'application.extensions.zurmoinc.framework.widgets.*',
+            'application.modules.zurmo.components.BeginRequestBehavior',
+            'application.extensions.zurmoinc.framework.utils.ArrayUtil',
+            'application.extensions.zurmoinc.framework.utils.FileUtil',
+            'application.extensions.zurmoinc.framework.utils.GeneralCache',
+            'application.extensions.zurmoinc.framework.exceptions.NotFoundException',
+            'application.extensions.zurmoinc.framework.components.ZurmoLocale',
+            'application.modules.api.tests.unit.models.*',
+            'application.modules.api.tests.unit.forms.*',
+            'application.modules.install.serviceHelpers.MemcacheServiceHelper',
+            'application.modules.install.serviceHelpers.ServiceHelper',
+            'application.modules.install.serviceHelpers.SetIncludePathServiceHelper',
+            'application.modules.install.utils.InstallUtil',
         ),
 
         'modules' => array(
             'accounts',
             'activities',
+            'api',
             'configuration',
             'contacts',
             'designer',
+            'emailMessages',
+            'export',
+            'gamification',
             'home',
             'import',
             'install',
+            'jobsManager',
             'leads',
             'meetings',
             'notes',
+            'notifications',
             'opportunities',
             'rssReader',
             'tasks',
@@ -225,11 +309,13 @@
                 ),
             ),
             'users',
+            'maps',
         ),
 
         'params' => array(
             'redBeanVersion'    => '1.3',
-            'yiiVersion'        => '1.1.8',
+            'yiiVersion'        => '1.1.10',
+            'memcacheServers'   => $memcacheServers,
             'supportedLanguages' => array(
                 'en' => 'English',
                 'es' => 'Spanish',
@@ -244,63 +330,16 @@
         ),
     );
 
-    // THIS IS LIKELY TO BE A PERFORMANCE ISSUE, SEARCHING SO MANY DIRECTORIES. TO BE INVESTIGATED.
-    // Add aliases here that are likely to be useful in any module.
-    foreach ($common_config['modules'] as $index => $moduleName)
-    {
-        //This is to handle nested modules in the config above.
-        if (is_array($moduleName))
-        {
-            $moduleName = $index;
-        }
-        $common_config['import'][] = "application.modules.$moduleName.*";                           // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.adapters.*";                  // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.adapters.columns.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.dataproviders.*";             // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.elements.*";                  // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.elements.actions.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.elements.actions.security.*"; // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.elements.derived.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.components.*";                // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.controllers.*";               // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.controllers.filters.*";       // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.exceptions.*";                // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.forms.*";                     // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.forms.attributes.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.interfaces.*";                // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.models.*";                    // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.modules.*";                   // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.rules.*";                     // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.rules.attributes.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.rules.policies.*";            // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.tests.unit.*";                // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.tests.unit.files.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.tests.unit.models.*";         // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.tests.unit.walkthrough.*";    // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.utils.*";                     // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.utils.charts.*";              // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.utils.sanitizers.*";          // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.utils.security.*";            // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.utils.analyzers.*";           // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.validators.*";                // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.views.*";                     // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.views.attributetypes.*";      // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.views.charts.*";              // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.views.related.*";             // Not Coding Standard
-        $common_config['import'][] = "application.modules.$moduleName.widgets.*";                   // Not Coding Standard
-    }
+    // Routes for api test
+    $testApiConfig['components']['urlManager']['rules'] = array(
+        array('api/<model>Api/read',     'pattern' => 'api/<model:\w+>/api/read/<id:\d+>',   'verb' => 'GET'),    // Not Coding Standard
+        array('api/<model>Api/list',     'pattern' => 'api/<model:\w+>/api/list/*',          'verb' => 'GET'),    // Not Coding Standard
+        array('api/<model>Api/update',   'pattern' => 'api/<model:\w+>/api/update/<id:\d+>', 'verb' => 'PUT'),    // Not Coding Standard
+        array('api/<model>Api/delete',   'pattern' => 'api/<model:\w+>/api/delete/<id:\d+>', 'verb' => 'DELETE'), // Not Coding Standard
+        array('api/<model>Api/create',   'pattern' => 'api/<model:\w+>/api/create/',         'verb' => 'POST'),   // Not Coding Standard
+        array('api/<model>Api/<action>', 'pattern' => 'api/<model:\w+>/api/<action>/*'),                          // Not Coding Standard
+    );
 
-    // Add aliases here that are likely to only be specific to a particular module.
-
-    $common_config['import'][] = "application.modules.designer.rules.*";                            // Not Coding Standard
-    $common_config['import'][] = "application.modules.designer.rules.elements.*";                   // Not Coding Standard
-    $common_config['import'][] = "application.modules.designer.elements.layoutsettings.*";          // Not Coding Standard
-    $common_config['import'][] = "application.modules.designer.forms.attributes.*";                 // Not Coding Standard
-    $common_config['import'][] = "application.modules.install.serviceHelpers.*";                    // Not Coding Standard
-    $common_config['import'][] = "application.modules.zurmo.elements.security.*";                   // Not Coding Standard
-    $common_config['import'][] = "application.modules.zurmo.utils.security.*";                      // Not Coding Standard
-    $common_config['import'][] = "application.modules.zurmo.views.currency.*";                      // Not Coding Standard
-    $common_config['import'][] = "application.modules.zurmo.views.language.*";                      // Not Coding Standard
-    $common_config['import'][] = "application.modules.zurmo.views.security.*";                      // Not Coding Standard
+    $common_config = CMap::mergeArray($testApiConfig, $common_config);
     return $common_config;
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -210,21 +210,21 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'type',
                     'permissions',
+                    'type',
                 ),
                 'relations' => array(
                     'permitable'     => array(RedBeanModel::HAS_ONE,             'Permitable'),
                     'securableItem'  => array(RedBeanModel::HAS_MANY_BELONGS_TO, 'SecurableItem'),
                 ),
                 'rules' => array(
-                    array('type',        'required'),
-                    array('type',        'type', 'type' => 'integer'),
-                    array('type',        'numerical', 'min' => 1, 'max' => 2),
                     array('permissions', 'required'),
                     array('permissions', 'type', 'type' => 'integer'),
                     array('permissions', 'numerical', 'min' => 0, 'max' => 31),
                     array('permitable',  'required'),
+                    array('type',        'required'),
+                    array('type',        'type', 'type' => 'integer'),
+                    array('type',        'numerical', 'min' => 1, 'max' => 2),
                 ),
             );
             return $metadata;

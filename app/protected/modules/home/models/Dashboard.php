@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -87,11 +87,18 @@
 
         public function __toString()
         {
-            if (trim($this->name) == '')
+            try
             {
-                return Yii::t('Default', '(Unnamed)');
+                if (trim($this->name) == '')
+                {
+                    return Yii::t('Default', '(Unnamed)');
+                }
+                return $this->name;
             }
-            return $this->name;
+            catch (AccessDeniedSecurityException $e)
+            {
+                return '';
+            }
         }
 
         public static function getDefaultMetadata()
@@ -99,21 +106,21 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'name',
                     'layoutId',
                     'layoutType',
                     'isDefault',
+                    'name',
                 ),
                 'rules' => array(
-                    array('name',       'required'),
-                    array('name',       'type',   'type' => 'string'),
-                    array('name',       'length', 'min' => 3, 'max' => 64),
+                    array('isDefault',  'boolean'),
                     array('layoutId',   'required'),
-                    array('layoutId',   'type',   'type' => 'number'),
+                    array('layoutId',   'type',   'type' => 'integer'),
                     array('layoutType', 'required'),
                     array('layoutType', 'type',   'type' => 'string'),
                     array('layoutType', 'length', 'max' => 10),
-                    array('isDefault',  'boolean'),
+                    array('name',       'required'),
+                    array('name',       'type',   'type' => 'string'),
+                    array('name',       'length', 'min' => 3, 'max' => 64),
                 ),
                 'defaultSortAttribute' => 'name'
             );

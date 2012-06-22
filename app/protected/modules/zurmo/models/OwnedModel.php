@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -33,6 +33,13 @@
      */
     class OwnedModel extends RedBeanModel
     {
+        /**
+         * In the case of OwnedModels, there is no need to create a bean.  The class hierarchy can end here for
+         * bean creation.
+         * @var string
+         */
+        protected static $lastClassInBeanHeirarchy = 'OwnedModel';
+
         // On changing a member value the original value
         // is saved (ie: on change it again the original
         // value is not overwritten) so that on save the
@@ -48,6 +55,11 @@
         public function save($runValidation = true, array $attributeNames = null)
         {
             AuditUtil::throwNotSupportedExceptionIfNotCalledFromAnItem();
+            return parent::save($runValidation, $attributeNames);
+        }
+
+        public function unrestrictedSave($runValidation = true, array $attributeNames = null)
+        {
             return parent::save($runValidation, $attributeNames);
         }
 

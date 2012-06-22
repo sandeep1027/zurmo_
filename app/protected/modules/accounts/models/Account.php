@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -45,11 +45,18 @@
 
         public function __toString()
         {
-            if (trim($this->name) == '')
+            try
             {
-                return Yii::t('Default', '(Unnamed)');
+                if (trim($this->name) == '')
+                {
+                    return Yii::t('Default', '(Unnamed)');
+                }
+                return $this->name;
             }
-            return $this->name;
+            catch (AccessDeniedSecurityException $e)
+            {
+                return '';
+            }
         }
 
         public static function getModuleClassName()
@@ -85,48 +92,48 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
+                    'annualRevenue',
+                    'description',
+                    'employees',
                     'name',
                     'officePhone',
                     'officeFax',
-                    'employees',
                     'website',
-                    'annualRevenue',
-                    'description',
                 ),
                 'relations' => array(
                     'account'          => array(RedBeanModel::HAS_MANY_BELONGS_TO,  'Account'),
                     'accounts'         => array(RedBeanModel::HAS_MANY,             'Account'),
+                    'billingAddress'   => array(RedBeanModel::HAS_ONE,              'Address',          RedBeanModel::OWNED),
+                    'contacts'         => array(RedBeanModel::HAS_MANY,             'Contact'),
+                    'industry'         => array(RedBeanModel::HAS_ONE,              'OwnedCustomField', RedBeanModel::OWNED),
+                    'opportunities'    => array(RedBeanModel::HAS_MANY,             'Opportunity'),
                     'primaryEmail'     => array(RedBeanModel::HAS_ONE,              'Email',            RedBeanModel::OWNED),
                     'secondaryEmail'   => array(RedBeanModel::HAS_ONE,              'Email',            RedBeanModel::OWNED),
-                    'billingAddress'   => array(RedBeanModel::HAS_ONE,              'Address',          RedBeanModel::OWNED),
                     'shippingAddress'  => array(RedBeanModel::HAS_ONE,              'Address',          RedBeanModel::OWNED),
-                    'industry'         => array(RedBeanModel::HAS_ONE,              'OwnedCustomField', RedBeanModel::OWNED),
                     'type'             => array(RedBeanModel::HAS_ONE,              'OwnedCustomField', RedBeanModel::OWNED),
-                    'contacts'         => array(RedBeanModel::HAS_MANY,             'Contact'),
-                    'opportunities'    => array(RedBeanModel::HAS_MANY,             'Opportunity'),
                 ),
                 'rules' => array(
+                    array('annualRevenue', 'type',    'type' => 'float'),
+                    array('description',   'type',    'type' => 'string'),
+                    array('employees',     'type',    'type' => 'integer'),
                     array('name',          'required'),
                     array('name',          'type',    'type' => 'string'),
                     array('name',          'length',  'min'  => 3, 'max' => 64),
                     array('officePhone',   'type',    'type' => 'string'),
-                    array('officePhone',   'length',  'min'  => 1, 'max' => 14),
+                    array('officePhone',   'length',  'min'  => 1, 'max' => 16),
                     array('officeFax',     'type',    'type' => 'string'),
-                    array('officeFax',     'length',  'min'  => 1, 'max' => 14),
-                    array('employees',     'type',    'type' => 'integer'),
+                    array('officeFax',     'length',  'min'  => 1, 'max' => 16),
                     array('website',       'url'),
-                    array('annualRevenue', 'type',    'type' => 'float'),
-                    array('description',   'type',    'type' => 'string'),
                 ),
                 'elements' => array(
+                    'account'         => 'Account',
+                    'billingAddress'  => 'Address',
+                    'description'     => 'TextArea',
                     'officePhone'     => 'Phone',
                     'officeFax'       => 'Phone',
-                    'description'     => 'TextArea',
                     'primaryEmail'    => 'EmailAddressInformation',
                     'secondaryEmail'  => 'EmailAddressInformation',
-                    'billingAddress'  => 'Address',
                     'shippingAddress' => 'Address',
-                    'account'         => 'Account',
                 ),
                 'customFields' => array(
                     'industry' => 'Industries',
@@ -134,15 +141,15 @@
                 ),
                 'defaultSortAttribute' => 'name',
                 'rollupRelations' => array(
+                    'accounts' => array('contacts', 'opportunities'),
                     'contacts',
-                    'opportunities',
-                    'accounts' => array('contacts', 'opportunities')
+                    'opportunities'
                 ),
                 'noAudit' => array(
-                    'employees',
                     'annualRevenue',
+                    'description',
+                    'employees',
                     'website',
-                    'description'
                 ),
             );
             return $metadata;
@@ -161,6 +168,11 @@
         public static function hasReadPermissionsOptimization()
         {
             return true;
+        }
+
+        public static function getGamificationRulesType()
+        {
+            return 'AccountGamification';
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -64,24 +64,26 @@
             {
                 return $value;
             }
-            $model    = new $modelClassName(false);
-            $type     = ModelAttributeToMixedTypeUtil::getType($model, $attributeName);
-            $validator = new RedBeanModelNumberValidator();
+            $sanitizedValue = str_replace('$', '', $value);
+            $sanitizedValue = str_replace(',', '', $sanitizedValue); // Not Coding Standard
+            $model          = new $modelClassName(false);
+            $type           = ModelAttributeToMixedTypeUtil::getType($model, $attributeName);
+            $validator      = new RedBeanModelNumberValidator();
             if ($validator->integerOnly === true)
             {
-                if (!preg_match($validator->integerPattern, $value))
+                if (!preg_match($validator->integerPattern, $sanitizedValue))
                 {
                     throw new InvalidValueToSanitizeException(Yii::t('Default', 'Invalid integer format.'));
                 }
             }
             else
             {
-                if (!preg_match($validator->numberPattern, $value))
+                if (!preg_match($validator->numberPattern, $sanitizedValue))
                 {
                     throw new InvalidValueToSanitizeException(Yii::t('Default', 'Invalid number format.'));
                 }
             }
-            return $value;
+            return $sanitizedValue;
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -32,18 +32,15 @@
                 'global' => array(
                     'panels' => array(
                         array(
-                            'title' => 'Basic Search',
-                            'rows' => array(
+                            'locked' => true,
+                            'title'  => 'Basic Search',
+                            'rows'   => array(
                                 array('cells' =>
                                     array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'name', 'type' => 'Text'),
-                                            ),
-                                        ),
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'officePhone', 'type' => 'Phone'),
+                                                array('attributeName' => 'anyMixedAttributes',
+                                                      'type' => 'AnyMixedAttributesSearch', 'wide' => true),
                                             ),
                                         ),
                                     )
@@ -57,12 +54,25 @@
                                     array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'industry', 'type' => 'DropDown', 'addBlank' => true),
+                                                array('attributeName' => 'name', 'type' => 'Text'),
                                             ),
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'type', 'type' => 'DropDown', 'addBlank' => true),
+                                                array('attributeName' => 'officePhone', 'type' => 'Phone'),
+                                            ),
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'elements' => array(
+                                                array('attributeName' => 'industry', 'type' => 'DropDownAsMultiSelect', 'addBlank' => true),
                                             ),
                                         ),
                                     )

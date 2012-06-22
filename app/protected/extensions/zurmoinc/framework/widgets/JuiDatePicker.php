@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -33,6 +33,87 @@
         protected function hasModel()
         {
             return $this->model instanceof RedBeanModel && $this->attribute !== null;
+        }
+
+        /**
+         * This function overrides the run method from CJuiDatePicker and fixes the jQuery issue for the Datepicker showing
+         * wrong language in the portlet views popup.
+         */
+        public function run()
+        {
+            list($name, $id) = $this->resolveNameID();
+
+            if (isset($this->htmlOptions['id']))
+            {
+                $id = $this->htmlOptions['id'];
+            }
+            else
+            {
+                $this->htmlOptions['id'] = $id;
+            }
+
+            if (isset($this->htmlOptions['name']))
+            {
+                $name = $this->htmlOptions['name'];
+            }
+            else
+            {
+                $this->htmlOptions['name'] = $name;
+            }
+
+            if ($this->flat === false)
+            {
+                if ($this->hasModel())
+                {
+                    echo CHtml::activeTextField($this->model, $this->attribute, $this->htmlOptions);
+                }
+                else
+                {
+                    echo CHtml::textField($name, $this->value, $this->htmlOptions);
+                }
+            }
+            else
+            {
+                if ($this->hasModel())
+                {
+                    echo CHtml::activeHiddenField($this->model, $this->attribute, $this->htmlOptions);
+                    $attribute = $this->attribute;
+                    $this->options['defaultDate'] = $this->model->$attribute;
+                }
+                else
+                {
+                    echo CHtml::hiddenField($name, $this->value, $this->htmlOptions);
+                    $this->options['defaultDate'] = $this->value;
+                }
+
+                if (!isset($this->options['onSelect']))
+                {
+                    $this->options['onSelect']="js:function( selectedDate ) { jQuery('#{$id}').val(selectedDate);}"; // Not Coding Standard
+                }
+
+                $id = $this->htmlOptions['id'] = $this->htmlOptions['id'].'_container';
+                $this->htmlOptions['name'] = $this->htmlOptions['name'].'_container';
+
+                echo CHtml::tag('div', $this->htmlOptions, '');
+            }
+
+            $options = CJavaScript::encode($this->options);
+            $js = "jQuery('#{$id}').datepicker($options);";
+
+            if ($this->language != '' && $this->language != 'en')
+            {
+                $this->registerScriptFile($this->i18nScriptFile);
+                $js = "jQuery(function(){jQuery('#{$id}').datepicker(jQuery.extend({showMonthAfterYear:false}, jQuery.datepicker.regional['{$this->language}'], {$options}));})";
+            }
+
+            $cs = Yii::app()->getClientScript();
+
+            if (isset($this->defaultOptions))
+            {
+                $this->registerScriptFile($this->i18nScriptFile);
+                $cs->registerScript(__CLASS__,     $this->defaultOptions !== null?'jQuery.datepicker.setDefaults('.CJavaScript::encode($this->defaultOptions).');':'');
+            }
+            $cs->registerScript(__CLASS__. '#' . $id, $js);
         }
     }
 ?>

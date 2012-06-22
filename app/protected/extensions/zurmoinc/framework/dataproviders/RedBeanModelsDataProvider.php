@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -206,15 +206,11 @@
         }
 
         /**
-         * @return CSort the sorting object. If this is false, it means the sorting is disabled.
+         * @return CSort the sorting object. Sorting using getSort is disabled.
          */
         public function getSort()
         {
-            if (($sort = parent::getSort()) !== false)
-            {
-                $sort->modelClass = $this->modelClassName;
-            }
-            return $sort;
+            return false;
         }
 
         /**

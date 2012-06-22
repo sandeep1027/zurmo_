@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -53,6 +53,7 @@
             OpportunityTestHelper::createOpportunityWithAccountByNameForOwner('superOpp4',     $super, $account);
             //Setup default dashboard.
             Dashboard::getByLayoutIdAndUser                                  (Dashboard::DEFAULT_USER_LAYOUT_ID, $super);
+            ReadPermissionsOptimizationUtil::rebuild();
         }
 
         public function testRegularUserAllControllerActions()
@@ -126,11 +127,17 @@
 
             //Test nobody with elevated rights.
             Yii::app()->user->userModel = User::getByUsername('nobody');
-            $this->runControllerWithNoExceptionsAndGetContent('opportunities/default/list');
+            $content = $this->runControllerWithNoExceptionsAndGetContent('opportunities/default/list');
+            $this->assertFalse(strpos($content, 'Albert Einstein') === false);
             $this->runControllerWithNoExceptionsAndGetContent('opportunities/default/create');
 
             //Test nobody can view an existing opportunity he owns.
             $opportunity = OpportunityTestHelper::createOpportunityByNameForOwner('opportunityOwnedByNobody', $nobody);
+
+            //At this point the listview for leads should show the search/list and not the helper screen.
+            $content = $this->runControllerWithNoExceptionsAndGetContent('opportunities/default/list');
+            $this->assertTrue(strpos($content, 'Albert Einstein') === false);
+
             $this->setGetArray(array('id' => $opportunity->id));
             $this->runControllerWithNoExceptionsAndGetContent('opportunities/default/edit');
 
@@ -138,7 +145,7 @@
             $this->setGetArray(array('id' => $opportunity->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('opportunities/default/delete',
-            Yii::app()->getUrlManager()->getBaseUrl() . '?r=opportunities/default/index'); // Not Coding Standard
+                                                                   Yii::app()->createUrl('opportunities/default/index'));
 
             //Autocomplete for Opportunity should not fail.
             $this->setGetArray(array('term' => 'super'));
@@ -403,6 +410,28 @@
             $this->assertTrue($parentGroup->save());
             $childGroup->users->remove($userInChildGroup);
             $this->assertTrue($childGroup->save());
+        }
+
+        /**
+         * @depends testRegularUserControllerActionsWithElevationToModels
+         */
+        public function testRegularUserViewingOpportunityWithoutAccessToAccount()
+        {
+            $super       = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
+            $aUser       = UserTestHelper::createBasicUser('aUser');
+            $aUser->setRight('OpportunitiesModule', OpportunitiesModule::RIGHT_ACCESS_OPPORTUNITIES);
+            $aUser->setRight('AccountsModule',      AccountsModule::RIGHT_ACCESS_ACCOUNTS);
+            $this->assertTrue($aUser->save());
+            $aUser       = User::getByUsername('aUser');
+            $account     = AccountTestHelper::createAccountByNameForOwner('superTestAccount', $super);
+            $opportunity = OpportunityTestHelper::createOpportunityWithAccountByNameForOwner('opportunityOwnedByaUser', $aUser, $account);
+            $account->forget();
+            $id          = $opportunity->id;
+            $opportunity->forget();
+            unset($opportunity);
+            $this->logoutCurrentUserLoginNewUserAndGetByUsername('aUser');
+            $content = $this->runControllerWithNoExceptionsAndGetContent('opportunities/default');
+            $this->assertFalse(strpos($content, 'Fatal error: Method Account::__toString() must not throw an exception') > 0);
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -43,6 +43,23 @@
             //Setup default dashboard.
             Dashboard::getByLayoutIdAndUser(Dashboard::DEFAULT_USER_LAYOUT_ID, $super);
             ContactsModule::loadStartingData();
+        }
+
+        public function testSuperUserWelcomeActions()
+        {
+            $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
+
+            //test that the welcome screen appears
+            $content = $this->runControllerWithNoExceptionsAndGetContent('home/default/welcome');
+            $this->assertFalse(strpos($content, 'Go to the dashboard') === false);
+
+            //Change setting so user ignores welcome view.
+            $form                    = UserConfigurationFormAdapter::makeFormFromUserConfigurationByUser($super);
+            $form->hideWelcomeView   = true;
+            UserConfigurationFormAdapter::setConfigurationFromFormForCurrentUser($form);
+
+            //Now the welcome screen should not appear
+            $this->runControllerWithRedirectExceptionAndGetContent('home/default/welcome');
         }
 
         public function testSuperUserAllDefaultControllerActions()
@@ -134,7 +151,7 @@
             //Save a layout change. Collapse all portlets
             //At this point portlets for this view should be created because we have already loaded the 'details' page in a request above.
             $portlets = Portlet::getByLayoutIdAndUserSortedByColumnIdAndPosition($uniqueLayoutId, $super->id, array());
-            $this->assertEquals(6, count($portlets[1]));
+            $this->assertEquals(4, count($portlets[1]));
             $this->assertEquals(3, count($portlets[2]));
             $portletPostData = array();
             $portletCount = 0;
@@ -153,7 +170,7 @@
                 }
             }
             //There should have been a total of 3 portlets. Checking positions as 4 will confirm this.
-            $this->assertEquals(9, $portletCount);
+            $this->assertEquals(7, $portletCount);
             $this->resetGetArray();
             $this->setPostArray(array(
                 'portletLayoutConfiguration' => array(
@@ -165,7 +182,7 @@
             //Now test that all the portlets are collapsed.
             $portlets = Portlet::getByLayoutIdAndUserSortedByColumnIdAndPosition(
                             $uniqueLayoutId, $super->id, array());
-            $this->assertEquals (9, count($portlets[1])         );
+            $this->assertEquals (7, count($portlets[1])         );
             $this->assertFalse  (array_key_exists(8, $portlets) );
             foreach ($portlets as $column => $columns)
             {

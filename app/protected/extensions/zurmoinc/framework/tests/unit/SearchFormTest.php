@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -76,10 +76,14 @@
                                  'ABName',
                                  'differentOperatorA',
                                  'differentOperatorB',
+                                 'dateDateTimeADate__Date',
+                                 'dateDateTimeADateTime__DateTime',
+                                 'anyMixedAttributes',
                                  'date__Date',
                                  'date2__Date',
                                  'dateTime__DateTime',
-                                 'dateTime2__DateTime');
+                                 'dateTime2__DateTime',
+            );
             $this->assertEquals($compareData, $searchForm->attributeNames());
 
             //Check some other methods to make sure they work ok.
@@ -100,6 +104,8 @@
                 array('ABName', 'safe'),
                 array('differentOperatorA', 'safe'),
                 array('differentOperatorB', 'boolean'),
+                array('dateDateTimeADate__Date', 'safe'),
+                array('dateDateTimeADateTime__DateTime', 'safe'),
             );
             $this->assertEquals($compareData, $searchForm->rules());
 
@@ -110,7 +116,7 @@
             $this->assertEquals('MixedDateTypes', $mappingRulesType);
 
             //Test that the correct elements are used for the dynamic date attribute.
-            $elementType = ModelAttributeToDesignerTypeUtil::getDesignerType($searchForm, 'date__Date');
+            $elementType = ModelAttributeToMixedTypeUtil::getType($searchForm, 'date__Date');
             $this->assertEquals('MixedDateTypesForSearch', $elementType);
         }
 
@@ -140,8 +146,34 @@
             $this->assertEquals('MixedDateTimeTypes', $mappingRulesType);
 
             //Test that the correct elements are used for the dynamic date attribute.
-            $elementType = ModelAttributeToDesignerTypeUtil::getDesignerType($searchForm, 'dateTime__DateTime');
+            $elementType = ModelAttributeToMixedTypeUtil::getType($searchForm, 'dateTime__DateTime');
             $this->assertEquals('MixedDateTypesForSearch', $elementType);
+        }
+
+        public function testGetGlobalSearchAttributeNamesAndLabelsAndAll()
+        {
+            $searchModel = new ASearchFormTestModel(new A());
+            $data        = $searchModel->getGlobalSearchAttributeNamesAndLabelsAndAll();
+            $compareData = array('All' => 'All', 'a' => 'A', 'name' => 'Name');
+            $this->assertEquals($compareData, $data);
+        }
+
+        public function testResolveMixedSearchAttributeMappedToRealAttributesMetadata()
+        {
+            $realAttributesMetadata = array('something' => 'somethingElse');
+            $searchModel = new ASearchFormTestModel(new A());
+            $searchModel->resolveMixedSearchAttributeMappedToRealAttributesMetadata($realAttributesMetadata);
+            $compareData = array('anyMixedAttributes' => array(array('a'), array('name')),
+                                 'something' => 'somethingElse');
+            $this->assertEquals($compareData, $realAttributesMetadata);
+
+            //Add scoping.
+            $searchModel = new ASearchFormTestModel(new A());
+            $searchModel->setAnyMixedAttributesScope(array('name'));
+            $searchModel->resolveMixedSearchAttributeMappedToRealAttributesMetadata($realAttributesMetadata);
+            $compareData = array('anyMixedAttributes' => array(array('name')),
+                                 'something' => 'somethingElse');
+            $this->assertEquals($compareData, $realAttributesMetadata);
         }
     }
 ?>

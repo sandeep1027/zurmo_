@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,17 +26,17 @@
 
     class LeadsModuleAttributesListView extends GridView
     {
+        protected $cssClasses =  array( 'AdministrativeArea');
+
         public function __construct(
             $controllerId,
-            $moduleId,
-            $breadcrumbLinks
+            $moduleId
         )
         {
-            parent::__construct(3, 1);
+            parent::__construct(2, 1);
             $moduleDisplayName = LeadsModule::getModuleLabelByTypeAndLanguage('Plural');
-            $this->setView(new TitleBarView(Yii::t('Default', $moduleDisplayName), Yii::t('Default', 'Standard Fields')), 0, 0);
-            $this->setView(new DesignerBreadCrumbView($controllerId, $moduleId, $breadcrumbLinks), 1, 0);
-            $this->setView(new AttributesRedirectToContactsView($controllerId, $moduleId), 2, 0);
+            $this->setView(new ActionBarForDesignerModuleView($controllerId, $moduleId, Yii::app()->getModule('leads'), 'DesignerFieldsLink'), 0, 0);
+            $this->setView(new AttributesRedirectToContactsView($controllerId, $moduleId), 1, 0);
         }
 
         public function isUniqueToAPage()

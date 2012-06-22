@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -66,6 +66,7 @@
 
         public static function autoBuildModels(array $modelClassNames, & $messageLogger)
         {
+            AuditEvent::$isTableOptimized = false;
             assert('AssertUtil::all($modelClassNames, "is_string")');
             assert('$messageLogger instanceof MessageLogger');
             self::$modelClassNamesToSampleModels = array();
@@ -78,10 +79,11 @@
             }
             foreach (self::$modelClassNamesToSampleModels as $modelClassName => $model)
             {
-                if (!$model instanceof OwnedModel && !$model instanceof OwnedCustomField)
+                if (!$model instanceof OwnedModel && !$model instanceof OwnedCustomField && !$model instanceof OwnedMultipleValuesCustomField)
                 {
                     try
                     {
+                        $model->setScenario('autoBuildDatabase');
                         if (!$model->save())
                         {
                             $messageLogger->addErrorMessage("*** Saving the sample $modelClassName failed.");
@@ -102,6 +104,7 @@
                     {
                         $messageLogger->addErrorMessage("*** Saving the sample $modelClassName failed.");
                         if (is_subclass_of($modelClassName, 'OwnedCustomField') ||
+                            is_subclass_of($modelClassName, 'OwnedMultipleValuesCustomField') ||
                             is_subclass_of($modelClassName, 'OwnedModel'))
                         {
                             $messageLogger->addErrorMessage('It is OWNED and was probably not saved via its owner, making it not a root model.');
@@ -119,13 +122,27 @@
                 {
                     if (!$model->isDeleted())
                     {
-                        $messageLogger->addInfoMessage(get_class($model) . " Deleted (Not Owned).");
-                        $model->delete();
+                        if (!$model->delete())
+                        {
+                            if ($model->id < 0)
+                            {
+                                $messageLogger->addInfoMessage(get_class($model) . " Not Deleted but never saved so this is ok. (Most likely it is a - Has Many Owned)");
+                            }
+                            else
+                            {
+                                $messageLogger->addErrorMessage("*** Deleting the sample " .  get_class($model) . " failed. It would not delete.");
+                            }
+                        }
+                        else
+                        {
+                            $messageLogger->addInfoMessage(get_class($model) . " Deleted (Not Owned).");
+                        }
                     }
                     else
                     {
                         $messageLogger->addInfoMessage(get_class($model) . " Deleted Already (Owned).");
                     }
+                    AuditEvent::deleteAllByModel($model);
                     unset(self::$modelClassNamesToSampleModels[$modelClassName]);
                 }
                 catch (NotSupportedException $e)
@@ -137,6 +154,7 @@
             {
                 $messageLogger->addErrorMessage('*** Deleting of the sample(s) ' . join(', ', array_keys(self::$modelClassNamesToSampleModels)) . " didn't happen.");
             }
+            AuditEvent::$isTableOptimized = false;
         }
 
         public static function autoBuildSampleModel($modelClassName, array $modelClassNames, & $messageLogger)
@@ -148,6 +166,7 @@
             }
             $messageLogger->addInfoMessage("$modelClassName Being Created.");
             $model = new $modelClassName();
+            $model->setScenario('autoBuildDatabase');
             self::$modelClassNamesToSampleModels[$modelClassName] = $model;
             $metadata = $model->getMetadata();
             foreach ($metadata as $unused => $classMetadata)
@@ -171,7 +190,7 @@
                     foreach ($classMetadata['relations'] as $relationName => $relationTypeModelClassNameAndOwns)
                     {
                         //Always use the current user to ensure the model can later be saved and removed.
-                        if($relationName == 'owner' && $model instanceof OwnedSecurableItem)
+                        if ($relationName == 'owner' && $model instanceof OwnedSecurableItem)
                         {
                             $model->owner = Yii::app()->user->userModel;
                         }
@@ -321,7 +340,7 @@
                     case 'RedBeanModelCompareDateTimeValidator':
                     case 'RedBeanModelRequiredValidator':
                     case 'UsernameLengthValidator':
-                    case 'validateTimeZone':
+                    case 'ValidateTimeZone':
                         break;
 
                     case 'RedBeanModelTypeValidator':
