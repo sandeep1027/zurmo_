@@ -54,25 +54,29 @@
                 $pageSize,
                 Yii::app()->user->userModel->id
             );
-            $searchFilterListView = $this->makeSearchFilterListView(
+
+            $actionBarSearchAndListView = $this->makeActionBarSearchAndListView(
                 $searchForm,
-                'AnimalsFilteredList',
                 $pageSize,
                 AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
                 Yii::app()->user->userModel->id,
                 $dataProvider
             );
-            $view = new AnimalsPageView($this, $searchFilterListView);
+
+            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $actionBarSearchAndListView));
             echo $view->render();
         }
 
         public function actionDetails($id)
         {
-            $animal = Animal::getById(intval($id));
+            $animal = static::getModelAndCatchNotFoundAndDisplayError('Animal', intval($id));
             ControllerSecurityUtil::resolveAccessCanCurrentUserReadModel($animal);
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($animal), $animal);
-            $view = new AnimalsPageView($this,
-                $this->makeTitleBarAndEditAndDetailsView($animal, 'Details'));
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($animal), 'AnimalsModule'), $animal);
+
+            $titleBarAndEditView = $this->makeEditAndDetailsView($animal, 'Details');
+            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
             echo $view->render();
         }
 
@@ -83,18 +87,20 @@
 
         protected function actionCreateByModel(Animal $animal, $redirectUrl = null)
         {
-            $titleBarAndEditView = $this->makeTitleBarAndEditAndDetailsView(
+            $titleBarAndEditView = $this->makeEditAndDetailsView(
                                             $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit');
-            $view = new AnimalsPageView($this, $titleBarAndEditView);
+            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
             echo $view->render();
         }
 
         public function actionEdit($id, $redirectUrl = null)
         {
             $animal = Animal::getById(intval($id));
-            $view = new AnimalsPageView($this,
-                $this->makeTitleBarAndEditAndDetailsView(
-                    $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit'));
+            $titleBarAndEditView = $this->makeEditAndDetailsView(
+                                            $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit');
+            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
             echo $view->render();
         }
 

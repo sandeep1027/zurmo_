@@ -26,6 +26,16 @@
 
     class AnimalsModalSearchAndListView extends GridView
     {
+        public static function getListViewClassName()
+        {
+            return 'AnimalsModalListView';
+        }
+
+        public static function getSearchViewClassName()
+        {
+            return 'AnimalsModalSearchView';
+        }
+        /**
         public function __construct($controllerId, $moduleId, $modalListLinkProvider,
                                     RedBeanModel $animal, CDataProvider $dataProvider, $gridIdSuffix = null)
         {
@@ -35,7 +45,7 @@
             $this->setView(new AnimalsModalListView($controllerId, $moduleId, get_class($animal),
                                                      $modalListLinkProvider,  $dataProvider, $gridIdSuffix), 1, 0);
         }
-
+*/
         public function isUniqueToAPage()
         {
             return true;
