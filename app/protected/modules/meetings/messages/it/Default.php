@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,44 +30,58 @@
     // DON'T MAKE A MESS!
     return array(
         'Access MeetingsModulePluralLabel'
-            => '??',
+            => 'Accesso MeetingsModulePluralLabel',
         'Attendees'
-            => '??',
+            => 'Partecipanti',
         'Call'
-            => '??',
+            => 'Chiamata',
         'Category'
-            => '??',
+            => 'Categoria',
         'Create MeetingsModulePluralLabel'
-            => '??',
+            => 'Crea MeetingsModulePluralLabel',
+        'Create MeetingsModuleSingularLabel'
+            => 'Crea MeetingsModuleSingularLabel',
         'Delete MeetingsModulePluralLabel'
-            => '??',
+            => 'Elimina MeetingsModulePluralLabel',
         'End Time'
-            => '??',
+            => 'Data Fine',
         'Location'
-            => '??',
+            => 'Luogo',
         'Meeting'
-            => '??',
+            => 'Riuniona',
         'Meetings'
-            => '??',
+            => 'Riunioni',
         'MeetingsModulePluralLabel'
-            => 'MeetingsModulePluralLabel',
+            => 'MeetingsModulePluralLabel', // Same Word Translated
         'MeetingsModulePluralLabel For AccountsModuleSingularLabel'
-            => '??',
+            => 'MeetingsModulePluralLabel per AccountsModuleSingularLabel',
         'MeetingsModulePluralLabel For ContactsModuleSingularLabel'
-            => '??',
+            => 'MeetingsModulePluralLabel per ContactsModuleSingularLabel',
         'MeetingsModulePluralLabel For OpportunitiesModuleSingularLabel'
-            => '??',
+            => 'MeetingsModulePluralLabel per OpportunitiesModuleSingularLabel',
+        'MeetingsModulePluralLabel On {displayStringTime}'
+            => 'MeetingsModulePluralLabel Il {displayStringTime}',
         'MeetingsModuleSingularLabel'
-            => 'MeetingsModuleSingularLabel',
+            => 'MeetingsModuleSingularLabel', // Same Word Translated
+        'MeetingsModuleSingularLabel Day Summary'
+            => 'Sommario delle MeetingsModulePluralLabel',
         'My Upcoming MeetingsModulePluralLabel'
-            => '??',
+            => 'Le miei MeetingsModulePluralLabel',
         'Related ContactsModulePluralLabel and LeadsModulePluralLabel'
-            => '??',
+            => 'ContactsModulePluralLabel e LeadsModulePluralLabel relativi',
         'Start Time'
-            => '??',
+            => 'Data & ora inizio',
         'Type a ContactsModuleSingularLowerCaseLabel or LeadsModuleSingularLowerCaseLabel: name or email address'
-            => '??',
+            => 'Digita un ContactsModuleSingularLowerCaseLabel o LeadsModuleSingularLowerCaseLabel: nome o indirizzo e-mail',
         'Upcoming MeetingsModulePluralLabel'
-            => '??',
+            => 'Prossimi MeetingsModulePluralLabel',
+        '{n} Call created|{n} Calls created'
+            => '{n} Chiamata create|{n} Chiamati creati',
+        '{n} MeetingsModuleSingularLabel created|{n} MeetingsModulePluralLabel created'
+            => '{n} MeetingsModuleSingularLabel create|{n} MeetingsModulePluralLabel creati',
+        '{quantity} MeetingsModulePluralLabel'
+            => '{quantity} MeetingsModulePluralLabel', // Same Word Translated
+        '{quantity} MeetingsModuleSingularLabel'
+            => '{quantity} MeetingsModuleSingularLabel', // Same Word Translated
     );
 ?>

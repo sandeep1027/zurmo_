@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -38,24 +38,25 @@
 
         protected $userId;
 
-        public function __construct($controllerId, $moduleId, array $groupMembership, $userId)
+        public function __construct($controllerId, $moduleId, array $groupMembership, $userId, $title = null)
         {
             assert('is_string($controllerId) && $controllerId != null');
             assert('is_string($moduleId) && $moduleId != null');
             assert('is_int($userId) && $controllerId != null');
+            assert('$title == null || is_string($title)');
             $this->controllerId           = $controllerId;
             $this->moduleId               = $moduleId;
             $this->groupMembership        = $groupMembership;
             $this->userId                 = $userId;
+            $this->title                  = $title;
         }
 
         protected function renderContent()
         {
-            $content  = '<div class="view-toolbar">';
-            $content .= '</div>';
+            $content  = '<div class="details-table">';
+            $content .= $this->renderTitleContent();
             $content .= '<table>';
             $content .= '<colgroup>';
-            //$content .= '<col style="width:80%" /><col style="width:20%" />';
             $content .= '<col style="width:100%" />';
             $content .= '</colgroup>';
             $content .= '<tbody>';
@@ -85,7 +86,16 @@
             }
             $content .= '</tbody>';
             $content .= '</table>';
+            $content .= '</div>';
             return $content;
+        }
+
+        protected function renderTitleContent()
+        {
+            if ($this->title != null)
+            {
+                return '<h1>' . $this->title . "</h1>";
+            }
         }
 
         public function isUniqueToAPage()

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -80,6 +80,27 @@
         /**
          * @depends testSanitizePostByDesignerTypeForSavingModel
          */
+        public function testSanitizePostByDesignerTypeForSavingModelForTagCloud()
+        {
+            $sanitizedPostData = PostUtil::sanitizePostByDesignerTypeForSavingModel(new TestCustomFieldsModel(),
+                                                                                    array('tagCloud' =>
+                                                                                    array('values' => 'abc,def'))); // Not Coding Standard
+            $this->assertEquals(array('abc', 'def'), $sanitizedPostData['tagCloud']['values']);
+
+            $sanitizedPostData = PostUtil::sanitizePostByDesignerTypeForSavingModel(new TestCustomFieldsModel(),
+                                                                                    array('tagCloud' =>
+                                                                                    array('values' => '')));
+            $this->assertEquals(array(), $sanitizedPostData['tagCloud']['values']);
+
+            $sanitizedPostData = PostUtil::sanitizePostByDesignerTypeForSavingModel(new TestCustomFieldsModel(),
+                                                                                    array('tagCloud' =>
+                                                                                    array('values' => array('gg', 'hh'))));
+            $this->assertEquals(array('gg', 'hh'), $sanitizedPostData['tagCloud']['values']);
+        }
+
+        /**
+         * @depends testSanitizePostByDesignerTypeForSavingModelForTagCloud
+         */
         public function testSanitizeSearchFormAttributes()
         {
             $super                      = User::getByUsername('super');
@@ -92,6 +113,10 @@
             $postData          = array( 'date__Date'  =>
                                     array('type'      => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
                                           'firstDate' => '3/25/11'),
+                                         'date2__Date'  =>
+                                    array('type'      => MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN,
+                                          'firstDate' =>  '5/25/11',
+                                          'secondDate' => '6/25/11'),
                                 'dateTime__DateTime'  =>
                                    array('type'       => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
                                           'firstDate' => '3/26/11'));
@@ -99,7 +124,47 @@
             $compareData = array( 'date__Date'  =>
                                     array('type'      => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
                                           'firstDate' => '2011-03-25'),
+                                  'date2__Date'  =>
+                                    array('type'       => MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN,
+                                          'firstDate'  => '2011-05-25',
+                                          'secondDate' => '2011-06-25'),
                                 'dateTime__DateTime'  =>
+                                   array('type'       => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
+                                          'firstDate' => '2011-03-26'));
+            $this->assertEquals($compareData, $sanitizedPostData);
+        }
+
+        /**
+         * @depends testSanitizeSearchFormAttributes
+         */
+        public function testSanitizeSearchFormAttributesThatAreOnARelatedModel()
+        {
+            $super                      = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+            $language                   = Yii::app()->getLanguage();
+            $this->assertEquals($language, 'en');
+
+            //test sanitizing a SearchForm date attribute and a SearchForm dateTime attribute
+            $searchForm        = new ASearchFormTestModel(new MixedRelationsModel());
+            $postData          = array( 'dateDateTimeADate__Date'  =>
+                                    array('type'      => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
+                                          'firstDate' => '3/25/11'),
+                                         'dateDateTimeADate__Date'  =>
+                                    array('type'      => MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN,
+                                          'firstDate' =>  '5/25/11',
+                                          'secondDate' => '6/25/11'),
+                                'dateDateTimeADateTime__DateTime'  =>
+                                   array('type'       => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
+                                          'firstDate' => '3/26/11'));
+            $sanitizedPostData = PostUtil::sanitizePostByDesignerTypeForSavingModel($searchForm, $postData);
+            $compareData = array( 'dateDateTimeADate__Date'  =>
+                                    array('type'      => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
+                                          'firstDate' => '2011-03-25'),
+                                  'dateDateTimeADate__Date'  =>
+                                    array('type'       => MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN,
+                                          'firstDate'  => '2011-05-25',
+                                          'secondDate' => '2011-06-25'),
+                                'dateDateTimeADateTime__DateTime'  =>
                                    array('type'       => MixedDateTypesSearchFormAttributeMappingRules::TYPE_AFTER,
                                           'firstDate' => '2011-03-26'));
             $this->assertEquals($compareData, $sanitizedPostData);

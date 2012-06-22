@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -237,6 +237,29 @@
                     );
                 }
             }
+        }
+
+        /**
+         * @return array of effective placed attributes. Includes all non-derived attributes directly placed in the
+         * layout as well as real attributes that are part of a derived attribute. For example: fullName. Even though
+         * this is derived, it effectively places the lastName attribute.
+         */
+        public function getEffectivePlacedAttributes()
+        {
+            $placedAttributes = $this->getAttributesInPlace();
+            foreach ($this->getDerivedAttributesInPlace() as $derivedAttributeType)
+            {
+                $elementClassName = $derivedAttributeType . 'Element';
+                $attributesUsed = $elementClassName::getModelAttributeNames();
+                foreach ($attributesUsed as $attribute)
+                {
+                    if (!in_array($attribute, $placedAttributes))
+                    {
+                        $placedAttributes[] = $attribute;
+                    }
+                }
+            }
+            return $placedAttributes;
         }
     }
 ?>

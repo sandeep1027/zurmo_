@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -23,9 +23,6 @@
      * You can contact Zurmo, Inc. with a mailing address at 113 McHenry Road Suite 207,
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
-
-    $basePath = Yii::app()->getBasePath();
-    require_once("$basePath/../../redbean/rb.php");
 
     /**
      * Abstraction over the top of an application database accessed via
@@ -57,15 +54,36 @@
      * schema on the fly as opposed to Yii's getting attributes from an
      * already existing schema.
      */
-    abstract class RedBeanModel extends CComponent implements Serializable
+    abstract class RedBeanModel extends ObservableComponent implements Serializable
     {
-        // Models that have not been saved yet have no id as far
-        // as the database is concerned. Until they are saved they are
-        // assigned a negative id, so that they have identity.
+        /**
+         * Models that have not been saved yet have no id as far
+         * as the database is concerned. Until they are saved they are
+         * assigned a negative id, so that they have identity.
+         * @var integer
+         */
         private static $nextPseudoId = -1;
 
-        // The id of an unsaved model.
+        /**
+         * Array of static models. Used by Observers @see ObservableComponent to add events to a class.
+         * @var array
+         */
+        private static $_models = array();
+
+        /*
+         * The id of an unsaved model.
+         * @var integer
+         */
         private $pseudoId;
+
+        /**
+         * When creating the class heirarchy for bean creation and maintenence, which class is the last class in the
+         * lineage to create a bean for?  Normally the RedBeanModel is the lastClass in the line, and therefore there
+         * will not be a table redbeanmodel.  Some classes that extend RedBeanModel might want the line to stop before
+         * RedBeanModel since creating a table with just an 'id' would be pointless.  @see OwnedModel
+         * @var string
+         */
+        protected static $lastClassInBeanHeirarchy = 'RedBeanModel';
 
         // A model maps to one or more beans. If Person extends RedBeanModel
         // there is one bean, but if User then extends Person a User model
@@ -88,13 +106,22 @@
         // it can be saved explicitly but it wont be saved automatically
         // when it is a related model and will be redispensed next
         // time it is referenced.
-        protected $modified       = false;
-        protected $deleted        = false;
-        protected $isInIsModified = false;
-        protected $isInHasErrors  = false;
-        protected $isInGetErrors  = false;
-        protected $isValidating   = false;
-        protected $isSaving       = false;
+        protected $modified               = false;
+        protected $deleted                = false;
+        protected $isInIsModified         = false;
+        protected $isInHasErrors          = false;
+        protected $isInGetErrors          = false;
+        protected $isValidating           = false;
+        protected $isSaving               = false;
+        protected $isNewModel             = false;
+
+        /**
+         * Can this model be saved when save is called from a related model?  True if it can, false if it cannot.
+         * Setting this value to false can reduce unnecessary queries to the database. If the models of a class do
+         * not change often then it can make sense to set this to false.  An example is @see Currency.
+         * @var boolean
+         */
+        protected $isSavableFromRelation = true;
 
         // Mapping of Yii validators to validators doing things that
         // are either required for RedBean, or that simply implement
@@ -112,8 +139,9 @@
 
         /**
          * Used in an extending class's getDefaultMetadata() method to specify
-         * that a relation is 1:1 and that the class on the 1 side of the
-         * relation.
+         * that a relation is 1:1 and that the class on the side of the relationship where this is not a column in that
+         * model's table.  Example: model X HAS_ONE Y.  There will be a y_id on the x table.  But in Y you would have
+         * HAS_ONE_BELONGS_TO X and there would be no column in the y table.
          */
         const HAS_ONE_BELONGS_TO = 0;
 
@@ -154,7 +182,46 @@
          * is deleted it owns the related models and they are deleted along with it.
          * If not specified the related model is independent and is not deleted.
          */
-        const OWNED = true;
+        const OWNED     = true;
+
+        /**
+         * @see const OWNED for more information.
+         * @var boolean
+         */
+        const NOT_OWNED = false;
+
+        /**
+         * Returns the static model of the specified AR class.
+         * The model returned is a static instance of the AR class.
+         * It is provided for invoking class-level methods (something similar to static class methods.)
+         *
+         * EVERY derived AR class must override this method as follows,
+         * <pre>
+         * public static function model($className=__CLASS__)
+         * {
+         *     return parent::model($className);
+         * }
+         * </pre>
+         *
+         * @param string $className active record class name.
+         * @return CActiveRecord active record model instance.
+         */
+        public static function model($className = null)
+        {
+            if ($className == null)
+            {
+                $className = get_called_class();
+            }
+            if (isset(self::$_models[$className]))
+            {
+                return self::$_models[$className];
+            }
+            else
+            {
+                $model = self::$_models[$className] = new $className(false);
+                return $model;
+            }
+        }
 
         /**
          * Gets all the models from the database of the named model type.
@@ -187,7 +254,7 @@
          * @param $joinTablesAdapter null or instance of joinTablesAdapter.
          * @param $offset The zero based index of the first model to be returned.
          * @param $count The number of models to be returned.
-         * @param $where TODO
+         * @param $where
          * @param $orderBy - sql string. Example 'a desc' or 'a.b desc'.  Currently only supports non-related attributes
          * @param $modelClassName Pass only when getting it at runtime gets the wrong name.
          * @return An array of models of the type of the extending model.
@@ -212,9 +279,9 @@
                 $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter($modelClassName);
             }
             $tableName = self::getTableName($modelClassName);
-            $sql = static::makeSubsetOrCountSqlQuery($tableName, $joinTablesAdapter, $offset, $count, $where,
-                                                     $orderBy, false, $selectDistinct);
-            $ids = R::getCol($sql);
+            $sql       = static::makeSubsetOrCountSqlQuery($tableName, $joinTablesAdapter, $offset, $count, $where,
+                                                           $orderBy, false, $selectDistinct);
+            $ids       = R::getCol($sql);
             $tableName = self::getTableName($modelClassName);
             $beans = R::batch ($tableName, $ids);
             return self::makeModels($beans, $modelClassName);
@@ -315,6 +382,11 @@
             return RedBeanModel::makeModel(end($beans), $modelClassName);
         }
 
+        public function getIsNewModel()
+        {
+            return $this->isNewModel;
+        }
+
         /**
          * Constructs a new model.
          * Important:
@@ -337,9 +409,10 @@
         public function __construct($setDefaults = true, RedBean_OODBBean $bean = null, $forceTreatAsCreation = false)
         {
             $this->pseudoId = self::$nextPseudoId--;
+            $this->init();
             if ($bean === null)
             {
-                foreach (array_reverse(RuntimeUtil::getClassHierarchy(get_class($this), 'RedBeanModel')) as $modelClassName)
+                foreach (array_reverse(RuntimeUtil::getClassHierarchy(get_class($this), static::$lastClassInBeanHeirarchy)) as $modelClassName)
                 {
                     $tableName = self::getTableName($modelClassName);
                     $newBean = R::dispense($tableName);
@@ -361,7 +434,7 @@
             {
                 assert('$bean->id > 0');
                 $first = true;
-                foreach (RuntimeUtil::getClassHierarchy(get_class($this), 'RedBeanModel') as $modelClassName)
+                foreach (RuntimeUtil::getClassHierarchy(get_class($this), static::$lastClassInBeanHeirarchy) as $modelClassName)
                 {
                     if ($first)
                     {
@@ -372,7 +445,10 @@
                     {
                         $tableName = self::getTableName($modelClassName);
                         $lastBean = R::getBean($lastBean, $tableName);
-                        assert('$lastBean !== null');
+                        if ($lastBean === null)
+                        {
+                            throw new MissingBeanException();
+                        }
                         assert('$lastBean->id > 0');
                     }
                     $this->modelClassNameToBean[$modelClassName] = $lastBean;
@@ -409,6 +485,7 @@
         protected function constructIncomplete($bean)
         {
             assert('$bean === null || $bean instanceof RedBean_OODBBean');
+            $this->init();
         }
 
         public function serialize()
@@ -593,7 +670,7 @@
                 {
                     foreach ($metadata[$modelClassName]['relations'] as $relationName => $relationTypeModelClassNameAndOwns)
                     {
-                        assert('in_array(count($relationTypeModelClassNameAndOwns), array(2, 3))');
+                        assert('in_array(count($relationTypeModelClassNameAndOwns), array(2, 3, 4))');
 
                         $relationType           = $relationTypeModelClassNameAndOwns[0];
                         $relationModelClassName = $relationTypeModelClassNameAndOwns[1];
@@ -607,19 +684,34 @@
                                       array('{relationName}' => $relationName,
                                             '{relationModelClassName}' => $relationModelClassName)));
                         }
-                        if (count($relationTypeModelClassNameAndOwns) == 3)
+                        if (count($relationTypeModelClassNameAndOwns) >= 3 &&
+                            $relationTypeModelClassNameAndOwns[2] == self::OWNED)
                         {
-                            $relationTypeModelClassNameAndOwns[2] == self::OWNED;
                             $owns = true;
                         }
                         else
                         {
                             $owns = false;
                         }
+                        if (count($relationTypeModelClassNameAndOwns) == 4 && $relationType != self::HAS_MANY)
+                        {
+                            throw new NotSupportedException();
+                        }
+                        if (count($relationTypeModelClassNameAndOwns) == 4)
+                        {
+                            $relationPolyOneToManyName = $relationTypeModelClassNameAndOwns[3];
+                        }
+                        else
+                        {
+                            $relationPolyOneToManyName = null;
+                        }
                         assert('in_array($relationType, array(self::HAS_ONE_BELONGS_TO, self::HAS_MANY_BELONGS_TO, ' .
                                                              'self::HAS_ONE, self::HAS_MANY, self::MANY_MANY))');
                         $this->attributeNameToBeanAndClassName[$relationName] = array($bean, $modelClassName);
-                        $this->relationNameToRelationTypeModelClassNameAndOwns[$relationName] = array($relationType, $relationModelClassName, $owns);
+                        $this->relationNameToRelationTypeModelClassNameAndOwns[$relationName] = array($relationType,
+                                                                                                $relationModelClassName,
+                                                                                                $owns,
+                                                                                                $relationPolyOneToManyName);
                         if (!in_array($relationType, array(self::HAS_ONE_BELONGS_TO, self::HAS_MANY_BELONGS_TO, self::MANY_MANY)))
                         {
                             $this->attributeNamesNotBelongsToOrManyMany[] = $relationName;
@@ -764,7 +856,7 @@
                 $className = get_called_Class();
                 $defaultMetadata = $className::getDefaultMetadata();
                 $metadata = array();
-                foreach (array_reverse(RuntimeUtil::getClassHierarchy($className, 'RedBeanModel')) as $modelClassName)
+                foreach (array_reverse(RuntimeUtil::getClassHierarchy($className, static::$lastClassInBeanHeirarchy)) as $modelClassName)
                 {
                     if ($modelClassName::canSaveMetadata())
                     {
@@ -823,7 +915,7 @@
                 self::assertMetadataIsValid($metadata);
             }
             $className = get_called_class();
-            foreach (array_reverse(RuntimeUtil::getClassHierarchy($className, 'RedBeanModel')) as $modelClassName)
+            foreach (array_reverse(RuntimeUtil::getClassHierarchy($className, static::$lastClassInBeanHeirarchy)) as $modelClassName)
             {
                 if ($modelClassName::canSaveMetadata())
                 {
@@ -864,7 +956,7 @@
         protected static function assertMetadataIsValid(array $metadata)
         {
             $className = get_called_Class();
-            foreach (RuntimeUtil::getClassHierarchy($className, 'RedBeanModel') as $modelClassName)
+            foreach (RuntimeUtil::getClassHierarchy($className, static::$lastClassInBeanHeirarchy) as $modelClassName)
             {
                 if (isset($metadata[$modelClassName]['members']))
                 {
@@ -1051,21 +1143,29 @@
                 {
                     if (!array_key_exists($attributeName, $this->relationNameToRelatedModel))
                     {
-                        list($relationType, $relatedModelClassName, $owns) = $this->relationNameToRelationTypeModelClassNameAndOwns[$attributeName];
+                        list($relationType, $relatedModelClassName, $owns, $relationPolyOneToManyName) =
+                             $this->relationNameToRelationTypeModelClassNameAndOwns[$attributeName];
                         $relatedTableName = self::getTableName($relatedModelClassName);
                         switch ($relationType)
                         {
                             case self::HAS_ONE_BELONGS_TO:
-                                $relatedIds = R::$linkManager->getKeys($bean, $relatedTableName);
-                                assert('in_array(count($relatedIds), array(0, 1))');
-                                if (count($relatedIds) != 1)
+                                $linkName          = strtolower(get_class($this));
+                                $columnName        = $linkName . '_id';
+                                $relatedBeans      = RedBean_Plugin_Finder::where($relatedTableName, $columnName . " = " . $bean->id);
+                                if (count($relatedBeans) > 1)
                                 {
-                                    return null;
+                                    throw new NotFoundException();
                                 }
-                                $relatedBean = R::load($relatedTableName, $relatedIds[0]);
-                                $this->relationNameToRelatedModel[$attributeName] = self::makeModel($relatedBean, $relatedModelClassName);
+                                elseif (count($relatedBeans) == 0)
+                                {
+                                    $relatedModel = new $relatedModelClassName();
+                                }
+                                else
+                                {
+                                    $relatedModel = self::makeModel(end($relatedBeans), $relatedModelClassName);
+                                }
+                                $this->relationNameToRelatedModel[$attributeName] = $relatedModel;
                                 break;
-
                             case self::HAS_ONE:
                             case self::HAS_MANY_BELONGS_TO:
                                 if ($relationType == self::HAS_ONE)
@@ -1109,7 +1209,12 @@
                                 break;
 
                             case self::HAS_MANY:
-                                $this->relationNameToRelatedModel[$attributeName] = new RedBeanOneToManyRelatedModels($bean, $relatedModelClassName, $attributeModelClassName, $owns);
+                                $this->relationNameToRelatedModel[$attributeName] =
+                                    new RedBeanOneToManyRelatedModels($bean,
+                                                                      $relatedModelClassName,
+                                                                      $attributeModelClassName,
+                                                                      $owns,
+                                                                      $relationPolyOneToManyName);
                                 break;
 
                             case self::MANY_MANY:
@@ -1192,7 +1297,8 @@
                 }
                 else
                 {
-                    list($relationType, $relatedModelClassName, $owns) = $this->relationNameToRelationTypeModelClassNameAndOwns[$attributeName];
+                    list($relationType, $relatedModelClassName, $owns, $relationPolyOneToManyName) =
+                        $this->relationNameToRelationTypeModelClassNameAndOwns[$attributeName];
                     $relatedTableName = self::getTableName($relatedModelClassName);
                     $linkName = strtolower($attributeName);
                     if ($linkName == strtolower($relatedModelClassName))
@@ -1331,6 +1437,41 @@
         }
 
         /**
+         * Given an attribute return the column name.
+         * @param string $attributeName
+         */
+        public function getColumnNameByAttribute($attributeName)
+        {
+            assert('is_string($attributeName)');
+            if ($this->isRelation($attributeName))
+            {
+                $modelClassName = get_class($this);
+                $columnName = $modelClassName::getForeignKeyName($modelClassName, $attributeName);
+            }
+            else
+            {
+                $columnName = strtolower($attributeName);
+            }
+            return $columnName;
+        }
+
+        /**
+         * This method is needed to interpret when the attributeName is 'id'.  Since id is not an attribute
+         * on the model, we manaully check for this and return the appropriate class name.
+         * @param string $attributeName
+         * @return the model class name for the attribute.  This could be a casted up model class name.
+         */
+        public function resolveAttributeModelClassName($attributeName)
+        {
+            assert('is_string($attributeName)');
+            if ($attributeName == 'id')
+            {
+                return get_class($this);
+            }
+            return $this->getAttributeModelClassName($attributeName);
+        }
+
+        /**
          * Returns the model class name for an
          * attribute name defined by the extending class's getMetadata() method.
          * For use by RedBeanModelDataProvider. Is unlikely to be of any
@@ -1447,7 +1588,7 @@
          * proceeding to non-validated models.
          * @see RedBeanModel
          * @param $ignoreRequiredValidator - set to true in scenarios where you want to validate everything but the
-         * 									 the required validator.  An example is a search form.
+         *                                   the required validator.  An example is a search form.
          */
         public function validate(array $attributeNames = null, $ignoreRequiredValidator = false)
         {
@@ -1668,6 +1809,31 @@
                         foreach ($this->relationNameToRelatedModel as $relationName => $relatedModel)
                         {
                             $relationType = $this->relationNameToRelationTypeModelClassNameAndOwns[$relationName][0];
+                            if (!in_array($relationType, array(self::HAS_ONE_BELONGS_TO,
+                                                               self::HAS_MANY_BELONGS_TO)))
+                            {
+                                if ($relatedModel->isModified() ||
+                                    ($this->isAttributeRequired($relationName)))
+                                {
+                                    //If the attribute is required, but already exists and has not been modified we do
+                                    //not have to worry about saving it.
+                                    if($this->isSavableFromRelation &&
+                                       !($this->isAttributeRequired($relationName) &&
+                                         !$relatedModel->isModified() &&
+                                         $relatedModel->id > 0))
+                                    {
+                                        if (!$relatedModel->save(false))
+                                        {
+                                            $this->isSaving = false;
+                                            return false;
+                                        }
+                                    }
+                                    elseif ($relatedModel->isModified())
+                                    {
+                                        throw new NotSuportedException();
+                                    }
+                                }
+                            }
                             if ($relatedModel instanceof RedBeanModel)
                             {
                                 $bean                  = $this->attributeNameToBeanAndClassName                [$relationName][0];
@@ -1677,18 +1843,21 @@
                                 {
                                     $linkName = null;
                                 }
-                                elseif ($relationType == RedBeanModel::HAS_MANY_BELONGS_TO)
+                                elseif ($relationType == RedBeanModel::HAS_MANY_BELONGS_TO ||
+                                        $relationType == RedBeanModel::HAS_ONE_BELONGS_TO)
                                 {
-                                    $label = 'Relations of type HAS_MANY_BELONGS_TO must have the relation name ' .
+                                    $label = 'Relations of type HAS_MANY_BELONGS_TO OR HAS_ONE_BELONGS_TO must have the relation name ' .
                                              'the same as the related model class name. Relation: {relationName} ' .
                                              'Relation model class name: {relationModelClassName}';
                                     throw new NotSupportedException(Yii::t('Default', $label,
                                               array('{relationName}' => $linkName,
                                                     '{relationModelClassName}' => $relatedModelClassName)));
                                 }
-                                if ($relatedModel->isModified() ||
+                                //Needed to exclude HAS_ONE_BELONGS_TO because an additional column was being created
+                                //on the wrong side.
+                                if ($relationType != RedBeanModel::HAS_ONE_BELONGS_TO && ($relatedModel->isModified() ||
                                     $relatedModel->id > 0       ||
-                                    $this->isAttributeRequired($relationName))
+                                    $this->isAttributeRequired($relationName)))
                                 {
                                     $relatedModel = $this->relationNameToRelatedModel[$relationName];
                                     $relatedBean  = $relatedModel->getClassBean($relatedModelClassName);
@@ -1698,20 +1867,6 @@
                                         $tableName  = self::getTableName($this->getAttributeModelClassName($relationName));
                                         $columnName = self::getForeignKeyName(get_class($this), $relationName);
                                         RedBean_Plugin_Optimizer_Id::ensureIdColumnIsINT11($tableName, $columnName);
-                                    }
-                                }
-                            }
-                            if (!in_array($relationType, array(self::HAS_ONE_BELONGS_TO,
-                                                               self::HAS_MANY_BELONGS_TO)))
-                            {
-                                if ($relatedModel->isModified() ||
-                                    ($this->isAttributeRequired($relationName) && $relatedModel->id <= 0))
-                                {
-                                    // Validation of this model has already done.
-                                    if (!$relatedModel->save(false))
-                                    {
-                                        $this->isSaving = false;
-                                        return false;
                                     }
                                 }
                             }
@@ -1762,13 +1917,75 @@
             }
         }
 
+        /**
+         * This method is invoked before saving a record (after validation, if any).
+         * The default implementation raises the {@link onBeforeSave} event.
+         * You may override this method to do any preparation work for record saving.
+         * Use {@link isNewModel} to determine whether the saving is
+         * for inserting or updating record.
+         * Make sure you call the parent implementation so that the event is raised properly.
+         * @return boolean whether the saving should be executed. Defaults to true.
+         */
         protected function beforeSave()
         {
-            return true;
+            if ($this->hasEventHandler('onBeforeSave'))
+            {
+                $event = new CModelEvent($this);
+                $this->onBeforeSave($event);
+                return $event->isValid;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         protected function afterSave()
         {
+            $event = new CEvent($this);
+            $this->onAfterSave($event);
+        }
+
+        /**
+         * This event is raised before the record is saved.
+         * By setting {@link CModelEvent::isValid} to be false, the normal {@link save()} process will be stopped.
+         * @param CModelEvent $event the event parameter
+         * @since 1.0.2
+         */
+        public function onBeforeSave($event)
+        {
+            $this->raiseEvent('onBeforeSave', $event);
+        }
+
+        /**
+         * This event is raised after the record is saved.
+         * @param CEvent $event the event parameter
+         * @since 1.0.2
+         */
+        public function onAfterSave($event)
+        {
+            $this->raiseEvent('onAfterSave', $event);
+        }
+
+        /**
+         * This event is raised before the record is deleted.
+         * By setting {@link CModelEvent::isValid} to be false, the normal {@link delete()} process will be stopped.
+         * @param CModelEvent $event the event parameter
+         * @since 1.0.2
+         */
+        public function onBeforeDelete($event)
+        {
+            $this->raiseEvent('onBeforeDelete', $event);
+        }
+
+        /**
+         * This event is raised after the record is deleted.
+         * @param CEvent $event the event parameter
+         * @since 1.0.2
+         */
+        public function onAfterDelete($event)
+        {
+            $this->raiseEvent('onAfterDelete', $event);
         }
 
         protected function linkBeans()
@@ -1848,7 +2065,7 @@
             {
                 // If the model was never saved
                 // then it doesn't need to be deleted.
-                return;
+                return false;
             }
             $modelClassName = get_called_class();
             if (!$modelClassName::isTypeDeletable() ||
@@ -1857,17 +2074,51 @@
                 // See comments below on isDeletable.
                 throw new NotSupportedException();
             }
-            $this->beforeDelete();
-            $this->unrestrictedDelete();
-            $this->afterDelete();
+            if ($this->beforeDelete())
+            {
+                $deleted = $this->unrestrictedDelete();
+                $this->afterDelete();
+                return $deleted;
+            }
+            else
+            {
+                return false;
+            }
         }
 
+        /**
+         * This method is invoked before deleting a record.
+         * The default implementation raises the {@link onBeforeDelete} event.
+         * You may override this method to do any preparation work for record deletion.
+         * Make sure you call the parent implementation so that the event is raised properly.
+         * @return boolean whether the record should be deleted. Defaults to true.
+         */
         protected function beforeDelete()
         {
+            if ($this->hasEventHandler('onBeforeDelete'))
+            {
+                $event = new CModelEvent($this);
+                $this->onBeforeDelete($event);
+                return $event->isValid;
+            }
+            else
+            {
+                return true;
+            }
         }
 
+        /**
+         * This method is invoked after deleting a record.
+         * The default implementation raises the {@link onAfterDelete} event.
+         * You may override this method to do postprocessing after the record is deleted.
+         * Make sure you call the parent implementation so that the event is raised properly.
+         */
         protected function afterDelete()
         {
+            if ($this->hasEventHandler('onAfterDelete'))
+            {
+                $this->onAfterDelete(new CEvent($this));
+            }
         }
 
         protected function unrestrictedDelete()
@@ -1875,7 +2126,7 @@
             $this->forget();
             // RedBeanModel only supports cascaded deletes on associations,
             // not on links. So for now at least they are done the slow way.
-            foreach (RuntimeUtil::getClassHierarchy(get_class($this), 'RedBeanModel') as $modelClassName)
+            foreach (RuntimeUtil::getClassHierarchy(get_class($this), static::$lastClassInBeanHeirarchy) as $modelClassName)
             {
                 $this->deleteOwnedRelatedModels  ($modelClassName);
                 $this->deleteForeignRelatedModels($modelClassName);
@@ -1886,6 +2137,7 @@
             }
             // The model cannot be used anymore.
             $this->deleted = true;
+            return true;
         }
 
         public function isDeleted()
@@ -1897,7 +2149,7 @@
         {
             foreach ($this->relationNameToRelationTypeModelClassNameAndOwns as $relationName => $relationTypeModelClassNameAndOwns)
             {
-                assert('count($relationTypeModelClassNameAndOwns) == 3');
+                assert('count($relationTypeModelClassNameAndOwns) == 3 || count($relationTypeModelClassNameAndOwns) == 4');
                 $relationType = $relationTypeModelClassNameAndOwns[0];
                 $owns         = $relationTypeModelClassNameAndOwns[2];
                 if ($owns)
@@ -2407,24 +2659,25 @@
         public function getAttributes(array $attributeNames = null)
         {
             $values = array();
-            foreach ($this->attributeNames() as $attributeName)
-            {
-                $values[$attributeName] = $this->$attributeName;
-            }
             if (is_array($attributeNames))
             {
                 $values2 = array();
+                $allModelAttributeNames = $this->attributeNames();
                 foreach ($attributeNames as $attributeName)
                 {
-                    if (isset($values[$attributeName]))
+                    if (in_array($attributeName, $allModelAttributeNames))
                     {
-                        $values2[$attributeName] = $values[$attributeName];
+                        $values2[$attributeName] = $this->$attributeName;
                     }
                 }
                 return $values2;
             }
             else
             {
+                foreach ($this->attributeNames() as $attributeName)
+                {
+                    $values[$attributeName] = $this->$attributeName;
+                }
                 return $values;
             }
         }
@@ -2468,12 +2721,21 @@
                                 else
                                 {
                                     $relatedModelClassName = $this->relationNameToRelationTypeModelClassNameAndOwns[$attributeName][1];
-                                    $this->$attributeName = self::getById(intval($value['id']), $relatedModelClassName);
+                                    $this->$attributeName  = $relatedModelClassName::getById(intval($value['id']), $relatedModelClassName);
                                 }
                             }
                             else
                             {
-                                $this->$attributeName->setAttributes($value);
+                                $setAttributeMethodName = 'set' . ucfirst($attributeName);
+                                if ($this->$attributeName instanceof RedBeanOneToManyRelatedModels &&
+                                   method_exists($this, $setAttributeMethodName))
+                                {
+                                    $this->$setAttributeMethodName($value);
+                                }
+                                else
+                                {
+                                    $this->$attributeName->setAttributes($value);
+                                }
                             }
                         }
                     }
@@ -2645,9 +2907,30 @@
             foreach ($beans as $bean)
             {
                 assert('$bean instanceof RedBean_OODBBean');
-                $models[] = self::makeModel($bean, $modelClassName);
+                try
+                {
+                    $models[] = self::makeModel($bean, $modelClassName);
+                }
+                catch (MissingBeanException $e)
+                {
+                }
             }
             return $models;
+        }
+
+        public static function getModuleClassName()
+        {
+            return null;
+        }
+
+        /**
+         * Given an array of data, create stringified content.
+         * @param array $values
+         */
+        public function stringifyOneToManyRelatedModelsValues($values)
+        {
+            assert('is_array($values)');
+            return ArrayUtil::stringify($values);
         }
     }
 ?>

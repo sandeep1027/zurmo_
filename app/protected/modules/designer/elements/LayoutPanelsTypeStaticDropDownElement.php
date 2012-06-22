@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -31,7 +31,7 @@
             return array(
                 FormLayout::PANELS_DISPLAY_TYPE_ALL    => Yii::t('Default', 'All panels visible'),
                 FormLayout::PANELS_DISPLAY_TYPE_FIRST  => Yii::t('Default', 'First panel visible, then `show more` link'),
-                FormLayout::PANELS_DISPLAY_TYPE_TABBED => Yii::t('Default', 'Panels are tabbed'),
+                //FormLayout::PANELS_DISPLAY_TYPE_TABBED => Yii::t('Default', 'Panels are tabbed'), Enable when supported in UI
             );
         }
     }

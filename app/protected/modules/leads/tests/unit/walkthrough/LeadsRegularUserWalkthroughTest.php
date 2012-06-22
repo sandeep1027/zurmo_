@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -47,6 +47,7 @@
             LeadTestHelper::createLeadbyNameForOwner                 ('superLead4', $super);
             //Setup default dashboard.
             Dashboard::getByLayoutIdAndUser                          (Dashboard::DEFAULT_USER_LAYOUT_ID, $super);
+            ReadPermissionsOptimizationUtil::rebuild();
         }
 
         public function testRegularUserAllControllerActions()
@@ -118,11 +119,17 @@
 
             //Test nobody with elevated rights.
             Yii::app()->user->userModel = User::getByUsername('nobody');
-            $this->runControllerWithNoExceptionsAndGetContent('leads/default/list');
+            $content = $this->runControllerWithNoExceptionsAndGetContent('leads/default/list');
+            $this->assertFalse(strpos($content, 'Thomas Paine') === false);
             $this->runControllerWithNoExceptionsAndGetContent('leads/default/create');
 
             //Test nobody can view an existing lead he owns.
             $lead = LeadTestHelper::createLeadByNameForOwner('leadOwnedByNobody', $nobody);
+
+            //At this point the listview for leads should show the search/list and not the helper screen.
+            $content = $this->runControllerWithNoExceptionsAndGetContent('leads/default/list');
+            $this->assertTrue(strpos($content, 'Thomas Paine') === false);
+
             $this->setGetArray(array('id' => $lead->id));
             $this->runControllerWithNoExceptionsAndGetContent('leads/default/edit');
 
@@ -130,7 +137,7 @@
             $this->setGetArray(array('id' => $lead->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('leads/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=leads/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('leads/default/index'));
 
             //Autocomplete for Lead should not fail.
             $this->setGetArray(array('term' => 'super'));
@@ -217,7 +224,7 @@
             $this->setGetArray(array('id' => $lead->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('leads/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=leads/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('leads/default/index'));
 
             //create some roles
             Yii::app()->user->userModel = $super;
@@ -342,7 +349,7 @@
             $this->setGetArray(array('id' => $lead2->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('leads/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=leads/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('leads/default/index'));
 
             //clear up the role relationships between users so not to effect next assertions
             $parentRole->users->remove($userInParentRole);
@@ -485,7 +492,7 @@
             $this->logoutCurrentUserLoginNewUserAndGetByUsername($userInChildGroup->username);
             $this->setGetArray(array('id' => $lead3->id));
             $this->runControllerWithRedirectExceptionAndGetContent('leads/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=leads/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('leads/default/index'));
 
             //clear up the role relationships between users so not to effect next assertions
             $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');

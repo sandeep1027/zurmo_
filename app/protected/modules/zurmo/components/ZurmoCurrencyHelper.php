@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -101,7 +101,12 @@
             }
             try
             {
-                $currency = Currency::getByCode($this->getBaseCode());
+                $code = $this->getBaseCode();
+                if (null != $currency = Currency::getCachedCurrencyByCode($code))
+                {
+                    return $currency;
+                }
+                $currency = Currency::getByCode($code);
             }
             catch (NotFoundException $e)
             {
@@ -111,6 +116,7 @@
             {
                 throw new NotSupportedException();
             }
+            Currency::setCachedCurrency($currency);
             return $currency;
         }
 
@@ -155,11 +161,12 @@
         /**
          * Check if the currency rate has been updated within the last 24 hours. If not, then perform a currency
          * update and update the lastAttemptedRateUpdateTimeStamp.
+         * @param boolean $forceCheck - If true, it will ignore the last time the check was made
          */
-        public function checkAndUpdateCurrencyRates()
+        public function checkAndUpdateCurrencyRates($forceCheck = false)
         {
             $metadata = Currency::getMetadata();
-            if ( $metadata['Currency']['lastAttemptedRateUpdateTimeStamp'] == null ||
+            if ( $forceCheck || $metadata['Currency']['lastAttemptedRateUpdateTimeStamp'] == null ||
                 (time() - $metadata['Currency']['lastAttemptedRateUpdateTimeStamp']) > (24 * 60 * 60))
             {
                 //code and message or just code ? hmm.
@@ -187,7 +194,11 @@
         public function getActiveCurrenciesOrSelectedCurrenciesData($selectedCurrencyId)
         {
             assert('$selectedCurrencyId == null || (is_int($selectedCurrencyId) && $selectedCurrencyId > 0)');
-            $currencies = Currency::getAll();
+            if (null == $currencies = Currency::getAllCachedCurrencies())
+            {
+                $currencies = Currency::getAll();
+                Currency::setAllCachedCurrencies($currencies);
+            }
             $data       = array();
             foreach ($currencies as $currency)
             {

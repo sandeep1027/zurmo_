@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -114,6 +114,31 @@
             //Make sure the sql runs properly.
             $dataProvider = new RedBeanModelDataProvider('Account', null, false, $searchAttributeData);
             $data = $dataProvider->getData();
+        }
+
+        /**
+         * @depends testSearchMemberOfAndMembers
+         */
+        public function testSearchByCustomFieldWithEscapedContent()
+        {
+            $super = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
+            //Searching with a custom field that is not blank should not produce any errors.
+            //The data returned should be no accounts.
+            $fakePostData        = array('name'         => null,
+                                         'officePhone'  => null,
+                                         'industry'     => array('value' => "Ban'king"),
+                                         'officeFax'    => null);
+            $account             = new Account(false);
+            $searchForm          = new AccountsSearchForm($account);
+            $metadataAdapter     = new SearchDataProviderMetadataAdapter($searchForm, $super->id, $fakePostData);
+            $searchAttributeData = $metadataAdapter->getAdaptedMetadata();
+
+            //Run search and make sure the data returned matches how many total accounts are available.
+            $dataProvider        = new RedBeanModelDataProvider('Account', null, false, $searchAttributeData);
+            $data                = $dataProvider->getData();
+            $this->assertEquals(0, count($data));
         }
     }
 ?>

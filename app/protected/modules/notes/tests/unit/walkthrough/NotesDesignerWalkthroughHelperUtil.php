@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -42,6 +42,10 @@
                                         array(
                                             'element' => 'description',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'occurredOnDateTime',
                                         ),
@@ -52,6 +56,10 @@
                                         array(
                                             'element' => 'owner',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'NoteActivityItems', // Not Coding Standard
                                         ),
@@ -63,6 +71,10 @@
                                             'detailViewOnly' => true,
                                             'element' => 'DateTimeCreatedUser',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'detailViewOnly' => true,
                                             'element' => 'DateTimeModifiedUser',
@@ -74,6 +86,10 @@
                                         array(
                                             'element' => 'checkbox',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'currency',
                                         ),
@@ -84,6 +100,10 @@
                                         array(
                                             'element' => 'date',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'datetime',
                                         ),
@@ -94,6 +114,10 @@
                                         array(
                                             'element' => 'decimal',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'picklist',
                                         ),
@@ -104,6 +128,10 @@
                                         array(
                                             'element' => 'integer',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'multiselect',
                                         ),
@@ -112,8 +140,33 @@
                                 array('cells' =>
                                     array(
                                         array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'dropdowndependency',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
                                             'element' => 'phone',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'radio',
                                         ),
@@ -124,6 +177,10 @@
                                         array(
                                             'element' => 'text',
                                         ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
                                         array(
                                             'element' => 'textarea',
                                         ),
@@ -133,9 +190,6 @@
                                     array(
                                         array(
                                             'element' => 'url',
-                                        ),
-                                        array(
-                                            'element' => 'Null', // Not Coding Standard
                                         ),
                                     )
                                 ),
@@ -250,6 +304,41 @@
                                     array(
                                         array(
                                             'element' => 'multiselect',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
                                         ),
                                     )
                                 ),
@@ -412,6 +501,41 @@
                                     array(
                                         array(
                                             'element' => 'multiselect',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'tagcloud',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'calculatednumber',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'countrypicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'statepicklist',
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'element' => 'citypicklist',
                                         ),
                                     )
                                 ),

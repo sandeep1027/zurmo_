@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,6 +37,11 @@
                         'moduleClassName' => get_class($this->getModule()),
                         'viewClassName'   => $viewClassName,
                    ),
+                    array(
+                        ZurmoModuleController::ZERO_MODELS_CHECK_FILTER_PATH . ' + list, index',
+                        'controller'                    => $this,
+                        'stateMetadataAdapterClassName' => 'ContactsStateMetadataAdapter'
+                   ),
                )
             );
         }
@@ -55,27 +60,28 @@
                 Yii::app()->user->userModel->id,
                 'ContactsStateMetadataAdapter'
             );
-            $searchFilterListView = $this->makeSearchFilterListView(
+            $actionBarSearchAndListView = $this->makeActionBarSearchAndListView(
                 $searchForm,
-                'ContactsFilteredList',
                 $pageSize,
                 ContactsModule::getModuleLabelByTypeAndLanguage('Plural'),
                 Yii::app()->user->userModel->id,
                 $dataProvider
             );
-            $view = new ContactsPageView($this, $searchFilterListView);
+            $view = new ContactsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $actionBarSearchAndListView));
             echo $view->render();
         }
 
         public function actionDetails($id)
         {
-            $contact = Contact::getById(intval($id));
+            $contact = static::getModelAndCatchNotFoundAndDisplayError('Contact', intval($id));
             ControllerSecurityUtil::resolveAccessCanCurrentUserReadModel($contact);
-            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, strval($contact), $contact);
+            AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($contact), 'ContactsModule'), $contact);
             $detailsAndRelationsView = $this->makeDetailsAndRelationsView($contact, 'ContactsModule',
                                                                           'ContactDetailsAndRelationsView',
                                                                           Yii::app()->request->getRequestUri());
-            $view = new ContactsPageView($this, $detailsAndRelationsView);
+            $view = new ContactsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $detailsAndRelationsView));
             echo $view->render();
         }
 
@@ -95,9 +101,10 @@
 
         protected function actionCreateByModel(Contact $contact, $redirectUrl = null)
         {
-            $titleBarAndEditView = $this->makeTitleBarAndEditAndDetailsView(
+            $titleBarAndEditView = $this->makeEditAndDetailsView(
                                             $this->attemptToSaveModelFromPost($contact, $redirectUrl), 'Edit');
-            $view = new ContactsPageView($this, $titleBarAndEditView);
+            $view = new ContactsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
             echo $view->render();
         }
 
@@ -105,11 +112,10 @@
         {
             $contact = Contact::getById(intval($id));
             ControllerSecurityUtil::resolveAccessCanCurrentUserWriteModel($contact);
-            $view = new ContactsPageView($this,
-                $this->makeTitleBarAndEditAndDetailsView(
-                            $this->attemptToSaveModelFromPost($contact, $redirectUrl), 'Edit'
-                )
-            );
+            $view    = new ContactsPageView(ZurmoDefaultViewUtil::
+                                            makeStandardViewForCurrentUser($this,
+                                                $this->makeEditAndDetailsView(
+                                                    $this->attemptToSaveModelFromPost($contact, $redirectUrl), 'Edit')));
             echo $view->render();
         }
 
@@ -150,13 +156,14 @@
                 ContactsModule::getModuleLabelByTypeAndLanguage('Plural'),
                 $dataProvider
             );
-            $titleBarAndMassEditView = $this->makeTitleBarAndMassEditView(
+            $massEditView = $this->makeMassEditView(
                 $contact,
                 $activeAttributes,
                 $selectedRecordCount,
                 ContactsModule::getModuleLabelByTypeAndLanguage('Plural')
             );
-            $view = new ContactsPageView($this, $titleBarAndMassEditView);
+            $view = new ContactsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $massEditView));
             echo $view->render();
         }
 
@@ -241,6 +248,21 @@
                             'autoCompleteListPageSize', get_class($this->getModule()));
             $autoCompleteResults = ContactAutoCompleteUtil::getByPartialName($term, $pageSize, 'ContactsStateMetadataAdapter');
             echo CJSON::encode($autoCompleteResults);
+        }
+
+        protected function getSearchFormClassName()
+        {
+            return 'ContactsSearchForm';
+        }
+
+        protected function getModelFilteredListClassName()
+        {
+            return 'ContactsFilteredList';
+        }
+
+        public function actionExport()
+        {
+            $this->export();
         }
     }
 ?>

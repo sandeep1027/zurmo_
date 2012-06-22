@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class ZurmoModelSearchTest extends BaseTest
+    class ZurmoModelSearchTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -55,6 +55,32 @@
             $this->assertEquals(1, count($contacts));
             $this->assertEquals($id, $contacts[0]->id);
             $this->assertEquals('Super Man', strval($contacts[0]));
+        }
+
+        /**
+         * @depends testGetModelsByFullName
+         */
+        public function testCasingInsensitivity()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+
+            $user = User::getByUsername('billy');
+
+            ContactsModule::loadStartingData();
+            $states = ContactState::GetAll();
+            $contact = new Contact();
+            $contact->owner        = $user;
+            $contact->title->value = 'Mr.';
+            $contact->firstName    = 'super';
+            $contact->lastName     = 'man';
+            $contact->state        = $states[0];
+            $this->assertTrue($contact->save());
+            $id = $contact->id;
+            $this->assertNotEmpty($id);
+            unset($contact);
+
+            $contacts = ZurmoModelSearch::getModelsByFullName('Contact', 'Super Man');
+            $this->assertEquals(2, count($contacts));
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -38,6 +38,32 @@
         protected function getCGridViewLastColumn()
         {
             return array();
+        }
+
+        protected function getCGridViewPagerParams()
+        {
+            return array(
+                    'cssFile'          => Yii::app()->baseUrl . '/themes/' . Yii::app()->theme->name . '/css/cgrid-view.css',
+                    'prevPageLabel'    => '<span>previous</span>',
+                    'nextPageLabel'    => '<span>next</span>',
+                    'paginationParams' => GetUtil::getData(),
+                    'route'            => $this->getGridViewActionRoute('auditEventsModalList', $this->moduleId),
+                    'class'            => 'SimpleListLinkPager',
+                );
+        }
+
+        /**
+         * Override to not run global eval, since it causes doubling up of ajax requests on the pager.
+         * (non-PHPdoc)
+         * @see ListView::getCGridViewAfterAjaxUpdate()
+         */
+        protected function getCGridViewAfterAjaxUpdate()
+        {
+            // Begin Not Coding Standard
+            return 'js:function(id, data) {
+                        processAjaxSuccessError(id, data);
+                    }';
+            // End Not Coding Standard
         }
 
         public static function getDefaultMetadata()

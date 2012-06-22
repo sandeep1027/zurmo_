@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -170,7 +170,14 @@
                 }
                 if ($attributeForm instanceof MaxLengthAttributeForm)
                 {
-                    $maxLength = (int)$attributeForm->maxLength;
+                    if ($attributeForm->maxLength != null)
+                    {
+                        $maxLength = (int)$attributeForm->maxLength;
+                    }
+                    else
+                    {
+                        $maxLength = null;
+                    }
                 }
                 else
                 {
@@ -178,8 +185,22 @@
                 }
                 if ($attributeForm instanceof MinMaxValueAttributeForm)
                 {
-                    $minValue = (int)$attributeForm->minValue;
-                    $maxValue = (int)$attributeForm->maxValue;
+                    if ($attributeForm->minValue != null)
+                    {
+                        $minValue = (int)$attributeForm->minValue;
+                    }
+                    else
+                    {
+                        $minValue = null;
+                    }
+                    if ($attributeForm->maxValue != null)
+                    {
+                        $maxValue = (int)$attributeForm->maxValue;
+                    }
+                    else
+                    {
+                        $maxValue = null;
+                    }
                 }
                 else
                 {
@@ -226,15 +247,47 @@
             assert('is_string($modelClassName) && $modelClassName != ""');
             if (RedBeanDatabase::isFrozen())
             {
+                Yii::app()->gameHelper->muteScoringModelsOnSave();
                 RedBeanDatabase::unfreeze();
                 $messageLogger = new MessageLogger();
                 RedBeanDatabaseBuilderUtil::autoBuildModels(array('User', $modelClassName), $messageLogger);
                 RedBeanDatabase::freeze();
+                Yii::app()->gameHelper->unmuteScoringModelsOnSave();
                 if ($messageLogger->isErrorMessagePresent())
                 {
                     throw new FailedDatabaseSchemaChangeException($messageLogger->printMessages(true, true));
                 }
             }
+        }
+
+        /**
+         * Given a standard attribute, check if by default, this attribute is required. This means the default metadata
+         * has this attribute has being required, regardless of any customziation to that metadata.
+         * @param string $attributeName
+         * @throws NotSupportedException
+         */
+        public function isStandardAttributeRequiredByDefault($attributeName)
+        {
+            assert('is_string($attributeName)');
+            if (!$this->isStandardAttribute($attributeName))
+            {
+                throw new NotSupportedException();
+            }
+            $modelClassName  = $this->model->getAttributeModelClassName($attributeName);
+            $metadata        = $modelClassName::getDefaultMetadata();
+            if (isset($metadata[$modelClassName]['rules']))
+            {
+                foreach ($metadata[$modelClassName]['rules'] as $validatorMetadata)
+                {
+                    assert('isset($validatorMetadata[0])');
+                    assert('isset($validatorMetadata[1])');
+                    if ($validatorMetadata[0] == $attributeName && $validatorMetadata[1] == 'required')
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 ?>

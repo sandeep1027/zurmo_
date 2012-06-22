@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -78,8 +78,9 @@
 
         protected function renderContent()
         {
-            $content  = '<div class="view-toolbar">' . "\n";
-            $content .= "<h2><span id='" . $this->getProgressBarId() . "-msg'>" . $this->message . "</span></h2>";
+            $content  = '<div class="process-container-view">' . "\n";
+            $content .= "<h3>" . $this->message . '</h3>';
+            $content .= "<span id='" . $this->getProgressBarId() . "-msg'></span>";
             $content .= '</div>';
             $this->registerAjaxScript();
             return $content;
@@ -89,11 +90,11 @@
         {
             if ($this->nextParams != null)
             {
-                $urlParams = array_merge($_GET, array('nextParams' => $this->nextParams));
+                $urlParams = array_merge(GetUtil::getData(), array('nextParams' => $this->nextParams));
             }
             else
             {
-                $getString = $_GET;
+                $getString = GetUtil::getData();
                 unset($getString['nextParams']);
                 $urlParams = $getString;
             }

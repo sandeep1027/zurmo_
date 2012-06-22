@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -43,7 +43,7 @@
 
         public static function resolveArrayToLowerCase($array)
         {
-            return unserialize(mb_strtolower(serialize($array)));
+            return unserialize(TextUtil::strToLowerWithDefaultEncoding(serialize($array)));
         }
 
         /**
@@ -53,6 +53,45 @@
         public static function array_iunique($array)
         {
             return array_intersect_key($array, array_unique(array_map('strtolower', $array)));
+        }
+
+        /**
+         * Given an array, stringify the array values into content seperated by commas and return the content.
+         * @param array $data
+         */
+        public static function stringify($data)
+        {
+            assert('is_array($data)');
+            $s             = null;
+            foreach ($data as $value)
+            {
+                if ($s != null)
+                {
+                    $s .= ', ';
+                }
+                $s .= $value;
+            }
+            return $s;
+        }
+
+        /**
+         * Convert multi-dimenision array into flat(one dimension) array
+         */
+        public static function flatten($array)
+        {
+            $flatternArray = array();
+            foreach ($array as $element)
+            {
+                if (is_array($element))
+                {
+                    $flatternArray = array_merge($flatternArray, self::flatten($element));
+                }
+                else
+                {
+                    $flatternArray[] = $element;
+                }
+            }
+            return $flatternArray;
         }
     }
 ?>

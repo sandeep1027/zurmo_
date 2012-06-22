@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -167,11 +167,13 @@
                 case 'Singular':
                     return Yii::t('Default', static::getSingularModuleLabel());
                 case 'SingularLowerCase':
-                    return strtolower(Yii::t('Default', static::getSingularModuleLabel(), array(), null, $language));
+                    $string  = Yii::t('Default', static::getSingularModuleLabel(), array(), null, $language);
+                    return TextUtil::strToLowerWithDefaultEncoding($string);
                 case 'Plural':
                     return Yii::t('Default', static::getPluralModuleLabel(), array(), null, $language);
                 case 'PluralLowerCase':
-                    return strtolower(Yii::t('Default', static::getPluralModuleLabel(), array(), null, $language));
+                    $string  = Yii::t('Default', static::getPluralModuleLabel(), array(), null, $language);
+                    return TextUtil::strToLowerWithDefaultEncoding($string);
             }
         }
 
@@ -186,7 +188,8 @@
                     if (isset($metadata['global']['singularModuleLabels']) &&
                         isset($metadata['global']['singularModuleLabels'][$language]))
                     {
-                        return ucwords($metadata['global']['singularModuleLabels'][$language]);
+                        $label = $metadata['global']['singularModuleLabels'][$language];
+                        return preg_match('/^[a-z]/', $label) ? ucwords($label) : $label;
                     }
                 case 'SingularLowerCase':
                     if ( isset($metadata['global']['singularModuleLabels']) &&
@@ -198,7 +201,8 @@
                     if ( isset($metadata['global']['pluralModuleLabels']) &&
                         isset($metadata['global']['pluralModuleLabels'][$language]))
                     {
-                        return ucwords($metadata['global']['pluralModuleLabels'][$language]);
+                        $label = $metadata['global']['pluralModuleLabels'][$language];
+                        return preg_match('/^[a-z]/', $label) ? ucwords($label) : $label;
                     }
                 case 'PluralLowerCase':
                     if ( isset($metadata['global']['pluralModuleLabels']) &&
@@ -356,6 +360,20 @@
         /**
          * TODO
          */
+        public static function getAdminTabMenuItems($user = null)
+        {
+            assert('$user == null || $user instanceof User');
+            $metadata = self::getMetadata();
+            if (!empty($metadata['global']['adminTabMenuItems']))
+            {
+                return $metadata['global']['adminTabMenuItems'];
+            }
+            return array();
+        }
+
+        /**
+         * TODO
+         */
         public static function getConfigureMenuItems()
         {
             $metadata = self::getMetadata();
@@ -366,13 +384,13 @@
             return array();
         }
 
-        public static function getShortCutsMenuItems()
+        public static function getShortCutsCreateMenuItems()
         {
             $calledClass = get_called_class();
             $metadata = $calledClass::getMetadata();
-            if (!empty($metadata['global']['shortcutsMenuItems']))
+            if (!empty($metadata['global']['shortcutsCreateMenuItems']))
             {
-                return $metadata['global']['shortcutsMenuItems'];
+                return $metadata['global']['shortcutsCreateMenuItems'];
             }
             return array();
         }

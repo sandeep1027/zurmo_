@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * This program is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -36,10 +36,11 @@
 
     define('IS_LINUX', PHP_OS == 'Linux');
     define('IS_WINNT', PHP_OS == 'WINNT');
-
+    define('IS_OSX', PHP_OS == 'Darwin');
+    
     // The application has only been tested in Linux, and
     // Windows variants identifying themselves as WINNT.
-    assert(IS_LINUX || IS_WINNT);
+    assert(IS_LINUX || IS_WINNT || IS_OSX); // Not Coding Standard
 
     define('COMMON_ROOT',   dirname(__FILE__));
     define('INSTANCE_ROOT', getcwd());

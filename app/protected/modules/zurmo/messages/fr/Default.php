@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -45,14 +45,16 @@
             => 'Secteur 3D',
         '3D Vertical Bar Graph'
             => 'Histogramme 3D',
-        '<b>Zurmo</b> is a <b>Customer Relationship Management</b> system by <b>Zurmo Inc.</b>'
-            => '<b>Zurmo</b> est un système <b>Customer Relationship Management</b> créer par <b>Zurmo Inc.</b>',
-        '<b>Zurmo</b> is licensed under the GPLv3.  You can read the license <a href="http://www.zurmo.org/license">here</a>.'
-            => '<b>Zurmo</b> est licensé sous le GPLv3.  Vous pouvez lire la license <a href="http://www.zurmo.org/license">ici</a>.',
-        '<b>Zurmo</b> uses the following great Open Source tools and frameworks:'
-            => '<b>Zurmo</b> utilize les outils et cadres Open Source suivants:',
-        'About'
-            => 'À propos de zurmo',
+        '<strong>Zurmo</strong> is a <strong>Customer Relationship Management</strong> system by <strong>Zurmo Inc.</strong>'
+            => '<strong>Zurmo</strong> est un système <strong>Customer Relationship Management</strong> crée par <strong>Zurmo Inc.</strong>',
+        '<strong>Zurmo</strong> is licensed under the GPLv3.  You can read the license <a href="http://www.zurmo.org/license">here</a>.'
+            => '<strong>Zurmo</strong> est licensé sous le GPLv3.  Vous pouvez lire la license <a href="http://www.zurmo.org/license">ici</a>.',
+        '<strong>Zurmo</strong> uses the following great Open Source tools and frameworks:'
+            => '<strong>Zurmo</strong> utilize les outils et cadres Open Source suivants:',
+        'A large amount of data has been requested for export.  You will receive a notification with the download link when the export is complete.'
+            => 'Il y a une grande quantité de données pour export.  Lorsque le processus d\'exportation sera terminé, vous recevrez une notification avec un lien direct à votre fichier.',
+        'About Zurmo'
+            => 'À propos de Zurmo',
         'Access Administration Tab'
             => 'Accès Administration',
         'Access Currency Configuration'
@@ -66,7 +68,7 @@
         'Access Roles Tab'
             => 'Accès aux Rôles',
         'Active'
-            => 'Active',
+            => 'Active', // Same Word Translated
         'Active currencies can be used when creating new records and as a default currency for a user.'
             => 'Les devises actives sont disponibles pour créer de nouveaux enregistrements et comme devise de défault pour un utilisateur.',
         'Active languages can be used by users. The system language and any language in use by a user cannot be inactivated'
@@ -75,6 +77,8 @@
             => 'De circonstance / Resp. du compte',
         'Add Currency'
             => 'Ajouter la Devise',
+        'Add new fields, remove ones you don\'t need and change the layout using Designer.'
+            => 'Utilisez Designer pour ajouter de nouveau champs, enlever les champs non utilisés, et modifer la présentation de page.',
         'Address'
             => 'Adresse',
         'Admin'
@@ -87,6 +91,8 @@
             => 'Montant',
         'An error has occurred. Please click'
             => 'Il y a une erreur. Veuillez cliquer.',
+        'An error occured during login. Please try again.'
+            => 'Erreur lors du login.  Veuillez réessayer.',
         'Any City'
             => 'Ville',
         'Any Country'
@@ -103,8 +109,12 @@
             => 'État/Dépt',
         'Any Street'
             => 'Rue',
+        'Application Name'
+            => 'Nom du système',
         'are required.'
             => 'sont obligatoires.',
+        'Are you number one{spaceAndFirstName}? Find out how you size up to your colleagues on the Leaderboard.'
+            => 'À vos marques! Prêt? Feu, partez!  Voyez comment vous concurrencez par rapport à vos collègues su le Leaderboard.',
         'Are you sure you want to remove this group?'
             => 'Êtes-vous sûr(e) de vouloir supprimer ce groupe?',
         'Are you sure you want to remove this role?'
@@ -123,34 +133,38 @@
             => 'Bancaire',
         'Business Services'
             => 'Service de gestion',
+        'by {ownerStringContent}'
+            => 'par {ownerStringContent}',
         'Cancel'
             => 'Annuler',
-        'Changes to active currencies changed successfully.'
+        'Changes to active currencies saved successfully.'
             => 'Les changements de devises actives sont effectués.',
-        'Changes to active languages changed successfully.'
+        'Changes to active languages saved successfully.'
             => 'Les changements de langue actives sont effectués.',
         'Chart Type'
             => 'Type de graphique',
         'City'
             => 'Ville',
+        'Click on the Map link on records to see the customer location on Google Maps.'
+            => 'Cliquez le lien plan pour visualiser une adresse sur Google Maps.',
         'Close'
             => 'Fermer',
         'Code'
-            => 'Code',
+            => 'Code', // Same Word Translated
         'Configuration'
-            => 'Configuration',
+            => 'Configuration', // Same Word Translated
+        'Configure'
+            => 'Configurer',
         'Convert'
             => 'Convertir',
-        'Copyright &#169; Zurmo Inc., 2011. All Rights reserved.'
-            => 'Copyright &#169; Zurmo Inc., 2011. Tous droits réservés.',
+        'Copyright &#169; Zurmo Inc., 2012. All Rights reserved.'
+            => 'Copyright &#169; Zurmo Inc., 2012. Tous droits réservés.',
         'Country'
             => 'Pays',
         'Create Group'
             => 'Nouveau Groupe',
         'Create Groups'
             => 'Créer Groupes',
-        'Create New'
-            => 'Crée',
         'Create Role'
             => 'Créer Rôle',
         'Create Roles'
@@ -165,6 +179,8 @@
             => 'Devises',
         'Currency in use.'
             => 'Devise utiliséé.',
+        'Currency Rates Update Job'
+            => 'Met à jour les taux de devises',
         'Currency Value'
             => 'Valeur',
         'Customer'
@@ -190,9 +206,9 @@
         'Department'
             => 'Département',
         'Description'
-            => 'Description',
+            => 'Description', // Same Word Translated
         'Dr.'
-            => 'Dr.',
+            => 'Dr.', // Same Word Translated
         'Email Address'
             => 'Addresse e-mail',
         'Energy'
@@ -219,6 +235,10 @@
             => 'Finance',
         'First Name'
             => 'Prénom',
+        'Forums'
+            => 'Forums', // Same Word Translated
+        'Global and Basic Search Fields'
+            => 'Champs recherche globale et simple',
         'Global Configuration'
             => 'Configuration globale',
         'Global configuration saved successfully.'
@@ -235,6 +255,8 @@
             => 'Droits de sécurité',
         'Groups'
             => 'Groupes',
+        'Groups Home'
+            => 'Accueil Groupes',
         'here'
             => 'ici',
         'Home'
@@ -265,6 +287,8 @@
             => 'Assurance',
         'Invalid currency code'
             => 'Le code de devise est invalide.',
+        'Invalid username or password.'
+            => 'Nom d\'utilisateur invalide ou utilisateur introuvable.',
         'Is Invalid'
             => 'Invalide',
         'Job Title'
@@ -285,6 +309,10 @@
             => 'Nom',
         'Last Updated'
             => 'Dernière Modification',
+        'Latitude'
+            => 'Latitude', // Same Word Translated
+        'Let Zurmo crunch the numbers, add calculated fields to your records in Designer.'
+            => 'Permettez à Zurmo de faire le gros du travail, ajoutez des champs calculés dans Designer.',
         'List Filters'
             => 'Filtres',
         'List page size'
@@ -293,10 +321,8 @@
             => 'Vue liste',
         'Load'
             => 'Télécharger',
-        'Login'
-            => 'Connexion',
-        'Logout'
-            => 'Déconnexion',
+        'Longitude'
+            => 'Longitude', // Same Word Translated
         'Manage Active Languages'
             => 'Gestion des langues',
         'Manage Currency Configuration'
@@ -309,6 +335,8 @@
             => 'Gestion des rôles et hiérarchies',
         'Manufacturing'
             => 'Industriel',
+        'map'
+            => 'plan',
         'Member'
             => 'Filiale',
         'Member Of'
@@ -316,11 +344,17 @@
         'Members'
             => 'Filiales',
         'Menu'
-            => 'Menu',
+            => 'Menu', // Same Word Translated
+        'Missing Record'
+            => 'Donnée manquante',
         'Missing Required Fields'
             => 'Les champs obligatoires doivent être placés dans la vue',
         'Mobile Phone'
             => 'Téléphone portable',
+        'Model was not created.'
+            => 'Le modèle n\'a pas été créé.',
+        'Model was not updated.'
+            => 'Le modèle n\'a pas été mis à jour.',
         'Module Name - Plural'
             => 'Nom du module - au pluriel',
         'Module Name - Plural (lowercase)'
@@ -341,6 +375,8 @@
             => 'Mlle.',
         'My List Configuration View'
             => 'Ma Vue Liste Configuration',
+        'Need to update multiple records at once? Select them from the list and hit the Update button.'
+            => 'Pour mettre à jour plusieurs données en même temps, cochez les données dans la Vue liste et cliquez le bouton "Mise à jour globale".',
         'Never'
             => 'Jamais',
         'New'
@@ -353,12 +389,18 @@
             => 'Défaut',
         'Not Set - Ad-hoc / Owner'
             => 'Défaut - de circonstance / resp. du compte',
+        'Notifications'
+            => 'Notifications', // Same Word Translated
         'Office Fax'
             => 'Fax de bureau',
         'Office Phone'
             => 'Téléphone de bureau',
         'Oh no!'
             => 'Zut!',
+        'Once a day, early in the morning.'
+            => 'Une fois par jour, tôt le matin.',
+        'Once a week, early in the morning.'
+            => 'Une fois par semaine, tôt le matin.',
         'Only Items I Own'
             => 'Seulement mes éléments',
         'Opt Out'
@@ -373,12 +415,16 @@
             => 'Groupe mère',
         'Parent Role'
             => 'Rôle parent',
+        'Parlez vous Français{spaceAndFirstName}? Choose your preferred language in your My Profile area.'
+            => 'Sélectionnez votre langue préférée dans Mon Profil.',
         'Password'
             => 'Mot de passe',
         'Permissions'
-            => 'Permissions',
+            => 'Permissions', // Same Word Translated
         'Permitable'
             => 'Permis',
+        'Please provide data.'
+            => 'Veuillez fournir les données.',
         'Please use FireFox, Chrome, or Internet Explorer.'
             => 'Veuillez utiliser FireFox, Chrome, ou Internet Explorer.',
         'Policies'
@@ -415,12 +461,16 @@
             => 'Retour au menu administrateur',
         'Rights'
             => 'Droits',
+        'Rights and Permissions'
+            => 'Droits de sécurité et Permissions',
         'Rights Saved Successfully.'
             => 'Droits sauvegardés.',
         'Role'
             => 'Rôle',
         'Roles'
             => 'Rôles',
+        'Roles Home'
+            => 'Accueil Rôles ',
         'Salutation'
             => 'Civilité',
         'Save Changes'
@@ -445,8 +495,18 @@
             => 'Selectionner un rôle',
         'Self-Generated'
             => 'Auto-généré',
+        'Settings'
+            => 'Paramètres',
         'Shipping Address'
             => 'Adresse de livraison',
+        'Sign in'
+            => 'Connexion',
+        'Sign in required.'
+            => 'Connexion requise.',
+        'Sign out'
+            => 'Déconnexion',
+        'Sign out failed.'
+            => 'La déconnexion a échouée.',
         'Size'
             => 'Taille',
         'skipped because you do not have sufficient permissions.'
@@ -455,6 +515,8 @@
             => 'Désolé! Votre navigateur n\'est pas supporté.',
         'Source'
             => 'Origine',
+        'Specified custom field name was invalid.'
+            => 'Le nom du champ personnalisé est invalide.',
         'Stage'
             => 'Étape',
         'Standard Fields'
@@ -481,16 +543,22 @@
             => 'Le service de taux de change n\'est pas disponible.  Le taux n\'a pas pu être mis à jour automatiquement.',
         'The currency was not removed because it is in use.'
             => 'Impossible de supprimer la devise car elle est actuellement utilisée.',
+        'The ID specified was invalid.'
+            => 'ID invalide.',
+        'The record you are trying to access does not exist.'
+            => 'Cette donnée n\'existe pas.',
         'The status specified is invalid.'
             => 'La valeur du statut spécifié n\'est pas valide.',
         'There are no recently viewed items.'
             => 'Aucun éléments récents.',
         'There are required fields missing from the following layout: {view}.  Please contact your administrator.'
             => 'Il manque le(s) champ(s) obligatoire(s) suivant dans le fichier: {view}.  Veuillez contacter votre administrateur système.',
+        'There is no data to export.'
+            => 'Il n\'y a pas de données à exporter.',
         'This action is only available in debug mode.'
             => 'Cette action est seulement disponible en mode debug.',
-        'This is <b>version {zurmoVersion}</b> of <b>Zurmo</b>.'
-            => 'Vous utilisez la <b>version {zurmoVersion}</b> de <b>Zurmo</b>.',
+        'This is <strong>version {zurmoVersion}</strong> of <strong>Zurmo</strong>.'
+            => 'Vous utilisez la <strong>version {zurmoVersion}</strong> de <strong>Zurmo</strong>.',
         'This name is reserved. Please pick a different name.'
             => 'Ce nom est réservé.  Veuillez choisir un nom différent.',
         'Time zone'
@@ -513,10 +581,12 @@
             => 'Nom d\'utilisateur',
         'Value'
             => 'Valeur',
-        'Visit <b>Zurmo Inc.</b> at {url}.'
-            => 'Visitez <b>Zurmo Inc.</b>: {url}.',
-        'Visit the <b>Zurmo Open Source Project</b> at {url}.'
-            => 'Visitez le <b>Project Zurmo Open Source</b>: {url}.',
+        'Values'
+            => 'Valeurs',
+        'Visit <strong>Zurmo Inc.</strong> at {url}.'
+            => 'Visitez <strong>Zurmo Inc.</strong>: {url}.',
+        'Visit the <strong>Zurmo Open Source Project</strong> at {url}.'
+            => 'Visitez le <strong>Project Zurmo Open Source</strong>: {url}.',
         'Website'
             => 'Site web',
         'Welcome'
@@ -533,14 +603,12 @@
             => 'Vous avez tenté d\'accéder à une page dont vous n\'avez pas accès.',
         'You must have at least one active currency.'
             => 'Vous devez avoir au moins une devise active.',
-        'Your Profile'
-            => 'Votre Profil',
         'Your RedBean version is currentVersion and it should be acceptableVersion.'
             => 'Votre version de RedBean est currentVersion et doit être acceptableVersion.',
         'Your Yii version is currentVersion and it should be acceptableVersion.'
             => 'Votre version de Yii est currentVersion et doit être acceptableVersion.',
         'ZurmoCRM'
-            => 'ZurmoCRM',
+            => 'ZurmoCRM', // Same Word Translated
         '{url} (installed with Yii)'
             => '{url} (installé avec Yii)',
         '{url} (version {version} is installed)'

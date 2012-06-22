@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -43,36 +43,58 @@
          */
         protected function renderContent()
         {
-            $content = '<div class="wide form">';
+            $content  = '<div class="wrapper">';
+            $content .= $this->renderTitleContent();
+            $maxCellsPresentInAnyRow = $this->resolveMaxCellsPresentInAnyRow($this->getFormLayoutMetadata());
+            if ($maxCellsPresentInAnyRow > 1)
+            {
+                $class = "wide double-column form";
+            }
+            else
+            {
+                $class = "wide form";
+            }
+            $content .= '<div class="' . $class . '">';
             $clipWidget = new ClipWidget();
             list($form, $formStart) = $clipWidget->renderBeginWidget(
                                                                 'ZurmoActiveForm',
                                                                 array_merge(
-                                                                    array('id' => 'edit-form',
+                                                                    array('id' => static::getFormId(),
                                                                     'htmlOptions' => $this->resolveFormHtmlOptions()),
                                                                     $this->resolveActiveFormAjaxValidationOptions()
                                                                 )
                                                             );
             $content .= $formStart;
-            $content .= $this->renderViewToolBar();
             $content .= $this->renderFormLayout($form);
             $content .= $this->renderAfterFormLayout($form);
-            $formEnd = $clipWidget->renderEndWidget();
+            $actionToolBarContent = $this->renderActionElementBar(true);
+            if ($actionToolBarContent != null)
+            {
+                $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">';
+                $content .= $actionToolBarContent;
+                $content .= '</div></div>';
+            }
+            $formEnd  = $clipWidget->renderEndWidget();
             $content .= $formEnd;
 
-            $content .= '</div>';
+            $content .= '</div></div>';
             return $content;
         }
 
         protected function renderAfterFormLayout($form)
         {
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/dropDownInteractions.js');
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/jquery.dropkick-1.0.0.js');
         }
 
         protected function resolveActiveFormAjaxValidationOptions()
         {
             return array('enableAjaxValidation' => false);
         }
-
         public static function getDesignerRulesType()
         {
             return 'EditView';
@@ -83,9 +105,14 @@
             return !$detailViewOnly;
         }
 
-            protected function resolveFormHtmlOptions()
+        protected static function getFormId()
         {
-            $data = array();
+            return 'edit-form';
+        }
+
+        protected function resolveFormHtmlOptions()
+        {
+            $data = array('onSubmit' => 'js:return attachLoadingOnSubmit("' . static::getFormId() . '")');
             if ($this->viewContainsFileUploadElement)
             {
                 $data['enctype'] = 'multipart/form-data';

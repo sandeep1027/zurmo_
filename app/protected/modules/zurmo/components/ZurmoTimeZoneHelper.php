@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -118,6 +118,22 @@
             assert('is_int($utcTimeStamp)');
             $timeZone = $this->getForCurrentUser();
             return DateTimeUtil::convertFromLocalUnixStampByTimeZoneToUtcUnixStamp($utcTimeStamp, $timeZone);
+        }
+
+        public function isCurrentUsersTimeZoneConfirmed()
+        {
+            $keyName = 'timeZoneConfirmed';
+            if ( false != ZurmoConfigurationUtil::getForCurrentUserByModuleName('UsersModule', $keyName))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public function confirmCurrentUsersTimeZone()
+        {
+            $keyName = 'timeZoneConfirmed';
+            ZurmoConfigurationUtil::setForCurrentUserByModuleName('UsersModule', $keyName, true);
         }
     }
 ?>

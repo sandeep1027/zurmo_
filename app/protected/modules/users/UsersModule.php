@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -68,6 +68,15 @@
             return array('User');
         }
 
+        public static function getUntranslatedRightsLabels()
+        {
+            $labels                                = array();
+            $labels[self::RIGHT_LOGIN_VIA_WEB]     = 'Sign in Via Web';
+            $labels[self::RIGHT_LOGIN_VIA_MOBILE]  = 'Sign in Via Mobile';
+            $labels[self::RIGHT_LOGIN_VIA_WEB_API] = 'Sign in Via Web API';
+            return array_merge(parent::getUntranslatedRightsLabels(), $labels);
+        }
+
         public static function getStrongerPolicy($policyName, array $values)
         {
             assert('is_string($policyName) && $policyName != ""');
@@ -108,6 +117,30 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'adminTabMenuItems' => array(
+                    array(
+                        'label' => 'Users',
+                        'url'   => array('/users/default'),
+                        'right' => self::RIGHT_ACCESS_USERS,
+                        'items' => array(
+                            array(
+                                'label' => 'Create User',
+                                'url'   => array('/users/default/create'),
+                                'right' => self::RIGHT_CREATE_USERS
+                            ),
+                            array(
+                                'label' => 'Users',
+                                'url'   => array('/users/default'),
+                                'right' => self::RIGHT_ACCESS_USERS
+                            ),
+                        ),
+                    ),
+                ),
+                'globalSearchAttributeNames' => array(
+                    'fullName',
+                    'anyEmail',
+                    'username',
+                ),
                 'configureMenuItems' => array(
                     array(
                         'category'         => ZurmoModule::ADMINISTRATION_CATEGORY_GENERAL,
@@ -117,25 +150,25 @@
                         'right'            => self::RIGHT_ACCESS_USERS,
                     ),
                 ),
-                'shortcutsMenuItems' => array(
+                'headerMenuItems' => array(
                     array(
                         'label' => 'Users',
-                        'url'   => array('/users/default'),
+                        'url' => array('/users/default'),
                         'right' => self::RIGHT_ACCESS_USERS,
-                        'items' => array(
-                            array(
-                                'label' => 'Create User',
-                                'url'   => array('/users/default/create'),
-                                'right' => self::RIGHT_CREATE_USERS,
-                            ),
-                            array(
-                                'label' => 'Users',
-                                'url'   => array('/users/default'),
-                                'right' => self::RIGHT_ACCESS_USERS,
-                            ),
-                        ),
+                        'order' => 4,
                     ),
-
+                ),
+                'userHeaderMenuItems' => array(
+                        array(
+                            'label' => 'My Profile',
+                            'url' => array('/users/default/profile'),
+                            'order' => 1,
+                        ),
+                        array(
+                            'label' => 'Sign out',
+                            'url' => array('/zurmo/default/logout'),
+                            'order' => 3,
+                        ),
                 ),
                 'designerMenuItems' => array(
                     'showFieldsLink' => false,
@@ -210,6 +243,11 @@
         public static function getDemoDataMakerClassName()
         {
             return 'UsersDemoDataMaker';
+        }
+
+        public static function getGlobalSearchFormClassName()
+        {
+            return 'UsersSearchForm';
         }
     }
 ?>

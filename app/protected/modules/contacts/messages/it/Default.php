@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,56 +30,62 @@
     // DON'T MAKE A MESS!
     return array(
         'Access ContactsModulePluralLabel Tab'
-            => '?? ContactsModulePluralLabel',
+            => 'Acceso ai ContactsModulePluralLabel',
         'Company Name'
-            => '??',
+            => 'Nome Azienda',
         'Contact'
-            => '??',
+            => 'Contatto',
         'Contact Stage'
-            => '??',
+            => 'Stato del Contatto',
         'Contact Status Translated Labels'
-            => '??',
+            => 'Etichette tradotti del stato dei Contatti',
         'Contact Statuses'
-            => '??',
+            => 'Stato dei Contatti',
         'Contacts'
-            => '??',
+            => 'Contatti',
         'ContactsModulePluralLabel'
-            => 'ContactsModulePluralLabel',
+            => 'ContactsModulePluralLabel', // Same Word Translated
         'ContactsModulePluralLabel For AccountsModuleSingularLabel'
-            => 'ContactsModulePluralLabel ?? AccountsModuleSingularLabel',
+            => 'ContactsModulePluralLabel per AccountsModuleSingularLabel',
         'ContactsModulePluralLabel For OpportunitiesModuleSingularLabel'
-            => 'ContactsModulePluralLabel ?? OpportunitiesModuleSingularLabel',
+            => 'ContactsModulePluralLabel per OpportunitiesModuleSingularLabel',
         'ContactsModuleSingularLabel'
-            => 'ContactsModuleSingularLabel',
+            => 'ContactsModuleSingularLabel', // Same Word Translated
         'ContactsModuleSingularLabel or LeadsModuleSingularLabel'
-            => 'ContactsModuleSingularLabel ?? LeadsModuleSingularLabel',
+            => 'ContactsModuleSingularLabel o LeadsModuleSingularLabel',
         'ContactsModuleSingularLabel Search'
-            => 'ContactsModuleSingularLabel Search',
+            => 'Ricerca ContactsModuleSingularLabel',
         'Create ContactsModulePluralLabel'
-            => '?? ContactsModulePluralLabel',
+            => 'Crea ContactsModulePluralLabel',
         'Create ContactsModuleSingularLabel'
-            => '?? ContactsModuleSingularLabel',
+            => 'Crea ContactsModuleSingularLabel',
         'Delete ContactsModulePluralLabel'
-            => '?? ContactsModulePluralLabel',
+            => 'Elimina ContactsModulePluralLabel',
         'Each ContactsModuleSingularLowerCaseLabel state must be uniquely named'
-            => '?? ContactsModuleSingularLowerCaseLabel ??',
+            => 'Ogni  stato de ContactsModuleSingularLowerCaseLabel deve avere un nome unico',
         'My ContactsModulePluralLabel'
-            => '??',
+            => 'I miei ContactsModulePluralLabel',
         'Order'
-            => '??',
+            => 'Ordine',
         'Serialized Labels'
-            => '??',
+            => 'Etichette serialized',
         'Starting Status'
-            => '??',
+            => 'Stato predefinito',
         'The contact stage field'
-            => '??',
+            => 'Il campo stato del contato',
         'The default status specified does not exist.'
-            => '??',
+            => 'Il stato predefinito non esiste',
         'The status is required.  Neither a value nor a default was specified.'
-            => '??',
+            => 'Il stato è richiesto. Per favore di specificare un valore.',
         'The status specified does not exist.'
-            => '??',
+            => 'Il stato specificato non esiste.',
         'The status specified is not unique and is invalid.'
-            => '??',
+            => 'Il stato specificato non è unico e non è valido.',
+        '{n} ContactsModuleSingularLabel created|{n} ContactsModulePluralLabel created'
+            => '{n} ContactsModuleSingularLabel create|{n} ContactsModulePluralLabel creati',
+        '{n} ContactsModuleSingularLabel mass updated|{n} ContactsModulePluralLabel mass updated'
+            => '{n} ContactsModuleSingularLabel è stato aggiornato|{n} ContactsModulePluralLabel sono stati aggiornati',
+        '{n} ContactsModuleSingularLabel search completed|{n} ContactsModuleSingularLabel searches completed'
+            => '{n} recherche ContactsModuleSingularLabel completata|{n} recherche ContactsModuleSingularLabel completate',
     );
 ?>

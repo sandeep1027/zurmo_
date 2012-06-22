@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -145,9 +145,12 @@
         public static function typeCastPostData($postData)
         {
             assert('is_array($postData)');
-            foreach ($postData['userMembershipData'] as $index => $userId)
+            if (isset($postData['userMembershipData']))
             {
-                $postData['userMembershipData'][$index] = intval($userId);
+                foreach ($postData['userMembershipData'] as $index => $userId)
+                {
+                    $postData['userMembershipData'][$index] = intval($userId);
+                }
             }
             return $postData;
         }

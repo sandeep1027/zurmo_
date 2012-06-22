@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -55,7 +55,8 @@
                             $this->getModule()->getId(),
                             LanguagesToLanguageCollectionViewUtil::getLanguagesData(),
                             $messageBoxContent);
-            $view = new ZurmoConfigurationPageView($this, $view);
+            $view = new ZurmoConfigurationPageView(ZurmoDefaultAdminViewUtil::
+                                         makeStandardViewForCurrentUser($this, $view));
             echo $view->render();
         }
 
@@ -73,8 +74,7 @@
                     }
                 }
                 Yii::app()->languageHelper->setActiveLanguages($activeLanguages);
-                return HtmlNotifyUtil::renderHighlightBoxByMessage(
-                                       Yii::t('Default', 'Changes to active languages changed successfully.'));
+                Yii::app()->user->setFlash('notification', Yii::t('Default', 'Changes to active languages saved successfully.'));
             }
         }
     }

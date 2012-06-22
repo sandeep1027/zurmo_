@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -49,10 +49,14 @@
             $inputNameAndId = $this->getEditableInputId('file');
 
             $beforeUploadAction  = "$('#{$this->getEditableInputId('rowColumnDelimiter')}').attr('readonly', true);";
+            $beforeUploadAction .= "$('#{$this->getEditableInputId('rowColumnDelimiter')}').addClass('readonly-field');";
             $beforeUploadAction .= "$('#{$this->getEditableInputId('rowColumnEnclosure')}').attr('readonly', true);";
+            $beforeUploadAction .= "$('#{$this->getEditableInputId('rowColumnEnclosure')}').addClass('readonly-field');";
 
-            $afterDeleteAction    = "$('#{$this->getEditableInputId('rowColumnDelimiter')}').removeAttr('readonly');";
-            $afterDeleteAction   .= "$('#{$this->getEditableInputId('rowColumnEnclosure')}').removeAttr('readonly');";
+            $afterDeleteAction   = "$('#{$this->getEditableInputId('rowColumnDelimiter')}').removeAttr('readonly');";
+            $afterDeleteAction  .= "$('#{$this->getEditableInputId('rowColumnDelimiter')}').removeClass('readonly-field');";
+            $afterDeleteAction  .= "$('#{$this->getEditableInputId('rowColumnEnclosure')}').removeAttr('readonly');";
+            $afterDeleteAction  .= "$('#{$this->getEditableInputId('rowColumnEnclosure')}').removeClass('readonly-field');";
 
             $cClipWidget = new CClipWidget();
             $cClipWidget->beginClip("filesElement");
@@ -68,10 +72,10 @@
                 'existingFiles'        => $existingFilesInformation,
                 'maxSize'              => (int)InstallUtil::getMaxAllowedFileSize(),
                 'beforeUploadAction'   => $beforeUploadAction,
-                'afterDeleteAction'    => $afterDeleteAction,
+                'afterDeleteAction'    => $afterDeleteAction
             ));
             $cClipWidget->endClip();
-            $content .= $cClipWidget->getController()->clips['filesElement'];
+            $content .= '<tr><td></td><td colspan="3"><div class="file-upload-box">' . $cClipWidget->getController()->clips['filesElement'] . '</div></td></tr>';
             return $content;
         }
 
@@ -81,18 +85,18 @@
             $params = array('htmlOptions' => array('size' => 5));
             if (count($existingFilesInformation) == 1)
             {
-                $params['htmlOptions']['readonly'] = 'readonly';
+                $params['htmlOptions']['readonly']  = 'readonly';
+                $params['htmlOptions']['class']     = 'readonly-field';
             }
 
             $delimiterElement                          = new TextElement($this->model, 'rowColumnDelimiter',
                                                          $this->form, $params);
-            $delimiterElement->editableTemplate        = '<div style="float:left; padding:2px;">{label} {content}</div>';
+            $delimiterElement->editableTemplate        = '<tr><td>{label}</td><td colspan="3">{content}</td></tr>';
             $enclosureElement                          = new TextElement($this->model, 'rowColumnEnclosure',
                                                          $this->form, $params);
-            $enclosureElement->editableTemplate        = '<div style="float:left; padding:2px;">{label} {content}</div>';
+            $enclosureElement->editableTemplate        = '<tr><td>{label}</td><td colspan="3">{content}</td></tr>';
             $content  = $delimiterElement->render();
             $content .= $enclosureElement->render();
-            $content .= '<div style="clear:both;"></div>' . "\n";
             return $content;
         }
 
@@ -102,7 +106,7 @@
 
         protected function renderLabel()
         {
-            return Yii::t('Default', 'Please select the CSV to upload');
+            return '<h3>' . Yii::t('Default', 'Please select the CSV to upload') . '</h3>';
         }
     }
 ?>

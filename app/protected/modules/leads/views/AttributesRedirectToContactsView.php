@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -42,7 +42,7 @@
 
         protected function renderContent()
         {
-            $content  = '<div class="horizontal-line">';
+            $content  = '<div>';
             $content .= Yii::t('Default', 'LeadsModulePluralLabel and ContactsModulePluralLabel are the same records, ' .
                                           'just in a different status. To create a LeadsModuleSingularLowerCaseLabel ' .
                                           'field, create a ContactsModuleSingularLowerCaseLabel field, and then it ' .

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -43,6 +43,8 @@
                 'a' => 1,
                 'b' => 2,
                 'c' => 3,
+                //globalSearchAttributeNames is used by A model.
+                'globalSearchAttributeNames' => array('a', 'name')
             );
             return $metadata;
         }
@@ -50,6 +52,11 @@
         public static function getPrimaryModelName()
         {
             return 'A';
+        }
+
+        public static function getGlobalSearchFormClassName()
+        {
+            return 'ASearchFormTestModel';
         }
     }
 ?>

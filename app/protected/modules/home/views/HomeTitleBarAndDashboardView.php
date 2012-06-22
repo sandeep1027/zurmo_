@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,13 +30,17 @@
         {
             parent::__construct(2, 1);
             $this->setView(new TitleBarView (strval($model)), 0, 0);
-            $this->setView(new HomeDashboardView(
+
+            $homeDashboardView = new HomeDashboardView(
                 $controllerId,
                 $moduleId,
                 $uniqueLayoutId,
                 $model,
-                $params),
-            1, 0);
+                $params);
+
+            $homeDashboardView->setCssClasses( array( 'clearfix' ) );
+
+            $this->setView( $homeDashboardView, 1, 0 );
         }
     }
 ?>

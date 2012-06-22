@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -31,6 +31,37 @@
          * @var boolean
          */
         protected $installed;
+
+        /**
+         * Override to handle when debug is turned on and the checksum fails on cached models.
+         */
+        public function run()
+        {
+            try
+            {
+                parent::run();
+            }
+            catch (ChecksumMismatchException $e)
+            {
+                echo 'A checksum mismatch has occurred while retrieving a cached model. ' .
+                     'This is most likely caused by setting debug=true. The cache must be cleared.'; // Not Coding Standard
+                echo '<br/>';
+                $url = Yii::app()->createUrl('zurmo/default/index/', array('clearCache' => true));
+                echo CHtml::link('Click here to clear the cache', $url);
+                Yii::app()->end(0, false);
+            }
+        }
+
+        /**
+         * Returns the locale instance.
+         * This overrides the default CApplication->getLocale() function.
+         * @param string $localeID the locale ID (e.g. en_US). If null, the {@link getLanguage application language ID} will be used.
+         * @return CLocale the locale instance
+         */
+        public function getLocale($localeID = null)
+        {
+            return ZurmoLocale::getInstance($localeID === null ? $this->getLanguage() : $localeID);
+        }
 
         /**
          * Override so that the application looks at the controller class name differently.
@@ -89,6 +120,7 @@
                 {
                     $controllerID .= '/';
                 }
+
                 $baseClassName = ucfirst($id) . 'Controller';
                 //this assumes owner is the module, which i am not sure is always true...
                 if ($this->isOwnerTheController($owner))

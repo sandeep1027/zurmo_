@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -133,12 +133,13 @@
             ));
             $cClipWidget->endClip();
             $progressBarContent =  $cClipWidget->getController()->clips['ProgressBar'];
-            $content = "<h1>" . Yii::t('Default', 'Mass Update') . '&#160;' . $this->title . '</h1>';
-            $content .= '<div class="view-toolbar">' . "\n";
+            $content = "<div><h1>" . Yii::t('Default', 'Mass Update') . '&#160;' . $this->title . '</h1>';
+            $content .= '<div class="progress-counter">' . "\n";
             $content .= "<h2><span id='" . $this->progressBarId . "-msg'>" . $this->getMessage() . "</span></h2>";
             $content .= $progressBarContent;
-            $content .= '</div>';
             $content .= $this->renderFormLinks();
+            $content .= '</div>';
+            $content .= '</div>';
             return $content;
         }
 

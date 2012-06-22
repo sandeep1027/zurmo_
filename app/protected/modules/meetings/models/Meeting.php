@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,11 +28,27 @@
     {
         public function __toString()
         {
-            if (trim($this->name) == '')
+            try
             {
-                return Yii::t('Default', '(Unnamed)');
+                if (trim($this->name) == '')
+                {
+                    return Yii::t('Default', '(Unnamed)');
+                }
+                return $this->name;
             }
-            return $this->name;
+            catch (AccessDeniedSecurityException $e)
+            {
+                return '';
+            }
+        }
+
+        /**
+         * @return value of what is considered the 'call' type. It could be in the future named something else
+         * or changed by the user.  This api will be expanded to handle that.  By default it will return 'Call'
+         */
+        public static function getCategoryCallValue()
+        {
+            return 'Call';
         }
 
         public static function getModuleClassName()
@@ -68,33 +84,33 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'name',
-                    'startDateTime',
+                    'description',
                     'endDateTime',
                     'location',
-                    'description',
+                    'name',
+                    'startDateTime',
                 ),
                 'rules' => array(
+                    array('description',      'type', 'type' => 'string'),
+                    array('endDateTime',      'type', 'type' => 'datetime'),
+                    array('endDateTime',      'RedBeanModelCompareDateTimeValidator', 'type' => 'after',
+                                              'compareAttribute' => 'startDateTime'),
+                    array('location',         'type',    'type' => 'string'),
+                    array('location',         'length',  'min'  => 3, 'max' => 64),
                     array('name',             'required'),
                     array('name',             'type',    'type' => 'string'),
                     array('name',             'length',  'min'  => 3, 'max' => 64),
-                    array('location',         'type',    'type' => 'string'),
-                    array('location',         'length',  'min'  => 3, 'max' => 64),
                     array('startDateTime',    'required'),
                     array('startDateTime',    'type', 'type' => 'datetime'),
                     array('startDateTime',    'RedBeanModelCompareDateTimeValidator', 'type' => 'before',
                                               'compareAttribute' => 'endDateTime'),
-                    array('endDateTime',      'type', 'type' => 'datetime'),
-                    array('endDateTime',      'RedBeanModelCompareDateTimeValidator', 'type' => 'after',
-                                              'compareAttribute' => 'startDateTime'),
-                    array('description',      'type', 'type' => 'string'),
                 ),
                 'relations' => array(
                     'category'             => array(RedBeanModel::HAS_ONE, 'OwnedCustomField', RedBeanModel::OWNED),
                 ),
                 'elements' => array(
-                    'startDateTime' => 'DateTime',
                     'endDateTime'   => 'DateTime',
+                    'startDateTime' => 'DateTime',
                 ),
                 'customFields' => array(
                     'category'     => 'MeetingCategories',
@@ -111,8 +127,8 @@
         {
             return array_merge(parent::untranslatedAttributeLabels(),
                 array(
-                    'startDateTime' => 'Start Time',
                     'endDateTime'   => 'End Time',
+                    'startDateTime' => 'Start Time',
                 )
             );
         }
@@ -147,6 +163,11 @@
         public static function hasReadPermissionsOptimization()
         {
             return true;
+        }
+
+        public static function getGamificationRulesType()
+        {
+            return 'MeetingGamification';
         }
     }
 ?>

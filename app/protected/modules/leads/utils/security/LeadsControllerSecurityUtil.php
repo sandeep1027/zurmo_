@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -48,7 +48,7 @@
             {
                 $scenarioSpecificContent = // Not Coding Standard
                 Yii::t('Default', 'Conversion requires access to the ContactsModulePluralLowerCaseLabel' .
-                                  ' module which you do not have. Please contact your administrator regarding this.',
+                                  ' module which you do not have. Please contact your administrator.',
                        LabelUtil::getTranslationParamsForAllModules());
                 $userCanConvertProperly  = false;
             }
@@ -58,7 +58,7 @@
                 $scenarioSpecificContent = // Not Coding Standard
                 Yii::t('Default', 'Conversion is set to require an AccountsModuleSingularLowerCaseLabel.  Currently' .
                                   ' you do not have access to the AccountsModulePluralLowerCaseLabel module.' .
-                                  ' Please contact your administrator regarding this.',
+                                  ' Please contact your administrator.',
                        LabelUtil::getTranslationParamsForAllModules());
                 $userCanConvertProperly  = false;
             }
@@ -66,7 +66,7 @@
             {
                 return;
             }
-            static::renderAccessFailureView(false, $scenarioSpecificContent);
+            static::processAccessFailure(false, $scenarioSpecificContent);
             Yii::app()->end(0, false);
         }
     }

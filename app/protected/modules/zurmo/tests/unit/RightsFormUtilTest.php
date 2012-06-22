@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class RightsFormUtilTest extends BaseTest
+    class RightsFormUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -99,6 +99,40 @@
                         'effective'   => Right::DENY,
                     ),
                 ),
+                'EmailMessagesModule' => array(
+                    'RIGHT_CREATE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_CREATE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_DELETE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_DELETE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_CONFIGURATION'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_CONFIGURATION,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'ExportModule'  => array(
+                    'RIGHT_ACCESS_EXPORT'   => array(
+                        'displayName' => ExportModule::RIGHT_ACCESS_EXPORT,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
                 'HomeModule' => array(
                     'RIGHT_CREATE_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_CREATE_DASHBOARDS,
@@ -114,6 +148,14 @@
                     ),
                     'RIGHT_ACCESS_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_ACCESS_DASHBOARDS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'JobsManagerModule' => array(
+                    'RIGHT_ACCESS_JOBSMANAGER'   => array(
+                        'displayName' => JobsManagerModule::RIGHT_ACCESS_JOBSMANAGER,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -140,6 +182,14 @@
                     ),
                     'RIGHT_CONVERT_LEADS'   => array(
                         'displayName' => LeadsModule::RIGHT_CONVERT_LEADS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'MapsModule' => array(
+                    'RIGHT_ACCESS_MAPS_ADMINISTRATION'   => array(
+                        'displayName' => MapsModule::RIGHT_ACCESS_MAPS_ADMINISTRATION,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -307,19 +357,19 @@
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_WEB'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB,
+                        'displayName' => 'Sign in Via Web',
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_MOBILE'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_MOBILE,
+                        'displayName' => 'Sign in Via Mobile',
                         'explicit'    => Right::ALLOW,
                         'inherited'   => null,
                         'effective'   => Right::ALLOW,
                     ),
                     'RIGHT_LOGIN_VIA_WEB_API'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB_API,
+                        'displayName' => 'Sign in Via Web API',
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -404,6 +454,40 @@
                         'effective'   => Right::DENY,
                     ),
                 ),
+                'EmailMessagesModule' => array(
+                    'RIGHT_CREATE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_CREATE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_DELETE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_DELETE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_CONFIGURATION'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_CONFIGURATION,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'ExportModule'  => array(
+                    'RIGHT_ACCESS_EXPORT'   => array(
+                        'displayName' => ExportModule::RIGHT_ACCESS_EXPORT,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
                 'HomeModule' => array(
                     'RIGHT_CREATE_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_CREATE_DASHBOARDS,
@@ -419,6 +503,14 @@
                     ),
                     'RIGHT_ACCESS_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_ACCESS_DASHBOARDS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'JobsManagerModule' => array(
+                    'RIGHT_ACCESS_JOBSMANAGER'   => array(
+                        'displayName' => JobsManagerModule::RIGHT_ACCESS_JOBSMANAGER,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -445,6 +537,14 @@
                     ),
                     'RIGHT_CONVERT_LEADS'   => array(
                         'displayName' => LeadsModule::RIGHT_CONVERT_LEADS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'MapsModule' => array(
+                    'RIGHT_ACCESS_MAPS_ADMINISTRATION'   => array(
+                        'displayName' => MapsModule::RIGHT_ACCESS_MAPS_ADMINISTRATION,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -612,19 +712,19 @@
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_WEB'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB,
+                        'displayName' => 'Sign in Via Web',
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_MOBILE'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_MOBILE,
+                        'displayName' => 'Sign in Via Mobile',
                         'explicit'    => Right::ALLOW,
                         'inherited'   => null,
                         'effective'   => Right::ALLOW,
                     ),
                     'RIGHT_LOGIN_VIA_WEB_API'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB_API,
+                        'displayName' => 'Sign in Via Web API',
                         'explicit'    => null,
                         'inherited'   => Right::ALLOW,
                         'effective'   => Right::ALLOW,
@@ -705,6 +805,40 @@
                         'effective'   => Right::DENY,
                     ),
                 ),
+                'EmailMessagesModule' => array(
+                    'RIGHT_CREATE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_CREATE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_DELETE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_DELETE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_CONFIGURATION'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_CONFIGURATION,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'ExportModule'  => array(
+                    'RIGHT_ACCESS_EXPORT'   => array(
+                        'displayName' => ExportModule::RIGHT_ACCESS_EXPORT,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
                 'HomeModule' => array(
                     'RIGHT_CREATE_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_CREATE_DASHBOARDS,
@@ -720,6 +854,14 @@
                     ),
                     'RIGHT_ACCESS_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_ACCESS_DASHBOARDS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'JobsManagerModule' => array(
+                    'RIGHT_ACCESS_JOBSMANAGER'   => array(
+                        'displayName' => JobsManagerModule::RIGHT_ACCESS_JOBSMANAGER,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -746,6 +888,14 @@
                     ),
                     'RIGHT_CONVERT_LEADS'   => array(
                         'displayName' => LeadsModule::RIGHT_CONVERT_LEADS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'MapsModule' => array(
+                    'RIGHT_ACCESS_MAPS_ADMINISTRATION'   => array(
+                        'displayName' => MapsModule::RIGHT_ACCESS_MAPS_ADMINISTRATION,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -913,19 +1063,19 @@
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_WEB'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB,
+                        'displayName' => 'Sign in Via Web',
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_MOBILE'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_MOBILE,
+                        'displayName' => 'Sign in Via Mobile',
                         'explicit'    => Right::ALLOW,
                         'inherited'   => null,
                         'effective'   => Right::ALLOW,
                     ),
                     'RIGHT_LOGIN_VIA_WEB_API'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB_API,
+                        'displayName' => 'Sign in Via Web API',
                         'explicit'    => null,
                         'inherited'   => Right::ALLOW,
                         'effective'   => Right::ALLOW,
@@ -1005,6 +1155,40 @@
                         'effective'   => Right::DENY,
                     ),
                 ),
+                'EmailMessagesModule' => array(
+                    'RIGHT_CREATE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_CREATE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_DELETE_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_DELETE_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_EMAIL_MESSAGES'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_EMAIL_MESSAGES,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                    'RIGHT_ACCESS_CONFIGURATION'   => array(
+                        'displayName' => EmailMessagesModule::RIGHT_ACCESS_CONFIGURATION,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'ExportModule'  => array(
+                    'RIGHT_ACCESS_EXPORT'   => array(
+                        'displayName' => ExportModule::RIGHT_ACCESS_EXPORT,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
                 'HomeModule' => array(
                     'RIGHT_CREATE_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_CREATE_DASHBOARDS,
@@ -1020,6 +1204,14 @@
                     ),
                     'RIGHT_ACCESS_DASHBOARDS'   => array(
                         'displayName' => HomeModule::RIGHT_ACCESS_DASHBOARDS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'JobsManagerModule' => array(
+                    'RIGHT_ACCESS_JOBSMANAGER'   => array(
+                        'displayName' => JobsManagerModule::RIGHT_ACCESS_JOBSMANAGER,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -1046,6 +1238,14 @@
                     ),
                     'RIGHT_CONVERT_LEADS'   => array(
                         'displayName' => LeadsModule::RIGHT_CONVERT_LEADS,
+                        'explicit'    => null,
+                        'inherited'   => null,
+                        'effective'   => Right::DENY,
+                    ),
+                ),
+                'MapsModule' => array(
+                    'RIGHT_ACCESS_MAPS_ADMINISTRATION'   => array(
+                        'displayName' => MapsModule::RIGHT_ACCESS_MAPS_ADMINISTRATION,
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
@@ -1213,19 +1413,19 @@
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_WEB'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB,
-                        'explicit'   => Right::DENY,
+                        'displayName' => 'Sign in Via Web',
+                        'explicit'    => Right::DENY,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_MOBILE'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_MOBILE,
+                        'displayName' => 'Sign in Via Mobile',
                         'explicit'    => null,
                         'inherited'   => null,
                         'effective'   => Right::DENY,
                     ),
                     'RIGHT_LOGIN_VIA_WEB_API'   => array(
-                        'displayName' => UsersModule::RIGHT_LOGIN_VIA_WEB_API,
+                        'displayName' => 'Sign in Via Web API',
                         'explicit'    => Right::ALLOW,
                         'inherited'   => Right::ALLOW,
                         'effective'   => Right::ALLOW,

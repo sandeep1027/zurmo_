@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -64,9 +64,9 @@
                     'name',
                 ),
                 'relations' => array(
-                    'users' => array(RedBeanModel::HAS_MANY,            'User'),
                     'role'  => array(RedBeanModel::HAS_MANY_BELONGS_TO, 'Role'),
                     'roles' => array(RedBeanModel::HAS_MANY,            'Role'),
+                    'users' => array(RedBeanModel::HAS_MANY,            'User'),
                 ),
                 'rules' => array(
                     array('name', 'required'),
@@ -123,8 +123,12 @@
 
         protected function beforeDelete()
         {
-            parent::beforeDelete();
+            if (!parent::beforeDelete())
+            {
+                return false;
+            }
             ReadPermissionsOptimizationUtil::roleBeingDeleted($this);
+            return true;
         }
 
         protected function afterDelete()

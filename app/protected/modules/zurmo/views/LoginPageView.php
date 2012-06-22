@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,15 +29,18 @@
         public function __construct(CController $controller, CFormModel $formModel, $extraHeaderContent = null)
         {
             assert('is_string($extraHeaderContent) || $extraHeaderContent == null');
+
+            $loginview = new LoginView($controller, $formModel, $extraHeaderContent);
+            $loginview->setCssClasses(array('clearfix', 'background-' . mt_rand(1,3)));
             $gridView = new GridView(2, 1);
-            $gridView->setView(new LoginView($controller, $formModel, $extraHeaderContent), 0, 0);
-            $gridView->setView(new FooterView(),                       1, 0);
+            $gridView->setView($loginview, 0, 0);
+            $gridView->setView(new FooterView(), 1, 0);
             parent::__construct($gridView);
         }
 
         protected function getSubtitle()
         {
-            return Yii::t('Default', 'Login');
+            return Yii::t('Default', 'Sign in');
         }
     }
 ?>

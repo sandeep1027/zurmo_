@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -45,6 +45,7 @@
             AccountTestHelper::createAccountByNameForOwner('superAccount4', Yii::app()->user->userModel);
             //Setup default dashboard.
             Dashboard::getByLayoutIdAndUser(Dashboard::DEFAULT_USER_LAYOUT_ID, Yii::app()->user->userModel);
+            ReadPermissionsOptimizationUtil::rebuild();
         }
 
         public function testRegularUserAllControllerActionsNoElevation()
@@ -104,11 +105,18 @@
 
             //Test nobody with elevated rights.
             Yii::app()->user->userModel = User::getByUsername('nobody');
-            $this->runControllerWithNoExceptionsAndGetContent('accounts/default/list');
+            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/default/list');
+            $this->assertFalse(strpos($content, 'Benjamin Franklin') === false);
             $this->runControllerWithNoExceptionsAndGetContent('accounts/default/create');
 
             //Test nobody can view an existing account he owns.
             $account = AccountTestHelper::createAccountByNameForOwner('accountOwnedByNobody', $nobody);
+
+            //At this point the listview for accounts should show the search/list and not the helper screen.
+            $content = $this->runControllerWithNoExceptionsAndGetContent('accounts/default/list');
+            $this->assertTrue(strpos($content, 'Benjamin Franklin') === false);
+
+            //Go to the a ccount editview.
             $this->setGetArray(array('id' => $account->id));
             $this->runControllerWithNoExceptionsAndGetContent('accounts/default/edit');
 
@@ -116,7 +124,7 @@
             $this->setGetArray(array('id' => $account->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('accounts/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=accounts/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('accounts/default/index'));
 
             //Autocomplete for Account should not fail.
             $this->setGetArray(array('term' => 'super'));
@@ -203,7 +211,7 @@
             $this->setGetArray(array('id' => $account->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('accounts/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=accounts/default/index'); // Not Coding Standard
+                       Yii::app()->createUrl('accounts/default/index'));
 
             //create some roles
             Yii::app()->user->userModel = $super;
@@ -328,7 +336,7 @@
             $this->setGetArray(array('id' => $account2->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('accounts/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=accounts/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('accounts/default/index'));
 
             //clear up the role relationships between users so not to effect next assertions
             $parentRole->users->remove($userInParentRole);
@@ -471,7 +479,7 @@
             $this->setGetArray(array('id' => $account3->id));
             $this->resetPostArray();
             $this->runControllerWithRedirectExceptionAndGetContent('accounts/default/delete',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=accounts/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('accounts/default/index'));
 
             //clear up the role relationships between users so not to effect next assertions
             $super = $this->logoutCurrentUserLoginNewUserAndGetByUsername('super');
@@ -514,13 +522,13 @@
             $this->setPostArray(array('Account' => array('name' => 'Switcheroo Inc.')));
             //Make sure the redirect is to the details view and not the list view.
             $this->runControllerWithRedirectExceptionAndGetContent('accounts/default/edit',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=accounts/default/details&id=' . $account->id); // Not Coding Standard
+                        Yii::app()->createUrl('accounts/default/details', array('id' => $account->id)));
 
             //Now save account changing the owner, the redirect should go to the list view and provide a flash message.
             $this->setPostArray(array('Account' => array('owner' => array('id' => $super->id))));
             //Make sure the redirect is to the details view and not the list view.
             $this->runControllerWithRedirectExceptionAndGetContent('accounts/default/edit',
-                        Yii::app()->getUrlManager()->getBaseUrl() . '?r=accounts/default/index'); // Not Coding Standard
+                        Yii::app()->createUrl('accounts/default/index'));
             ///Confirm flash message is set.
             $this->assertContains('You no longer have permissions to access Switcheroo Inc',
                                   Yii::app()->user->getFlash('notification'));

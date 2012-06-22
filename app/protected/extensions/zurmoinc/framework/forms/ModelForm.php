@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -217,6 +217,21 @@
                 return false;
             }
             return true;
+        }
+
+        /**
+         * Override to properly get validators for an attribute when they are on the model.
+         * Todo: Factor in scenario for model attributes.
+         * (non-PHPdoc)
+         * @see CModel::getValidators()
+         */
+        public function getValidators($attribute = null)
+        {
+            if ($attribute != null && !property_exists($this, $attribute))
+            {
+                return $this->model->getValidators($attribute);
+            }
+            return parent::getValidators($attribute);
         }
 
         /**

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class TaskTest extends BaseTest
+    class TaskTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -35,6 +35,30 @@
             AccountTestHelper::createAccountByNameForOwner('anAccount', $super);
         }
 
+        public function testCreateTaskWithZerosStampAndEditAgain()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+            $task                       = new Task();
+            $task->name                 = 'My Task';
+            $task->owner                = Yii::app()->user->userModel;
+            $task->completedDateTime    = '0000-00-00 00:00:00';
+            $saved = $task->save();
+            $this->assertTrue($saved);
+            $taskId = $task->id;
+            $task->forget();
+            unset($task);
+
+            $task       = Task::getById($taskId);
+            $task->name ='something new';
+            $saved      = $task->save();
+            $this->assertTrue($saved);
+
+            $task->delete();
+        }
+
+        /**
+         * @depends testCreateTaskWithZerosStampAndEditAgain
+         */
         public function testCreateAndGetTaskById()
         {
             Yii::app()->user->userModel = User::getByUsername('super');

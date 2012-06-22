@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,9 +37,9 @@
             => 'AccountsModuleSingularLabel Requis',
         'Complete LeadsModuleSingularLowerCaseLabel conversion without selecting or creating an AccountsModuleSingularLowerCaseLabel.'
             => 'Convertir la LeadsModuleSingularLowerCaseLabel sans sélectionner ou créer un AccountsModuleSingularLowerCaseLabel.',
-        'Conversion is set to require an AccountsModuleSingularLowerCaseLabel.  Currently you do not have access to the AccountsModulePluralLowerCaseLabel module. Please contact your administrator regarding this.'
+        'Conversion is set to require an AccountsModuleSingularLowerCaseLabel.  Currently you do not have access to the AccountsModulePluralLowerCaseLabel module. Please contact your administrator.'
             => 'Vous avez chosi de convertir un AccountsModuleSingularLowerCaseLabel, mais vous n\'avez pas accès au module de AccountsModuleSingularLowerCaseLabel.  Veuillez contacter votre administrateur système.',
-        'Conversion requires access to the ContactsModulePluralLowerCaseLabel module which you do not have. Please contact your administrator regarding this.'
+        'Conversion requires access to the ContactsModulePluralLowerCaseLabel module which you do not have. Please contact your administrator.'
             => 'Vous devez avoir accès au module de ContactsModulePluralLowerCaseLabel pour continuer.  Veuillez contacter votre administrateur système.',
         'Convert LeadsModulePluralLabel'
             => 'Convertir LeadsModulePluralLabel',
@@ -56,7 +56,7 @@
         'Leads'
             => 'Pistes',
         'LeadsModulePluralLabel'
-            => 'LeadsModulePluralLabel',
+            => 'LeadsModulePluralLabel', // Same Word Translated
         'LeadsModulePluralLabel and ContactsModulePluralLabel are the same records, ' .
         'just in a different status. To create a LeadsModuleSingularLowerCaseLabel ' .
         'field, create a ContactsModuleSingularLowerCaseLabel field, and then it ' .
@@ -66,7 +66,7 @@
                'veuillez créer le champ dans le module ContactsModuleSingularLowerCaseLabel, le champ ' .
                'apparaîtra alors dans les présentations de pages des LeadsModulePluralLowerCaseLabel.',
         'LeadsModuleSingularLabel'
-            => 'LeadsModuleSingularLabel',
+            => 'LeadsModuleSingularLabel', // Same Word Translated
         'LeadsModuleSingularLabel Conversion'
             => 'Conversion de la LeadsModuleSingularLabel',
         'LeadsModuleSingularLabel Search'
@@ -81,5 +81,7 @@
             => 'Choisir un AccountsModuleSingularLabel',
         'Skip AccountsModuleSingularLabel'
             => 'Aucun AccountsModuleSingularLabel',
+        '{n} LeadsModuleSingularLabel created|{n} LeadsModulePluralLabel created'
+            => '{n} LeadsModuleSingularLabel crée|{n} LeadsModulePluralLabel crées',
     );
 ?>

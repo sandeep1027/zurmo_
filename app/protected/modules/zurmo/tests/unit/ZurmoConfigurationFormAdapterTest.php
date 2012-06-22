@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class ZurmoConfigurationFormAdapterTest extends BaseTest
+    class ZurmoConfigurationFormAdapterTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -42,17 +42,20 @@
             Yii::app()->pagination->setGlobalValueByType('subListPageSize',       51);
             Yii::app()->pagination->setGlobalValueByType('modalListPageSize',     52);
             Yii::app()->pagination->setGlobalValueByType('dashboardListPageSize', 53);
+            ZurmoConfigurationUtil::setByModuleName('ZurmoModule', 'applicationName', 'demoCompany');
             $form = ZurmoConfigurationFormAdapter::makeFormFromGlobalConfiguration();
             $this->assertEquals('America/New_York', $form->timeZone);
             $this->assertEquals(50,                 $form->listPageSize);
             $this->assertEquals(51,                 $form->subListPageSize);
             $this->assertEquals(52,                 $form->modalListPageSize);
             $this->assertEquals(53,                 $form->dashboardListPageSize);
+            $this->assertEquals('demoCompany',      $form->applicationName);
             $form->timeZone              = 'America/Chicago';
             $form->listPageSize          = 60;
             $form->subListPageSize       = 61;
             $form->modalListPageSize     = 62;
             $form->dashboardListPageSize = 63;
+            $form->applicationName       = 'demoCompany2';
             ZurmoConfigurationFormAdapter::setConfigurationFromForm($form);
 
             $form = ZurmoConfigurationFormAdapter::makeFormFromGlobalConfiguration();
@@ -61,6 +64,7 @@
             $this->assertEquals(61,                 $form->subListPageSize);
             $this->assertEquals(62,                 $form->modalListPageSize);
             $this->assertEquals(63,                 $form->dashboardListPageSize);
+            $this->assertEquals('demoCompany2',     $form->applicationName);
         }
     }
 ?>

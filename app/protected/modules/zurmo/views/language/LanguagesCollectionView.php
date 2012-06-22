@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,11 +50,17 @@
 
         protected function renderContent()
         {
-            $content = '<div class="wide form">';
+            $content = '<div>';
+            $content .= $this->renderTitleContent();
+            $content .= '<div class="wide form">';
             $clipWidget = new ClipWidget();
             list($form, $formStart) = $clipWidget->renderBeginWidget(
                                                                 'ZurmoActiveForm',
-                                                                array('id' => 'language-collection-form')
+                                                                array('id' => 'language-collection-form',
+                                                                        'htmlOptions' =>
+                                                                            array('onSubmit' =>
+                                                                                        'js:return attachLoadingOnSubmit("language-collection-form")')
+                                                                )
                                                             );
             $content .= $formStart;
 
@@ -64,13 +70,20 @@
                 $content .= '<br/>';
             }
             $content .= $this->renderFormLayout($form);
-            $content .= $this->renderViewToolBar();
+            $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">';
+            $content .= $this->renderActionElementBar(true);
+            $content .= '</div></div>';
             $content .= $clipWidget->renderEndWidget();
-            $content .= '</div>';
+            $content .= '</div></div>';
             return $content;
         }
 
-            /**
+        protected function renderTitleContent()
+        {
+            return '<h1>' . Yii::t('Default', 'Languages') . '</h1>';
+        }
+
+        /**
          * Render a form layout.
          * @param $form If the layout is editable, then pass a $form otherwise it can
          * be null.
@@ -110,8 +123,9 @@
                 'global' => array(
                     'toolbar' => array(
                         'elements' => array(
+                            array('type'  => 'ConfigurationLink',
+                                  'label' => "eval:Yii::t('Default', 'Cancel')"),
                             array('type'  => 'SaveButton',
-                                  'label' => "eval:Yii::t('Default', 'Save Changes')",
                                   'htmlOptions' => array('id' => 'save-collection', 'name' => 'save-collection')),
                         ),
                      ),
@@ -139,7 +153,7 @@
                 $htmlOptions['disabled'] = 'disabled';
                 $htmlOptions['uncheckValue'] = '1';
             }
-            return CHtml::checkBox($name, $active, $htmlOptions);
+            return ZurmoHtml::checkBox($name, $active, $htmlOptions);
         }
 
         protected static function renderActiveHeaderContent()
@@ -147,8 +161,8 @@
             $title       = Yii::t('Default', 'Active languages can be used by users. The system language and any language in use by a user cannot be inactivated');
             $content     = Yii::t('Default', 'Active') . '&#160;';
             $content    .= '<span id="active-languages-tooltip" class="tooltip" title="' . $title . '">';
-            $content    .= Yii::t('Default', 'What is this?') . '</span>';
-            $qtip = new QTip();
+            $content    .= '?</span>';
+            $qtip = new ZurmoTip();
             $qtip->addQTip("#active-languages-tooltip");
             return $content;
         }

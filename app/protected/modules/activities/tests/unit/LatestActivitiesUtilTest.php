@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class LatestActivitiesUtilTest extends BaseTest
+    class LatestActivitiesUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -39,7 +39,7 @@
         {
             Yii::app()->user->userModel = User::getByUsername('super');
             $mashableModelData = LatestActivitiesUtil::getMashableModelDataForCurrentUser();
-            $this->assertEquals(3, count($mashableModelData));
+            $this->assertEquals(4, count($mashableModelData));
             Yii::app()->user->userModel = User::getByUsername('billy');
             $mashableModelData = LatestActivitiesUtil::getMashableModelDataForCurrentUser();
             $this->assertEquals(0, count($mashableModelData));
@@ -52,7 +52,8 @@
             $relationItemIds = array(5, 7, 9);
             $searchAttributesData = LatestActivitiesUtil::
                                         getSearchAttributesDataByModelClassNamesAndRelatedItemIds($modelClassNames,
-                                                                                                  $relationItemIds);
+                                                                                                  $relationItemIds,
+                                                                                                  LatestActivitiesConfigurationForm::OWNED_BY_FILTER_ALL);
             $compareSearchAttributesData = array();
             $compareSearchAttributesData['Meeting']['clauses'] = array(
                 1 => array('attributeName' => 'activityItems',
@@ -83,6 +84,32 @@
             );
 
             $compareSearchAttributesData['Note']['structure'] = '1';
+            $this->assertEquals($compareSearchAttributesData['Meeting'], $searchAttributesData[0]['Meeting']);
+            $this->assertEquals($compareSearchAttributesData['Task'],    $searchAttributesData[1]['Task']);
+            $this->assertEquals($compareSearchAttributesData['Note'],    $searchAttributesData[2]['Note']);
+
+            $searchAttributesData = LatestActivitiesUtil::
+                                        getSearchAttributesDataByModelClassNamesAndRelatedItemIds($modelClassNames,
+                                                                                                  $relationItemIds,
+                                                                                                  LatestActivitiesConfigurationForm::OWNED_BY_FILTER_USER);
+            $compareSearchAttributesData['Meeting']['structure'] = '1 and 2 and 3';
+            $compareSearchAttributesData['Meeting']['clauses'][3] = array(
+                'attributeName' => 'owner',
+                'operatorType' => 'equals',
+                'value' => Yii::app()->user->userModel->id
+            );
+            $compareSearchAttributesData['Task']['structure']    = '1 and 2 and 3';
+            $compareSearchAttributesData['Task']['clauses'][3] = array(
+                'attributeName' => 'owner',
+                'operatorType' => 'equals',
+                'value' => Yii::app()->user->userModel->id
+            );
+            $compareSearchAttributesData['Note']['structure']    = '1 and 2';
+            $compareSearchAttributesData['Note']['clauses'][2] = array(
+                'attributeName' => 'owner',
+                'operatorType' => 'equals',
+                'value' => Yii::app()->user->userModel->id
+            );
             $this->assertEquals($compareSearchAttributesData['Meeting'], $searchAttributesData[0]['Meeting']);
             $this->assertEquals($compareSearchAttributesData['Task'],    $searchAttributesData[1]['Task']);
             $this->assertEquals($compareSearchAttributesData['Note'],    $searchAttributesData[2]['Note']);

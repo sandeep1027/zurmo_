@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,18 @@
 
     class ZurmoGroupController extends ZurmoModuleController
     {
+        public static function resolveBreadCrumbActionByGroup(Group $group)
+        {
+            if (!$group->isEveryone && !$group->isSuperAdministrators)
+            {
+                return 'edit';
+            }
+            else
+            {
+                return 'editPolicies';
+            }
+        }
+
         public function filters()
         {
             return array(
@@ -36,6 +48,11 @@
             );
         }
 
+        public function resolveAndGetModuleId()
+        {
+            return 'groups';
+        }
+
         public function actionIndex()
         {
             $this->actionList();
@@ -43,55 +60,65 @@
 
         public function actionList()
         {
-            $titleAndTreeView = new GroupsTitleBarAndTreeView(
+            $title           = Yii::t('Default', 'Groups');
+            $breadcrumbLinks = array(
+                 $title,
+            );
+            $treeView = new GroupsActionBarAndTreeListView(
                 $this->getId(),
                 $this->getModule()->getId(),
-                Group::getAll('name')
+                static::getGroupsOrderedByNonDeletablesFirst()
             );
-            $view             = new GroupsPageView($this, $titleAndTreeView);
+            $view             = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                         makeViewWithBreadcrumbsForCurrentUser($this, $treeView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
         public function actionDetails($id)
         {
             $group = Group::getById(intval($id));
-            $params = array(
-                'controllerId'     => $this->getId(),
-                'relationModuleId' => $this->getModule()->getId(),
-                'relationModel'    => $group,
-                'redirectUrl'      => Yii::app()->request->getRequestUri(),
-            );
-            $detailsAndSubviewsView = new GroupTitleBarAndDetailsView($this->getId(), $this->getModule()->getId(),
-                                                                      $group, $params);
-            $view                   = new GroupsPageView($this, $detailsAndSubviewsView);
-            echo $view->render();
+            if (!$group->isEveryone && !$group->isSuperAdministrators)
+            {
+                $this->redirect(array($this->getId() . '/edit', 'id' => $id));
+            }
+            else
+            {
+                $this->redirect(array($this->getId() . '/editPolicies', 'id' => $id));
+            }
         }
 
         public function actionCreate()
         {
-            $titleBarAndEditView = $this->makeTitleBarAndEditAndDetailsView(
-                                            $this->attemptToSaveModelFromPost(new Group()), 'Edit');
-            $view                = new GroupsPageView($this, $titleBarAndEditView);
+            $title           = Yii::t('Default', 'Create Group');
+            $breadcrumbLinks = array($title);
+            $titleBarAndCreateView = new GroupActionBarAndEditView($this->getId(), $this->getModule()->getId(),
+                                                                   $this->attemptToSaveModelFromPost(new Group()));
+            $view                  = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                         makeViewWithBreadcrumbsForCurrentUser($this, $titleBarAndCreateView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
         public function actionEdit($id)
         {
-            $group = Group::getById(intval($id));
+            $group               = Group::getById(intval($id));
+            $title           = Yii::t('Default', 'Edit');
+            $breadcrumbLinks = array(strval($group) => array('group/' . static::resolveBreadCrumbActionByGroup($group),  'id' => $id), $title);
             $this->resolveCanGroupBeEdited($group);
-            $view = new GroupsPageView($this,
-                $this->makeTitleBarAndEditAndDetailsView(
-                            $this->attemptToSaveModelFromPost($group), 'Edit'));
+            $titleBarAndEditView = new GroupActionBarAndEditView($this->getId(),
+                                                                 $this->getModule()->getId(),
+                                                                 $this->attemptToSaveModelFromPost($group));
+            $view                = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                       makeViewWithBreadcrumbsForCurrentUser($this, $titleBarAndEditView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
         public function actionModalList()
         {
-            $groupsModalTreeView = new SelectParentGroupModalTreeView(
+            $groupsModalTreeView = new SelectParentGroupModalTreeListView(
                 $this->getId(),
                 $this->getModule()->getId(),
                 $_GET['modalTransferInformation']['sourceModelId'],
-                Group::getAll('name'),
+                static::getGroupsOrderedByNonDeletablesFirst(false),
                 $_GET['modalTransferInformation']['sourceIdFieldId'],
                 $_GET['modalTransferInformation']['sourceNameFieldId']
             );
@@ -117,6 +144,8 @@
         public function actionEditUserMembership($id)
         {
             $group              = Group::getById(intval($id));
+            $title           = Yii::t('Default', 'User Membership');
+            $breadcrumbLinks = array(strval($group) => array('group/' . static::resolveBreadCrumbActionByGroup($group),  'id' => $id), $title);
             $membershipForm     = GroupUserMembershipFormUtil::makeFormFromGroup($group);
             $postVariableName   = get_class($membershipForm);
             if (isset($_POST[$postVariableName]))
@@ -132,19 +161,22 @@
                         Yii::app()->end(0, false);
                 }
             }
-            $titleBarAndEditView = new GroupTitleBarAndUserMembershipEditView(
+            $titleBarAndEditView = new GroupActionBarAndUserMembershipEditView(
                                             $this->getId(),
                                             $this->getModule()->getId(),
                                             $membershipForm,
                                             $group,
                                             $this->getModule()->getPluralCamelCasedName());
-            $view                = new GroupsPageView($this, $titleBarAndEditView);
+            $view                = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                         makeViewWithBreadcrumbsForCurrentUser($this, $titleBarAndEditView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
         public function actionEditModulePermissions($id)
         {
             $group            = Group::getById(intval($id));
+            $title           = Yii::t('Default', 'Module Permissions');
+            $breadcrumbLinks = array(strval($group) => array('group/' . static::resolveBreadCrumbActionByGroup($group),  'id' => $id), $title);
             $data             =  PermissionsUtil::getAllModulePermissionsDataByPermitable($group);
             $permissionsForm  = ModulePermissionsFormUtil::makeFormFromPermissionsData($data);
             $postVariableName = get_class($permissionsForm);
@@ -167,22 +199,25 @@
             $metadata            = ModulePermissionsEditViewUtil::resolveMetadataFromData(
                                         $permissionsData,
                                         ModulePermissionsEditAndDetailsView::getMetadata());
-            $titleBarAndEditView = new GroupTitleBarAndSecurityEditView(
+            $titleBarAndEditView = new GroupActionBarAndSecurityEditView(
                                             $this->getId(),
                                             $this->getModule()->getId(),
                                             $permissionsForm,
                                             $group,
                                             $this->getModule()->getPluralCamelCasedName(),
                                             $metadata,
-                                            Yii::t('Default', 'Group Module Permissions'),
-                                            'ModulePermissionsEditAndDetailsView');
-            $view                = new GroupsPageView($this, $titleBarAndEditView);
+                                            'ModulePermissionsEditAndDetailsView',
+                                            'GroupModulePermissionsEditLink');
+            $view                = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                         makeViewWithBreadcrumbsForCurrentUser($this, $titleBarAndEditView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
         public function actionEditRights($id)
         {
             $group              = Group::getById(intval($id));
+            $title           = Yii::t('Default', 'Rights');
+            $breadcrumbLinks = array(strval($group) => array('group/' . static::resolveBreadCrumbActionByGroup($group),  'id' => $id), $title);
             $rightsData         = RightsUtil::getAllModuleRightsDataByPermitable($group);
             $rightsForm         = RightsFormUtil::makeFormFromRightsData($rightsData);
             $postVariableName   = get_class($rightsForm);
@@ -202,22 +237,25 @@
             $metadata            = RightsEditViewUtil::resolveMetadataFromData(
                                             $rightsForm->data,
                                             RightsEditAndDetailsView::getMetadata());
-            $titleBarAndEditView = new GroupTitleBarAndSecurityEditView(
+            $titleBarAndEditView = new GroupActionBarAndSecurityEditView(
                                             $this->getId(),
                                             $this->getModule()->getId(),
                                             $rightsForm,
                                             $group,
                                             $this->getModule()->getPluralCamelCasedName(),
                                             $metadata,
-                                            Yii::t('Default', 'Group Rights'),
-                                            'RightsEditAndDetailsView');
-            $view                = new GroupsPageView($this, $titleBarAndEditView);
+                                            'RightsEditAndDetailsView',
+                                            'GroupRightsEditLink');
+            $view                = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                         makeViewWithBreadcrumbsForCurrentUser($this, $titleBarAndEditView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
         public function actionEditPolicies($id)
         {
             $group              = Group::getById(intval($id));
+            $title           = Yii::t('Default', 'Policies');
+            $breadcrumbLinks = array(strval($group) => array('group/' . static::resolveBreadCrumbActionByGroup($group),  'id' => $id), $title);
             $data               = PoliciesUtil::getAllModulePoliciesDataByPermitable($group);
             $policiesForm       = PoliciesFormUtil::makeFormFromPoliciesData($data);
             $postVariableName   = get_class($policiesForm);
@@ -241,16 +279,17 @@
             $metadata            = PoliciesEditViewUtil::resolveMetadataFromData(
                                         $policiesForm->data,
                                         PoliciesEditAndDetailsView::getMetadata());
-            $titleBarAndEditView = new GroupTitleBarAndSecurityEditView(
+            $titleBarAndEditView = new GroupActionBarAndSecurityEditView(
                                         $this->getId(),
                                         $this->getModule()->getId(),
                                         $policiesForm,
                                         $group,
                                         $this->getModule()->getPluralCamelCasedName(),
                                         $metadata,
-                                        Yii::t('Default', 'Group Policies'),
-                                        'PoliciesEditAndDetailsView');
-            $view                = new GroupsPageView($this, $titleBarAndEditView);
+                                        'PoliciesEditAndDetailsView',
+                                        'GroupPoliciesEditLink');
+            $view                = new GroupsPageView(ZurmoDefaultAdminViewUtil::
+                                         makeViewWithBreadcrumbsForCurrentUser($this, $titleBarAndEditView, $breadcrumbLinks, 'GroupBreadCrumbView'));
             echo $view->render();
         }
 
@@ -260,7 +299,7 @@
          * the _set is blocking the entry of a reserved name and _set is used
          * by setAttributes which comes before validate is called.
          */
-        protected function attemptToSaveModelFromPost($model, $redirectUrlParams = null)
+        protected function attemptToSaveModelFromPost($model, $redirectUrlParams = null, $redirect = true)
         {
             assert('$redirectUrlParams == null || is_array($redirectUrlParams)');
             $postVariableName = get_class($model);
@@ -307,6 +346,22 @@
             $view = new AccessFailurePageView($messageView);
             echo $view->render();
             Yii::app()->end(0, false);
+        }
+
+        protected static function getGroupsOrderedByNonDeletablesFirst($includeEveryoneGroup = true)
+        {
+            if ($includeEveryoneGroup)
+            {
+                $groups = array(Group::getByName(Group::EVERYONE_GROUP_NAME),
+                                Group::getByName(Group::SUPER_ADMINISTRATORS_GROUP_NAME));
+            }
+            else
+            {
+                $groups = array(Group::getByName(Group::SUPER_ADMINISTRATORS_GROUP_NAME));
+            }
+            $where    = Group::getTableName('Group') . ".name NOT IN( '" . Group::EVERYONE_GROUP_NAME . "', '" . Group::SUPER_ADMINISTRATORS_GROUP_NAME . "')";
+            $orderBy  = Group::getTableName('Group') . '.name asc';
+            return array_merge($groups, Group::getSubset(null, null, null, $where, $orderBy));
         }
     }
 ?>

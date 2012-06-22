@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -56,6 +56,17 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'designerMenuItems' => array(
+                    'showFieldsLink' => true,
+                    'showGeneralLink' => true,
+                    'showLayoutsLink' => true,
+                    'showMenusLink' => true,
+                ),
+                'globalSearchAttributeNames' => array(
+                    'name',
+                    'anyEmail',
+                    'officePhone',
+                ),
                 'tabMenuItems' => array(
                     array(
                         'label' => 'AccountsModulePluralLabel',
@@ -75,16 +86,12 @@
                         ),
                     ),
                 ),
-                'designerMenuItems' => array(
-                    'showFieldsLink' => true,
-                    'showGeneralLink' => true,
-                    'showLayoutsLink' => true,
-                    'showMenusLink' => true,
-                ),
-                'globalSearchAttributeNames' => array(
-                    'name',
-                    'anyEmail',
-                    'officePhone',
+                'shortcutsCreateMenuItems' => array(
+                    array(
+                        'label' => 'AccountsModuleSingularLabel',
+                        'url'   => array('/accounts/default/create'),
+                        'right' => self::RIGHT_CREATE_ACCOUNTS,
+                    ),
                 )
             );
             return $metadata;
@@ -123,6 +130,11 @@
         public static function getGlobalSearchFormClassName()
         {
             return 'AccountsSearchForm';
+        }
+
+        public static function hasPermissions()
+        {
+            return true;
         }
     }
 ?>

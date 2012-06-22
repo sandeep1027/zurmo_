@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -38,7 +38,13 @@
          * @see MenuView, TitleBarView for examples of views that set this
          * value to false.
          */
-        const RENDER_CONTENT_IN_DIV_WITH_OVERFLOW = true;
+        const RENDER_CONTENT_IN_DIV_WITH_OVERFLOW = false; //true
+
+        /**
+         * Extra classes defined to add to the div style for the view.
+         * @var array
+         */
+        protected $cssClasses = array();
 
         /**
          * Tells View that it can render the extending class' divs with
@@ -95,7 +101,7 @@
             {
                 $id = '';
             }
-            $classes = join(' ', $classes);
+            $classes = join(' ', array_merge($this->getCssClasses(), $classes));
             if ($classes != '')
             {
                 $classes = " class=\"$classes\"";
@@ -107,7 +113,16 @@
             }
             else
             {
-                return "<div $id$classes style=\"\">$content</div>";
+                if (YII_DEBUG)
+                {
+                    $reflection = new ReflectionClass( $calledClass );
+                    $classFile = $reflection->getFileName();
+                    return "<!--Called in: $classFile--><div $id $classes>$content</div>";
+                }
+                else
+                {
+                    return "<div $id $classes>$content</div>";
+                }
             }
         }
 
@@ -115,5 +130,15 @@
          * Renders the view content.
          */
         protected abstract function renderContent();
+
+        public function setCssClasses(array $classes)
+        {
+            $this->cssClasses = $classes;
+        }
+
+        public function getCssClasses()
+        {
+            return $this->cssClasses;
+        }
     }
 ?>

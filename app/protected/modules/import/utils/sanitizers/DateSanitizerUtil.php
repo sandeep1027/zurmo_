@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -48,7 +48,10 @@
                 'yyyy-MM-dd',
                 'MM-dd-yyyy',
                 'dd-MM-yyyy',
-                'MM/dd/yyyy'
+                'MM/dd/yyyy',
+                'M/d/yyyy',
+                'd/M/yyyy',
+                'yyyy-M-d'
             );
         }
 

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -75,7 +75,6 @@
             //update the ids of the account column to match the parent account.
             R::exec("update " . $import->getTempTableName() . " set column_16 = " .
                     $parentAccount->id . " where id != 1 limit 4");
-
             $this->assertEquals(4, ImportDatabaseUtil::getCount($import->getTempTableName())); // includes header rows.
 
             $mappingData = array(

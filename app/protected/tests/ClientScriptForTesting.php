@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -32,6 +32,41 @@
         public function getScriptFiles()
         {
             return $this->scriptFiles;
+        }
+
+        /**
+         * Override since there will not be a baseUrl available from the request object. Need to alter what is returned
+         * in that scenario.
+         * (non-PHPdoc)
+         * @see CClientScript::getPackageBaseUrl()
+         */
+        public function getPackageBaseUrl($name)
+        {
+            if (!isset($this->coreScripts[$name]))
+            {
+                return false;
+            }
+            $package = $this->coreScripts[$name];
+            if (isset($package['baseUrl']))
+            {
+                $baseUrl = $package['baseUrl'];
+                echo 'grapes:' . $baseUrl . "\n";
+                if ($baseUrl === '' || $baseUrl[0] !== '/' && strpos($baseUrl, '://') === false)
+                {
+                    //do not return because it will render a slash in front of the actual url
+                    //$baseUrl = Yii::app()->getRequest()->getBaseUrl() . '/' . $baseUrl;
+                }
+                $baseUrl = rtrim($baseUrl, '/');
+            }
+            elseif (isset($package['basePath']))
+            {
+                $baseUrl = Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias($package['basePath']));
+            }
+            else
+            {
+                $baseUrl = $this->getCoreScriptUrl();
+            }
+            return $this->coreScripts[$name]['baseUrl'] = $baseUrl;
         }
     }
 ?>

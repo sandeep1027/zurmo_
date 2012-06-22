@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,7 +26,7 @@
 
     /**
      * ActivityForm helps manage related models to an Activity. This form is used by ModelElements and its interface
-     * mimics if a CActiveForm was used.
+     * mimics if a ZurmoActiveForm was used.
      */
     class ActivityItemForm extends CFormModel
     {

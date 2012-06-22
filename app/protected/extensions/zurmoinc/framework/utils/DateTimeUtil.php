@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -132,14 +132,22 @@
         public static function convertTimestampToDbFormatDateTime($timestamp)
         {
             assert('is_int($timestamp)');
-            return Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateTimeFormat(),
+            $timeZone = date_default_timezone_get();
+            date_default_timezone_set('GMT');
+            $result = Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateTimeFormat(),
                                                      $timestamp);
+            date_default_timezone_set($timeZone);
+            return $result;
         }
 
         public static function convertDbFormatDateTimeToTimestamp($dbFormatDateTime)
         {
             assert('is_string($dbFormatDateTime)');
-            return strtotime($dbFormatDateTime);
+            $timeZone = date_default_timezone_get();
+            date_default_timezone_set('GMT');
+            $result = strtotime($dbFormatDateTime);
+            date_default_timezone_set($timeZone);
+            return $result;
         }
 
         public static function convertTimestampToDisplayFormat($timestamp,
@@ -152,12 +160,20 @@
 
         public static function isValidDbFormattedDate($date) // Basic version, feel free to enhance.
         {
+            if ($date == '0000-00-00')
+            {
+                return true;
+            }
             return preg_match('/^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|[3][0-1])$/',
                         $date) == 1;
         }
 
         public static function isValidDbFormattedDateTime($datetime) // Basic version, feel free to enhance.
         {
+            if ($datetime == '0000-00-00 00:00:00')
+            {
+                return true;
+            }
             return preg_match(  '/^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|[3][0-1]) ' .
                                 '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/',
                                 $datetime) == 1;
@@ -229,6 +245,24 @@
             $adjustedTimeStamp = Yii::app()->timeZoneHelper->convertFromLocalTimeStampForCurrentUser(
                                  DateTimeUtil::convertDbFormatDateTimeToTimestamp($lessThanValue));
             return               DateTimeUtil::convertTimestampToDbFormatDateTime($adjustedTimeStamp);
+        }
+
+        public static function getFirstDayOfAMonthDate($stringTime = null)
+        {
+            assert('is_string($stringTime) || $stringTime == null');
+            $dateTime = new DateTime($stringTime);
+            $dateTime->modify('first day of this month');
+            return Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateFormat(),
+                        $dateTime->getTimestamp());
+        }
+
+        public static function getLastDayOfAMonthDate($stringTime = null)
+        {
+            assert('is_string($stringTime) || $stringTime == null');
+            $dateTime = new DateTime($stringTime);
+            $dateTime->modify('last day of this month');
+            return Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateFormat(),
+                        $dateTime->getTimestamp());
         }
     }
 ?>

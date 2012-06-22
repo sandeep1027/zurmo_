@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -39,6 +39,18 @@
         public static function setUpBeforeClass()
         {
             parent::setUpBeforeClass();
+        }
+
+        public function testGlobalSearchAppearsOrDoesntDependingOnAccessRights()
+        {
+            $nobody          = $this->logoutCurrentUserLoginNewUserAndGetByUsername('nobody');
+            $content         = $this->runControllerWithNoExceptionsAndGetContent('home/default');
+            $this->assertTrue(strpos($content, 'globalSearchInput') === false);
+            //Now add accounts access, the global search should show up.
+            $nobody->setRight('AccountsModule', AccountsModule::RIGHT_ACCESS_ACCOUNTS);
+            $this->assertTrue($nobody->save()); // Not Coding Standard
+            $content         = $this->runControllerWithNoExceptionsAndGetContent('home/default');
+            $this->assertFalse(strpos($content, 'globalSearchInput') === false);
         }
 
         public function testRegularUserAllControllerActions()

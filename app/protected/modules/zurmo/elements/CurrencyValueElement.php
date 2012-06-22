@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -45,8 +45,11 @@
             $activeCurrenciesElement   = new CurrencyIdForAModelsRelatedCurrencyValueDropDownElement(
                                                                 $this->model, $this->attribute, $this->form, $params);
             $activeCurrenciesElement->editableTemplate = '{content}{error}';
-            $content  = $activeCurrenciesElement->render() . '&#160;';
-            $content .= $this->renderEditableValueTextField($currencyValueModel, $this->form, $this->attribute, 'value');
+            $content  = '<div class="hasParallelFields">';
+            $content .= CHtml::tag('div', array('class' => 'quarter'), $activeCurrenciesElement->render());
+            $content .= CHtml::tag('div', array('class' => 'threeQuarters'),
+                            $this->renderEditableValueTextField($currencyValueModel, $this->form, $this->attribute, 'value'));
+            $content .= '</div>';
             return $content;
         }
 

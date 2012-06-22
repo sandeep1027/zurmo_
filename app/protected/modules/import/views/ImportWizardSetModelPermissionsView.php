@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,21 +41,20 @@
 
             $importModelClassName      = ImportRulesUtil::getImportRulesClassNameByType($this->model->importRulesType);
             $importRulesLabel          = $importModelClassName::getDisplayLabel();
-            $label                     = Yii::t('Default', 'Who can read and write the new {importRulesLabel}',
-                                                array('{importRulesLabel}' => $importRulesLabel));
+            $label                     = '<h3>' . Yii::t('Default', 'Who can read and write the new {importRulesLabel}',
+                                                array('{importRulesLabel}' => $importRulesLabel)) . '</h3>';
             $element                   = new ExplicitReadWriteModelPermissionsElement($this->model,
                                              'explicitReadWriteModelPermissions', $form);
-            $element->editableTemplate = $label . '<br/>{content}';
+            $element->editableTemplate = $label . '{content}';
 
             $content  = $form->errorSummary($this->model);
             $content .= '<table>'     . "\n";
             $content .= '<tbody>'     . "\n";
-            $content .= '<tr><td>'    . "\n";
+            $content .= '<tr><td><div id="permissions-module">' . "\n";
             $content .= $element->render();
-            $content .= '</td></tr>'  . "\n";
+            $content .= '</div></td></tr>'  . "\n";
             $content .= '</tbody>'    . "\n";
             $content .= '</table>'    . "\n";
-            $content .= $this->renderActionLinksContent();
             return $content;
         }
 

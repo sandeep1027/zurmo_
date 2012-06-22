@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -44,7 +44,7 @@
         }
 
         /**
-         * Override of parent function. Makes use of the CActiveForm
+         * Override of parent function. Makes use of the ZurmoActiveForm
          * widget to provide an editable form.
          * @return A string containing the element's content.
          */
@@ -53,7 +53,7 @@
             $content = '<div class="wide form">';
             $clipWidget = new ClipWidget();
             list($form, $formStart) = $clipWidget->renderBeginWidget(
-                                                                'CActiveForm',
+                                                                'ZurmoActiveForm',
                                                                 array_merge(
                                                                     array('id' => 'install-form'),
                                                                     $this->resolveActiveFormAjaxValidationOptions()
@@ -102,12 +102,12 @@
                     }
                     $content .= '</tr>';
                 }
-                $element  = new SaveButtonActionElement($this->controllerId, $this->moduleId,
-                                                        null, array('label' => Yii::t('Default', 'Install')));
-                $content .= '<tr><td colspan="3" style="text-align:right;">' . $element->render() . '</td></tr>';
                 $content .= '</tbody>';
             }
             $content .= '</table>';
+            $element  = new SaveButtonActionElement($this->controllerId, $this->moduleId,
+                                                        null, array('label' => Yii::t('Default', 'Install')));
+            $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">' . $element->render() . '</div></div>';
             return $content;
         }
 
@@ -133,6 +133,16 @@
                                     array(
                                         array(
                                             'elements' => array(
+                                                array('attributeName' => 'databasePort', 'type' => 'Text',
+                                                      'description' => Yii::t('Default', 'Database port.')),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'elements' => array(
                                                 array('attributeName' => 'databaseAdminUsername', 'type' => 'Text',
                                                       'description' => Yii::t('Default', 'Leave this blank unless you ' .
                                                       'would like to create the user and database for Zurmo to run in.')),
@@ -144,7 +154,7 @@
                                     array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'databaseAdminPassword', 'type' => 'Text',
+                                                array('attributeName' => 'databaseAdminPassword', 'type' => 'Password',
                                                       'description' => Yii::t('Default', 'Leave this blank unless you ' .
                                                       'would like to create the user and database for Zurmo to run in.'))
                                             ),
@@ -189,7 +199,7 @@
                                     array(
                                         array(
                                             'elements' => array(
-                                                array('attributeName' => 'databasePassword', 'type' => 'Text',
+                                                array('attributeName' => 'databasePassword', 'type' => 'Password',
                                                       'description' => Yii::t('Default', 'User`s password.')),
                                             ),
                                         ),
@@ -238,6 +248,27 @@
                                         ),
                                     )
                                 ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'elements' => array(
+                                                array('attributeName' => 'hostInfo', 'type' => 'Text',
+                                                      'description' => Yii::t('Default', 'Host name where Zurmo will be installed.'))
+                                            ),
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'elements' => array(
+                                                array('attributeName' => 'scriptUrl', 'type' => 'Text',
+                                                      'description' => Yii::t('Default', 'The relative path where ' .
+                                                      'Zurmo will be installed.')),
+                                            ),
+                                        ),
+                                    )
+                                ),
                               ),
                         ),
                     ),
@@ -250,9 +281,11 @@
         {
             return array('enableAjaxValidation' => true,
                 'clientOptions' => array(
-                    'validateOnSubmit' => true,
-                    'validateOnChange' => false,
-                    'inputContainer' => 'td',
+                    'beforeValidate'    => 'js:beforeValidateAction',
+                    'afterValidate'     => 'js:afterValidateAction',
+                    'validateOnSubmit'  => true,
+                    'validateOnChange'  => false,
+                    'inputContainer'    => 'td',
                 )
             );
         }

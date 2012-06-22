@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,11 @@
 
     class SearchViewDesignerRules extends DesignerRules
     {
+        public function canMergeAndSplitCells()
+        {
+            return false;
+        }
+
         public function canAddPanels()
         {
             return false;
@@ -67,6 +72,7 @@
         {
             return array(
                 array('attributeName' => 'title', 'type' => 'Text'),
+                array('attributeName' => 'locked', 'type' => 'CheckBox'),
             );
         }
 
@@ -77,7 +83,9 @@
                 'EmailAddressInformation',
                 'Address',
                 'Date',
-                'DateTime'
+                'DateTime',
+                'CalculatedNumber',
+                'DropDownDependency'
             );
         }
 
@@ -86,14 +94,14 @@
             return array(
                 'AddBlankForDropDown',
                 'BooleanAsDropDown',
-                'RadioAsDropDown',
+                'DropDownAsMultiSelect',
                 'TextAreaAsText'
             );
         }
 
         public function maxCellsPerRow()
         {
-            return 2;
+            return 1;
         }
 
         /**
@@ -131,6 +139,11 @@
                     }
                 }
             }
+            return true;
+        }
+
+        public function requireOnlyUniqueFieldsInLayout()
+        {
             return true;
         }
     }

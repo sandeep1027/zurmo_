@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -67,7 +67,7 @@
                     }
                     $menuItems[] = array(
                         'label' => $dashboard['name'],
-                        'url'   => array('/home/default/dashboardDetails&id=' . $dashboard['id']),
+                        'url'   => array('/home/default/dashboardDetails?id=' . $dashboard['id']),
                         'right' => self::RIGHT_ACCESS_DASHBOARDS
                     );
                 }
@@ -94,6 +94,13 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'adminTabMenuItems' => array(
+                    array(
+                        'label'       => 'Back to Application',
+                        'url'         => array('/home/default'),
+                        'itemOptions' => array('class' => 'back-to-app-menu-item')
+                    ),
+                ),
                 'tabMenuItems' => array(
                     array(
                         'label' => 'Home',
@@ -111,7 +118,6 @@
                             ),
                         ),
                     ),
-
                 ),
             );
             return $metadata;

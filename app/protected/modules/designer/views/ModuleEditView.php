@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,12 +26,19 @@
 
     abstract class ModuleEditView extends EditView
     {
-        public function __construct($controllerId, $moduleId, ConfigurableMetadataModel $model)
+        public function __construct($controllerId, $moduleId, ConfigurableMetadataModel $model, $title)
         {
-            $this->controllerId = $controllerId;
-            $this->moduleId     = $moduleId;
-            $this->model        = $model;
-            $this->modelId      = null;
+            assert('is_string($title)');
+            $this->controllerId          = $controllerId;
+            $this->moduleId              = $moduleId;
+            $this->model                 = $model;
+            $this->modelId               = null;
+            $this->title                 = $title;
+        }
+
+        protected function renderTitleContent()
+        {
+            return '<h1>' . $this->title . '</h1>';
         }
 
         public function isUniqueToAPage()
@@ -43,9 +50,11 @@
         {
             return array('enableAjaxValidation' => true,
                 'clientOptions' => array(
-                    'validateOnSubmit' => true,
-                    'validateOnChange' => false,
-                    'inputContainer' => 'td',
+                    'beforeValidate'    => 'js:beforeValidateAction',
+                    'afterValidate'     => 'js:afterValidateAction',
+                    'validateOnSubmit'  => true,
+                    'validateOnChange'  => false,
+                    'inputContainer'    => 'td',
                 )
             );
         }
@@ -60,6 +69,7 @@
                 'global' => array(
                     'toolbar' => array(
                         'elements' => array(
+                            array('type' => 'CancelLink'),
                             array('type' => 'SaveButton'),
                         ),
                     ),

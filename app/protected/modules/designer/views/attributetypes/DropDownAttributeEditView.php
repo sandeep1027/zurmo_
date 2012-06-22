@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -32,7 +32,8 @@
                 'global' => array(
                     'toolbar' => array(
                         'elements' => array(
-                            array('type' => 'SaveButton'),
+                            array('type'  => 'CancelLink'),
+                            array('type'  => 'SaveButton'),
                         ),
                     ),
                     'panelsDisplayType' => FormLayout::PANELS_DISPLAY_TYPE_ALL,
@@ -107,9 +108,8 @@
 
         protected function renderAfterFormLayout($form)
         {
-            $titleBar = new TitleBarView (Yii::t('Default', 'Pick List Values'));
-            $content  = $titleBar->render();
-            $content .= '<div class="horizontal-line"></div>' . "\n";
+            $content  = '<h3>' . $this->getAfterFormLayoutTranslatedTitleContent() . '</h3>';
+            //$content .= '<div class="horizontal-line"></div>' . "\n";
             $content .= '<div>' . "\n";
             $element  = new EditableDropDownCollectionElement($this->model, 'customFieldDataData', $form,
                                 array('specificValueFromDropDownAttributeName' => 'defaultValueOrder',
@@ -119,6 +119,11 @@
             $content .= $element->render();
             $content .= '</div>' . "\n";
             return $content;
+        }
+
+        protected function getAfterFormLayoutTranslatedTitleContent()
+        {
+            return Yii::t('Default', 'Pick List Values');
         }
     }
 ?>

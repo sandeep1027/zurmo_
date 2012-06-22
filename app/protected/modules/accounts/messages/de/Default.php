@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,48 +30,54 @@
     // DON'T MAKE A MESS!
     return array(
         'Access AccountsModulePluralLabel Tab'
-            => '??',
+            => 'Zugang AccountsModulePluralLabel Tab',
         'Account'
-            => '??',
+            => 'Account', // Same Word Translated
         'Accounts'
-            => '??',
+            => 'Accounts', // Same Word Translated
         'AccountsModulePluralLabel'
-            => 'AccountsModulePluralLabel',
+            => 'AccountsModulePluralLabel', // Same Word Translated
         'AccountsModulePluralLabel For AccountsModuleSingularLabel'
-            => 'AccountsModulePluralLabel ?? AccountsModuleSingularLabel',
+            => 'AccountsModulePluralLabel für AccountsModuleSingularLabel',
         'AccountsModuleSingularLabel'
-            => 'AccountsModuleSingularLabel',
+            => 'AccountsModuleSingularLabel', // Same Word Translated
         'AccountsModuleSingularLabel Id'
-            => 'AccountsModuleSingularLabel ??',
+            => 'AccountsModuleSingularLabel ID',
         'AccountsModuleSingularLabel Name'
-            => 'AccountsModuleSingularLabel ??',
+            => 'AccountsModuleSingularLabel Bezeichnung',
         'AccountsModuleSingularLabel Search'
-            => 'AccountsModuleSingularLabel ??',
+            => 'AccountsModuleSingularLabel Search', // Same Word Translated
         'An account field'
-            => '??',
+            => 'Ein Account Datenfeld',
         'Annual Revenue'
-            => '??',
+            => 'Jährlicher Umsatz',
         'Billing Address'
             => 'Rechnungsadresse',
         'Complete Conversion'
-            => '??',
+            => 'Konvertierung abgeschlossen',
         'Create AccountsModulePluralLabel'
-            => '?? AccountsModulePluralLabel',
+            => 'Erstellen AccountsModulePluralLabel',
         'Create AccountsModuleSingularLabel'
-            => '?? AccountsModuleSingularLabel',
+            => 'Erstellen AccountsModuleSingularLabel',
         'Delete AccountsModulePluralLabel'
-            => '?? AccountsModulePluralLabel',
+            => 'Löschen AccountsModulePluralLabel',
         'Employees'
-            => '??',
+            => 'Mitarbeiter',
         'My AccountsModulePluralLabel'
-            => '??',
+            => 'Meine AccountsModulePluralLabel',
         'Parent AccountsModuleSingularLabel'
-            => '??',
+            => 'Parent AccountsModuleSingularLabel', // Same Word Translated
         'Prospect'
-            => '??',
+            => 'Prospect', // Same Word Translated
         'Related AccountsModulePluralLabel'
-            => '?? AccountsModulePluralLabel',
+            => 'Verwandte AccountsModulePluralLabel',
         'Vendor'
-            => '??',
+            => 'Verkäufer',
+        '{n} AccountsModuleSingularLabel created|{n} AccountsModulePluralLabel created'
+            => '{n} AccountsModuleSingularLabel erstellt|{n} AccountsModulePluralLabel erstellt',
+        '{n} AccountsModuleSingularLabel mass updated|{n} AccountsModulePluralLabel mass updated'
+            => '{n} AccountsModuleSingularLabel wurde aktualisiert|{n} AccountsModulePluralLabel wurden aktualisiert',
+        '{n} AccountsModuleSingularLabel search completed|{n} AccountsModuleSingularLabel searches completed'
+            => '{n} AccountsModuleSingularLabel Suche wurde abgeschlossen|{n} AccountsModuleSingularLabel Suchen wurden abgeschlossen',
     );
 ?>

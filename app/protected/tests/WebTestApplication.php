@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,6 +41,14 @@
             parent::__construct($config);
             $this->configLanguageValue = $this->language;
             $this->configTimeZoneValue = $this->timeZoneHelper->getTimeZone();
+
+            // We need explicitly to raise this event, because CApplication::run() method
+            // where OnBeginRequest event is raised is nvever called
+            // For more informationn check: app/protected/tests/bootstrap.php
+            if ($this->hasEventHandler('onBeginRequest'))
+            {
+                $this->onBeginRequest(new CEvent($this));
+            }
         }
 
         /**

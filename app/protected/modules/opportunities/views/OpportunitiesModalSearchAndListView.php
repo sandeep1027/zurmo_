@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,21 +24,16 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class OpportunitiesModalSearchAndListView extends GridView
+    class OpportunitiesModalSearchAndListView extends ModalSearchAndListView
     {
-        public function __construct($controllerId, $moduleId, $modalListLinkProvider,
-                                    RedBeanModel $opportunity, CDataProvider $dataProvider, $gridIdSuffix = null)
+        public static function getListViewClassName()
         {
-            assert('$modalListLinkProvider instanceof ModalListLinkProvider');
-            parent::__construct(2, 1);
-            $this->setView(new OpportunitiesModalSearchView($opportunity, get_class($opportunity), $gridIdSuffix), 0, 0);
-            $this->setView(new OpportunitiesModalListView($controllerId, $moduleId, get_class($opportunity),
-                                                     $modalListLinkProvider,  $dataProvider, $gridIdSuffix), 1, 0);
+            return 'OpportunitiesModalListView';
         }
 
-        public function isUniqueToAPage()
+        public static function getSearchViewClassName()
         {
-            return true;
+            return 'OpportunitiesModalSearchView';
         }
     }
 ?>

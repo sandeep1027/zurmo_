@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,7 +34,7 @@
         protected $designerRules;
         protected $attributeCollection;
         protected $designerLayoutAttributes;
-        protected $breadcrumbLinks;
+        protected $title;
 
         public function __construct($controllerId,
             $moduleId,
@@ -44,7 +44,7 @@
             DesignerRules $designerRules,
             $attributeCollection,
             DesignerLayoutAttributes $designerLayoutAttributes,
-            $breadcrumbLinks
+            $title
         )
         {
             assert('is_array($editableMetadata)');
@@ -57,7 +57,7 @@
             $this->designerRules            = $designerRules;
             $this->attributeCollection      = $attributeCollection;
             $this->designerLayoutAttributes = $designerLayoutAttributes;
-            $this->breadcrumbLinks          = $breadcrumbLinks;
+            $this->title                    = $title;
         }
 
         public function isUniqueToAPage()
@@ -67,22 +67,16 @@
 
         protected function renderContent()
         {
-            $titleDisplay    = $this->designerRules->resolveDisplayNameByView($this->metadataViewClassName);
-            $titleBarView    = new TitleBarView(
-                                        Yii::t('Default', 'Edit Layout'), $titleDisplay);
-            $content         = $titleBarView->render();
-            $breadcrumbView  = new DesignerBreadCrumbView(
-                                        $this->controllerId, $this->moduleId, $this->breadcrumbLinks);
-            $content        .= $breadcrumbView->render();
-            $content        .= '<div class="horizontal-line"></div>' . "\n";
-            $content        .= $this->renderForm();
+            $content = $this->renderForm();
             $this->renderStickyAnchorScript();
             return $content;
         }
 
         protected function renderForm()
         {
-            $content = '<div class="wide form">';
+            $content  = '<div class="wrapper">';
+            $content .= $this->renderTitleContent();
+            $content .= '<div class="wide form">';
             $clipWidget = new ClipWidget();
             list($form, $formStart) = $clipWidget->renderBeginWidget(
                                                                 'ZurmoActiveForm',
@@ -92,28 +86,50 @@
                                                                 )
                                                             );
             $content .= $formStart;
-            $content .= '<div class="view-toolbar">';
-            $content .= $this->renderNotificationBar('NotifcationBar');
-            $content .= $this->renderSaveLayoutButton('NotifcationBar');
+            $content .= '<div class="designer-toolbar">';
+            //$content .= $this->renderNotificationBar('NotificationBar');
             if ($this->designerRules->canConfigureLayoutPanelsType())
             {
                 $content .= $this->renderLayoutPanelsType($form);
             }
             $content .= '</div>';
             $content .= $this->renderDesignerLayoutEditorWidget();
-            $formEnd = $clipWidget->renderEndWidget();
-            $content .= $formEnd;
+            $content .= $this->renderNotificationBar('NotificationBar');
+            $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">';
+            $content .= $this->renderCancelLink();
+            $content .= $this->renderSaveLayoutButton('NotificationBar');
+            $content .= '</div></div>';
 
-            $content .= '</div>';
+            $formEnd  = $clipWidget->renderEndWidget();
+            $content .= $formEnd;
+            $content .= '</div></div>';
             return $content;
+        }
+
+        protected function renderTitleContent()
+        {
+            return '<h1>' . $this->title . '</h1>';
         }
 
         protected function renderSaveLayoutButton($notificationBarId)
         {
-            return CHtml::ajaxSubmitButton(Yii::t('Default', 'Save Layout'), null, array(
-                    //designer.AfterSaveLayoutUpdateFlashBar(data, flashBarId)
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')
+                    ) . '/FormUtils.js',
+                CClientScript::POS_END
+            );
+            $htmlOptions             = array();
+            $htmlOptions['class']    = 'attachLoading z-button';
+            $aContent                = CHtml::tag('span', array('class' => 'z-spinner'), null);
+            $aContent               .= CHtml::tag('span', array('class' => 'z-icon'), null);
+            $aContent               .= CHtml::tag('span', array('class' => 'z-label'), Yii::t('Default', 'Save Layout'));
+            return ZurmoHtml::ajaxLink($aContent, '#', array(
                     'data' => 'js:designer.prepareSaveLayout("edit-form")',
                     'dataType' => 'json',
+                    'type' => 'POST',
+                    'beforeSend' => 'js:function(){attachLoadingOnSubmit("edit-form");}',
+                    'complete'   => 'js:function(){detachLoadingOnSubmit("edit-form");}',
                     'success' => 'function(data){designer.updateFlashBarAfterSaveLayout(data, "' . $notificationBarId . '")}', // Not Coding Standard
                     'error' => 'function(data){ ' . // Not Coding Standard
                         'var data = {' . // Not Coding Standard
@@ -122,7 +138,14 @@
                         };
                         designer.updateFlashBarAfterSaveLayout(data, "' . $notificationBarId . '")
                     }',
-                ));
+                ), $htmlOptions);
+        }
+
+        protected function renderCancelLink()
+        {
+            $route = Yii::app()->createUrl($this->moduleId . '/' . $this->controllerId . '/moduleLayoutsList/',
+                                                 array('moduleClassName' => $this->moduleClassName));
+            return CHtml::link(Yii::t('Default', 'Cancel'), $route);
         }
 
         /**
@@ -132,10 +155,16 @@
         {
             $formModel = PanelsDisplayTypeLayoutMetadataUtil::makeFormFromEditableMetadata($this->editableMetadata);
             //$this->editableMetadata populate if it exists.
-            $content = '&#160;&#160;&#160;';
+            $content = null;
             $element  = new LayoutPanelsTypeStaticDropDownElement($formModel, 'type', $form);
-            $element->editableTemplate = Yii::t('Default', 'Panels Configuration') . ' {content}{error}';
+            $element->editableTemplate = '{content}';
             $content .= $element->render();
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/dropDownInteractions.js');
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')) . '/jquery.dropkick-1.0.0.js');
             return $content;
         }
 

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -64,6 +64,14 @@
         {
             $id = $this->getId();
             $this->htmlOptions['id'] = $id;
+            if (isset($this->htmlOptions['disabled']) && $this->htmlOptions['disabled'] == 'disabled')
+            {
+                $tokenListClassSuffix = ' disabled';
+            }
+            else
+            {
+                $tokenListClassSuffix = '';
+            }
             echo CHtml::textField($this->name, null, $this->htmlOptions);
             $javaScript  = "$(document).ready(function () { ";
             $javaScript .= "$('#$id').tokenInput('{$this->sourceUrl}', { ";
@@ -76,7 +84,7 @@
             {
                 $javaScript .= "prePopulate: " . $this->jsonEncodedIdsAndLabels . ","; // Not Coding Standard
             }
-            $javaScript .= "preventDuplicates: 'true'";
+            $javaScript .= "preventDuplicates: 'true', classes: {tokenList: 'token-input-list" . $tokenListClassSuffix . "'}";
             $javaScript .= "});";
             $javaScript .= "});";
             Yii::app()->getClientScript()->registerScript(__CLASS__ . '#' . $id, $javaScript);

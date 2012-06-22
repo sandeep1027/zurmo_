@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,7 +28,7 @@
      * This test is in the application instead of the framework so it can be tested when the database is frozen or
      * unfrozen.
      */
-    class DemoDataUtilTest extends BaseTest
+    class DemoDataUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -58,7 +58,7 @@
             $this->assertEquals(3, Account::getCount());
             $this->assertEquals(12, Contact::getCount());
             $this->assertEquals(6, Opportunity::getCount());
-            $this->assertEquals(9, Meeting::getCount());
+            $this->assertEquals(18, Meeting::getCount());
             $this->assertEquals(9, Note::getCount());
             $this->assertEquals(9, Task::getCount());
             $this->assertEquals(9, User::getCount());

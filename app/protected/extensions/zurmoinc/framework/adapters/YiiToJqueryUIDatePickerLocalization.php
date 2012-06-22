@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -53,12 +53,28 @@
         {
             switch($dateFormat)
             {
-                case 'dd.MM.yy':    //de format
+                case 'dd.MM.yy':    //de, ru format
                     return 'dd.mm.y';
-                case 'M/d/yy':      //en format
+                case 'M/d/yy':      //en, fa_ir format
                     return 'm/d/y';
-                case 'dd/MM/yy':    //es, fr, it format
+                case 'dd/MM/yy':    //es, fr, it, pt format
                     return 'dd/mm/y';
+                case 'd.M.yyyy':    //sk format
+                    return 'd.m.yy';
+                case 'd.M.yy.':     //sr_yu format
+                    return 'd.m.y.';
+                case 'd-M-yy':      //hi format
+                    return 'd-m-y';
+                case 'dd/MM/yyyy':  //vi format
+                    return 'dd/mm/yy';
+                case 'yy-M-d':      //zh_cn format
+                    return 'y-m-dd';
+                case 'yy/MM/dd':    //ja format
+                    return 'y/mm/dd';
+                case 'dd-MM-yy':    //nl format
+                        return 'dd-mm-y';
+                case 'd/MM/yy':     //en_au format
+                        return 'd/mm/y';
                 default :
                     throw new NotImplementedException();
             }
@@ -73,10 +89,14 @@
         {
             switch($timeFormat)
             {
-                case 'HH:mm':       //de, es, fr, it format
+                case 'HH:mm':       //de, es, fr, it, pt, nl, sr_yu, vi format
                     return 'hh:mm';
-                case 'h:mm a':      //en format
-                    return 'h:mm TT';
+                case 'h:mm a':      //en, hi, en_au format
+                    return 'h:mm tt';
+                case 'H:mm':        //sk, fa_ir, ru, ja format
+                    return 'h:mm';
+                case 'ah:mm':       //zh_cn format
+                    return 'tth:mm';
                 default :
                     throw new NotImplementedException();
             }

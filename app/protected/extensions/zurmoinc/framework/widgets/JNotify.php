@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -35,7 +35,9 @@
 
         public $showStatusBarOneAtATime = true;
 
-        public $statusBarId = 'StatusBar';
+        public $statusBarId             = 'StatusBar';
+
+        public $cssFile                 = 'css/jquery-ui.css';
 
         /**
          * Initialize the JNotify Widget
@@ -43,6 +45,8 @@
         public function init()
         {
             $this->registerClientScripts();
+            $this->themeUrl = Yii::app()->baseUrl . '/themes';
+            $this->theme    = Yii::app()->theme->name;
             parent::init();
         }
 

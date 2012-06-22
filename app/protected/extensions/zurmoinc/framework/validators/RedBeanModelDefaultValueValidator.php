@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -50,27 +50,33 @@
 
                 $isRelation = $model->isRelation($attributeName);
 
-                $isNullRelatedModel          = $isRelation &&
-                                               $value === null;
+                $isNullRelatedModel               = $isRelation &&
+                                                    $value === null;
                 assert('!$isRelation || $value === null || $value->id != 0');
-                $isNewUnmodifiedRelatedModel = $isRelation                    &&
-                                               !$value instanceof CustomField &&
-                                               $value !== null                &&
-                                               $value->id < 0                 &&
-                                               !$value->isModified();
-                $isEmptyCustomField          = $isRelation                   &&
-                                               $value instanceof CustomField &&
-                                               ($value->value === null ||
-                                                $value->value === '');
+                $isNewUnmodifiedRelatedModel      = $isRelation                    &&
+                                                    !$value instanceof CustomField &&
+                                                    !$value instanceof MultipleValuesCustomField &&
+                                                    $value !== null                &&
+                                                    $value->id < 0                 &&
+                                                    !$value->isModified();
+                $isEmptyCustomField               = $isRelation                   &&
+                                                    $value instanceof CustomField &&
+                                                    ($value->value === null ||
+                                                    $value->value === '');
+                $isEmptyMultipleValuesCustomField = $isRelation                   &&
+                                                    $value instanceof MultipleValuesCustomField &&
+                                                    (count($value->values) == 0);
 
                 // None or only one of these is true.
                 assert('!($isEmptyAttribute            ||
                           $isNullRelatedModel          ||
                           $isNewUnmodifiedRelatedModel ||
+                          $isEmptyMultipleValuesCustomField ||
                           $isEmptyCustomField) ||
                          ($isEmptyAttribute            ^
                           $isNullRelatedModel          ^
                           $isNewUnmodifiedRelatedModel ^
+                          $isEmptyMultipleValuesCustomField ^
                           $isEmptyCustomField)');
 
                 $thisValue = $this->calculate();
@@ -80,6 +86,12 @@
                     $isNewUnmodifiedRelatedModel)
                 {
                     $model->$attributeName = $thisValue;
+                }
+                if ($isEmptyMultipleValuesCustomField)
+                {
+                    $customFieldValue        = new CustomFieldValue();
+                    $customFieldValue->value = $thisValue;
+                    $model->$attributeName->values->add($customFieldValue);
                 }
                 elseif ($isEmptyCustomField)
                 {

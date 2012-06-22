@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -56,11 +56,14 @@
                     'currencyValue'    => array(RedBeanModel::HAS_ONE,   'CurrencyValue',    RedBeanModel::OWNED),
                     'dropDown'         => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
                     'radioDropDown'    => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                    'multiDropDown'    => array(RedBeanModel::HAS_ONE,   'OwnedMultipleValuesCustomField', RedBeanModel::OWNED),
+                    'tagCloud'         => array(RedBeanModel::HAS_ONE,   'OwnedMultipleValuesCustomField', RedBeanModel::OWNED),
                     'hasOne'           => array(RedBeanModel::HAS_ONE,   'ImportModelTestItem2'),
                     'hasMany'          => array(RedBeanModel::MANY_MANY, 'ImportModelTestItem3'),
                     'hasOneAlso'       => array(RedBeanModel::HAS_ONE,   'ImportModelTestItem4'),
                     'primaryEmail'     => array(RedBeanModel::HAS_ONE,   'Email', RedBeanModel::OWNED),
                     'primaryAddress'   => array(RedBeanModel::HAS_ONE,   'Address', RedBeanModel::OWNED),
+                    'secondaryEmail'   => array(RedBeanModel::HAS_ONE,   'Email', RedBeanModel::OWNED),
 
                 ),
                 'rules' => array(
@@ -83,20 +86,25 @@
                     array('url',       'url'),
                 ),
                 'elements' => array(
-                    'currencyValue'    => 'CurrencyValue',
-                    'date'             => 'Date',
-                    'dateTime'         => 'DateTime',
-                    'hasOne'           => 'ImportModelTestItem2',
-                    'hasOneAlso'       => 'ImportModelTestItem4',
-                    'phone'            => 'Phone',
-                    'primaryEmail'     => 'EmailAddressInformation',
-                    'primaryAddress'   => 'Address',
-                    'textArea'         => 'TextArea',
-                    'radioDropDown'    => 'RadioDropDown',
+                    'currencyValue'       => 'CurrencyValue',
+                    'date'                => 'Date',
+                    'dateTime'            => 'DateTime',
+                    'hasOne'              => 'ImportModelTestItem2',
+                    'hasOneAlso'          => 'ImportModelTestItem4',
+                    'phone'               => 'Phone',
+                    'primaryEmail'        => 'EmailAddressInformation',
+                    'secondaryEmail'      => 'EmailAddressInformation',
+                    'primaryAddress'      => 'Address',
+                    'textArea'            => 'TextArea',
+                    'radioDropDown'       => 'RadioDropDown',
+                    'multiDropDown'       => 'MultiSelectDropDown',
+                    'tagCloud'            => 'TagCloud',
                 ),
                 'customFields' => array(
                     'dropDown'        => 'ImportTestDropDown',
                     'radioDropDown'   => 'ImportTestRadioDropDown',
+                    'multiDropDown'   => 'ImportTestMultiDropDown',
+                    'tagCloud'        => 'ImportTestTagCloud',
                 ),
             );
             return $metadata;

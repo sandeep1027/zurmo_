@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -64,10 +64,17 @@
          */
         protected function analyzeByValue($value)
         {
-            if ($value != null && !in_array(strtolower($value), $this->dropDownValues))
+            if ($value != null)
             {
-                $this->missingDropDownInstructions[DropDownSanitizerUtil::ADD_MISSING_VALUE][] = $value;
-                $this->messageCountData[static::INVALID] ++;
+                $lowerCaseMissingValuesToMap = ArrayUtil::resolveArrayToLowerCase(
+                                               $this->missingDropDownInstructions
+                                               [DropDownSanitizerUtil::ADD_MISSING_VALUE]);
+                if (!in_array(strtolower($value), $this->dropDownValues) &&
+                   !in_array(strtolower($value), $lowerCaseMissingValuesToMap))
+                {
+                    $this->missingDropDownInstructions[DropDownSanitizerUtil::ADD_MISSING_VALUE][] = $value;
+                    $this->messageCountData[static::INVALID] ++;
+                }
             }
         }
 

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,7 +30,37 @@
 
         public function render()
         {
-            return CHtml::submitButton($this->getLabel(), $this->getHtmlOptions());
+            $htmlOptions = $this->getHtmlOptions();
+            $request     = Yii::app()->getRequest();
+            if($request->enableCsrfValidation && isset($htmlOptions['csrf']) && $htmlOptions['csrf'])
+            {
+                $htmlOptions['params'][$request->csrfTokenName]=$request->getCsrfToken();
+            }
+            if(isset($htmlOptions['params']))
+            {
+                $params = CJavaScript::encode($htmlOptions['params']);
+            }
+            else
+            {
+                $params = '{}';
+            }
+            if(isset($htmlOptions['class']))
+            {
+                $htmlOptions['class']  .= ' z-button';
+            }
+            else
+            {
+                $htmlOptions['class']   = 'z-button';
+            }
+            $cs = Yii::app()->getClientScript();
+            $cs->registerCoreScript('jquery');
+            $cs->registerCoreScript('yii');
+            $handler                 = "jQuery.yii.submitForm(this, '', $params); return false;";
+            $htmlOptions['onclick']  = $handler;
+            $aContent                = CHtml::tag('span', array('class' => 'z-spinner'), null);
+            $aContent               .= CHtml::tag('span', array('class' => 'z-icon'), null);
+            $aContent               .= CHtml::tag('span', array('class' => 'z-label'), $this->getLabel());
+            return ZurmoHtml::link($aContent, '#', $htmlOptions);
         }
     }
 ?>

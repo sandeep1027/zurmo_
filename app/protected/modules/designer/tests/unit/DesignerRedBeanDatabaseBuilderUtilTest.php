@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,7 +29,7 @@
      * tool.  Has tests to make sure users can properly rebuild the database for schema changes after creating or
      * editing a custom attribute.
      */
-    class DesignerRedBeanDatabaseBuilderUtilTest extends BaseTest
+    class DesignerRedBeanDatabaseBuilderUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {

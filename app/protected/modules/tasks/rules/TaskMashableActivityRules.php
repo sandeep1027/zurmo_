@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -33,7 +33,7 @@
          * Only show tasks that are completed. Adds filter to remove any non-completed tasks from the query.
          * @see ActivityMashableActivityRules::resolveSearchAttributeDataForLatestActivities()
          */
-        protected function resolveSearchAttributeDataForLatestActivities($searchAttributeData)
+        public function resolveSearchAttributeDataForLatestActivities($searchAttributeData)
         {
             assert('is_array($searchAttributeData)');
             $clausesCount = count($searchAttributeData['clauses']);
@@ -42,8 +42,49 @@
                     'operatorType'         => 'equals',
                     'value'                => (bool)1
             );
-            $searchAttributeData['structure'] .= ' and ' . ($clausesCount + 1);
+            if ($searchAttributeData['structure'] != null)
+            {
+                $searchAttributeData['structure'] .= ' and ';
+            }
+            $searchAttributeData['structure'] .=  ($clausesCount + 1);
             return $searchAttributeData;
+        }
+
+        /**
+         * (non-PHPdoc)
+         * @see MashableActivityRules::getSummaryContentTemplate()
+         */
+        public function getSummaryContentTemplate($ownedByFilter, $viewModuleClassName)
+        {
+            assert('is_string($ownedByFilter)');
+            assert('is_string($viewModuleClassName)');
+            if ($ownedByFilter != LatestActivitiesConfigurationForm::OWNED_BY_FILTER_USER &&
+               $viewModuleClassName != 'UsersModule')
+            {
+                if ($viewModuleClassName == 'HomeModule')
+                {
+                    return "<span>{modelStringContent}</span><br/><span>" .
+                           "{relatedModelsByImportanceContent} </span><span class='less-pronounced-text'>" .
+                           Yii::t('Default', 'owned by {ownerStringContent}') . "</span>";
+                }
+                else
+                {
+                    return "<span>{modelStringContent} </span><span class='less-pronounced-text'>" .
+                           Yii::t('Default', 'owned by {ownerStringContent}') . "</span>";
+                }
+            }
+            else
+            {
+                if ($viewModuleClassName == 'HomeModule' || $viewModuleClassName == 'UsersModule')
+                {
+                    return "<span>{modelStringContent}</span><br/><span>" .
+                           "{relatedModelsByImportanceContent} </span><span>{extraContent}</span>";
+                }
+                else
+                {
+                    return "<span>{modelStringContent}</span>";
+                }
+            }
         }
     }
 ?>

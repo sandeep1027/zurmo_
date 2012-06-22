@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -28,32 +28,7 @@
     {
         public static function getMetadata()
         {
-            return array(
-                'moduleCategories' => array(
-                    array(
-                        'label'        => Yii::t('Default', 'Fields'),
-                        'action'       => 'AttributesList',
-                        'showFlagName' => 'showFieldsLink',
-                    ),
-                    array(
-                        'label'        => Yii::t('Default', 'General'),
-                        'action'       => 'ModuleEdit',
-                        'showFlagName' => 'showGeneralLink',
-                    ),
-                    array(
-                        'label'        => Yii::t('Default', 'Layouts'),
-                        'action'       => 'ModuleLayoutsList',
-                        'showFlagName' => 'showLayoutsLink',
-                    ),
-                    /* todo: implement
-                    array(
-                        'label'        => Yii::t('Default', 'Menus'),
-                        'action'       => 'ModuleMenus',
-                        'showFlagName' => 'showMenusLink',
-                    ),
-                    */
-                ),
-            );
+            return array();
         }
     }
 ?>

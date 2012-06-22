@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -33,6 +33,31 @@
            return array('zurmo');
         }
 
+        public static function getAdminTabMenuItems($user = null)
+        {
+            $tabMenuItems = array(
+                array(
+                    'label' => 'Designer',
+                    'url'   => array('/designer/default'),
+                    'right'            => self::RIGHT_ACCESS_DESIGNER,
+                ),
+            );
+            $modules = Module::getModuleObjects();
+            foreach ($modules as $module)
+            {
+                $moduleTreeMenuItems = $module->getDesignerMenuItems();
+                if ($module->isEnabled() &&
+                    !empty($moduleTreeMenuItems))
+                {
+                    $tabMenuItems[0]['items'][] = array(
+                        'label' => Yii::t('Default', $module::getModuleLabelByTypeAndLanguage('Plural')),
+                        'url'   => array('/designer/default/modulesMenu', 'moduleClassName' => get_class($module)),
+                    );
+                }
+            }
+            return $tabMenuItems;
+        }
+
         public static function getDefaultMetadata()
         {
             $metadata = array();
@@ -44,6 +69,14 @@
                         'descriptionLabel' => 'Manage module fields, layouts, and labels.',
                         'route'            => '/designer/default',
                         'right'            => self::RIGHT_ACCESS_DESIGNER,
+                    ),
+                ),
+                'headerMenuItems' => array(
+                    array(
+                        'label' => 'Designer',
+                        'url' => array('/designer/default'),
+                        'right' => self::RIGHT_ACCESS_DESIGNER,
+                        'order' => 1,
                     ),
                 ),
             );

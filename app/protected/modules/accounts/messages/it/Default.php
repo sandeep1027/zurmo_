@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,48 +30,54 @@
     // DON'T MAKE A MESS!
     return array(
         'Access AccountsModulePluralLabel Tab'
-            => '??',
+            => 'Acceso ai AccountsModulePluralLabel',
         'Account'
-            => '??',
+            => 'Azienda',
         'Accounts'
-            => '??',
+            => 'Aziende',
         'AccountsModulePluralLabel'
-            => 'AccountsModulePluralLabel',
+            => 'AccountsModulePluralLabel', // Same Word Translated
         'AccountsModulePluralLabel For AccountsModuleSingularLabel'
-            => 'AccountsModulePluralLabel ?? AccountsModuleSingularLabel',
+            => 'AccountsModulePluralLabel per AccountsModuleSingularLabel',
         'AccountsModuleSingularLabel'
-            => 'AccountsModuleSingularLabel',
+            => 'AccountsModuleSingularLabel', // Same Word Translated
         'AccountsModuleSingularLabel Id'
-            => 'AccountsModuleSingularLabel ??',
+            => 'AccountsModuleSingularLabel Id', // Same Word Translated
         'AccountsModuleSingularLabel Name'
-            => 'AccountsModuleSingularLabel ??',
+            => 'Nome AccountsModuleSingularLabel',
         'AccountsModuleSingularLabel Search'
-            => 'AccountsModuleSingularLabel ??',
+            => 'Ricerca AccountsModuleSingularLabel',
         'An account field'
-            => '??',
+            => 'Un campo di azienda',
         'Annual Revenue'
-            => '??',
+            => 'Fatturato Annuo',
         'Billing Address'
             => 'Indirizzo di Fatturazione',
         'Complete Conversion'
-            => '??',
+            => 'Converti',
         'Create AccountsModulePluralLabel'
-            => '?? AccountsModulePluralLabel',
+            => 'Crea AccountsModulePluralLabel',
         'Create AccountsModuleSingularLabel'
-            => '?? AccountsModuleSingularLabel',
+            => 'Nuovo AccountsModuleSingularLabel',
         'Delete AccountsModulePluralLabel'
-            => '?? AccountsModulePluralLabel',
+            => 'Elimina AccountsModulePluralLabel',
         'Employees'
-            => '??',
+            => 'Dipendenti',
         'My AccountsModulePluralLabel'
-            => '??',
+            => 'Le mie AccountsModulePluralLabel',
         'Parent AccountsModuleSingularLabel'
-            => '??',
+            => 'AccountsModuleSingularLabel Genetori',
         'Prospect'
-            => '??',
+            => 'Prospect', // Same Word Translated
         'Related AccountsModulePluralLabel'
-            => '?? AccountsModulePluralLabel',
+            => 'AccountsModulePluralLabel principale',
         'Vendor'
-            => '??',
-    );
+            => 'Fornitore',
+        '{n} AccountsModuleSingularLabel created|{n} AccountsModulePluralLabel created'
+            => '{n} AccountsModuleSingularLabel creato|{n} AccountsModulePluralLabel creati',
+        '{n} AccountsModuleSingularLabel mass updated|{n} AccountsModulePluralLabel mass updated'
+            => '{n} AccountsModuleSingularLabel è stato aggiornato|{n} AccountsModulePluralLabel sono stati aggiornati',
+        '{n} AccountsModuleSingularLabel search completed|{n} AccountsModuleSingularLabel searches completed'
+            => '{n} ricerca AccountsModuleSingularLabel completata|{n} ricerche AccountsModuleSingularLabel completate',
+   );
 ?>

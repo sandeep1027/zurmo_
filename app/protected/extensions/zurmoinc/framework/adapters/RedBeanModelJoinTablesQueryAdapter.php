@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -62,11 +62,12 @@
          * @param $tableName - table to add in from clause.
          * @param $onTableJoinIdName - The joining id on the baseTable.
          */
-        public function addFromTableAndGetAliasName($tableName, $onTableJoinIdName, $onTableAliasName = null)
+        public function addFromTableAndGetAliasName($tableName, $onTableJoinIdName, $onTableAliasName = null, $tableJoinIdName = 'id')
         {
             assert('is_string($tableName)');
             assert('is_string($onTableJoinIdName)');
             assert('$onTableAliasName == null || is_string($onTableAliasName)');
+            assert('is_string($tableJoinIdName)');
             if ($onTableAliasName == null)
             {
                 $onTableAliasName = $this->baseFromTableName;
@@ -75,7 +76,7 @@
             $this->fromTablesAndAliases[] = array(
                 'tableName'         => $tableName,
                 'tableAliasName'    => $tableAliasName,
-                'tableJoinIdName'   => 'id',
+                'tableJoinIdName'   => $tableJoinIdName,
                 'onTableAliasName'  => $onTableAliasName,
                 'onTableJoinIdName' => $onTableJoinIdName,
             );

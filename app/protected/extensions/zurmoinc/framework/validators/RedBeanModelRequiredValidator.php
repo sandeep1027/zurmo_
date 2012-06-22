@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -57,7 +57,7 @@
                 }
                 if ($model->$attributeName instanceof CustomField)
                 {
-                    if ($model->$attributeName->value === null)
+                    if ($model->$attributeName->value == null)
                     {
                         if ($this->message !== null)
                         {
@@ -65,7 +65,7 @@
                         }
                         else
                         {
-                            $message = Yii::t('yii', '{attribute} is a CustomField that cannot be blank, implying that {attribute}\'s Value cannot be blank.');
+                            $message = Yii::t('yii', '{attribute} cannot be blank.');
                         }
                         $this->addError($model, $attributeName, $message);
                     }

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -36,11 +36,11 @@
         'Accounts'
             => 'Comptes',
         'AccountsModulePluralLabel'
-            => 'AccountsModulePluralLabel',
+            => 'AccountsModulePluralLabel', // Same Word Translated
         'AccountsModulePluralLabel For AccountsModuleSingularLabel'
             => 'AccountsModulePluralLabel pour AccountsModuleSingularLabel',
         'AccountsModuleSingularLabel'
-            => 'AccountsModuleSingularLabel',
+            => 'AccountsModuleSingularLabel', // Same Word Translated
         'AccountsModuleSingularLabel Id'
             => 'ID du AccountsModuleSingularLabel',
         'AccountsModuleSingularLabel Name'
@@ -68,10 +68,16 @@
         'Parent AccountsModuleSingularLabel'
             => 'AccountsModuleSingularLabel Parent',
         'Prospect'
-            => 'Prospect',
+            => 'Prospect', // Same Word Translated
         'Related AccountsModulePluralLabel'
             => 'AccountsModulePluralLabel principal',
         'Vendor'
             => 'Vendeur',
-    );
+        '{n} AccountsModuleSingularLabel created|{n} AccountsModulePluralLabel created'
+            => '{n} AccountsModuleSingularLabel crée|{n} AccountsModulePluralLabel creés',
+        '{n} AccountsModuleSingularLabel mass updated|{n} AccountsModulePluralLabel mass updated'
+            => '{n} AccountsModuleSingularLabel a été mis à jour|{n} AccountsModulePluralLabel ont été mis à jour',
+        '{n} AccountsModuleSingularLabel search completed|{n} AccountsModuleSingularLabel searches completed'
+            => '{n} recherche AccountsModuleSingularLabel complétée|{n} recherches AccountsModuleSingularLabel complétées',
+   );
 ?>

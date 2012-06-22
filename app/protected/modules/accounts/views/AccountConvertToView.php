@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,10 +26,31 @@
 
     class AccountConvertToView extends EditView
     {
+        /**
+         * Override to pass in the relation Id as the modelId. In the case of lead conversion, the lead->id is the
+         * $modelId. This can then be used for a cancel button to return to the lead detailview.
+         * @param string $controllerId
+         * @param string $moduleId
+         * @param RedsBeanModel $model
+         * @param integer $modelId
+         */
+        public function __construct($controllerId, $moduleId, $model, $modelId)
+        {
+            assert('is_int($modelId)');
+            parent::__construct($controllerId, $moduleId, $model);
+            $this->modelId = $modelId;
+        }
+
         public static function getDefaultMetadata()
         {
             $metadata = array(
                 'global' => array(
+                    'toolbar' => array(
+                        'elements' => array(
+                            array('type'  => 'CancelConvertLink'),
+                            array('type'  => 'SaveButton', 'label' => "eval:Yii::t('Default', 'Complete Conversion')"),
+                        ),
+                    ),
                     'panelsDisplayType' => FormLayout::PANELS_DISPLAY_TYPE_ALL,
                     'panels' => array(
                         array(
@@ -49,19 +70,6 @@
                 ),
             );
             return $metadata;
-        }
-
-        /**
-         * Override to remove any remnants of the BiewToolBar.
-         */
-        protected function renderViewToolBar($renderInForm = true)
-        {
-            return;
-        }
-
-        protected function renderAfterFormLayout($form)
-        {
-            return CHtml::submitButton(Yii::t('Default', 'Complete Conversion'));
         }
     }
 ?>

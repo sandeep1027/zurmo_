@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -47,6 +47,17 @@
             $this->assertEquals($modelClassNames, $modelClassNames2);
             $modelClassNames3 = ReadPermissionsOptimizationUtil::getMungableModelClassNames();
             $this->assertEquals($modelClassNames2, $modelClassNames3);
+        }
+
+        public function testGetMungeIdsByUserIncludesEveryoneGroup()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+            $mungeIds = ReadPermissionsOptimizationUtil::getMungeIdsByUser(Yii::app()->user->userModel);
+            $this->assertEquals(2, count($mungeIds));
+            $group = Group::getByName(Group::EVERYONE_GROUP_NAME);
+            $group->save();
+            $mungeIds = ReadPermissionsOptimizationUtil::getMungeIdsByUser(Yii::app()->user->userModel);
+            $this->assertEquals(3, count($mungeIds));
         }
     }
 ?>

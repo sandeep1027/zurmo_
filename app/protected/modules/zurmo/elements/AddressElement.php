@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -41,12 +41,16 @@
         {
             assert('$this->model->{$this->attribute} instanceof Address');
             $addressModel = $this->model->{$this->attribute};
+            $id           = $addressModel->id;
             $street1      = $addressModel->street1;
             $street2      = $addressModel->street2;
             $city         = $addressModel->city;
             $state        = $addressModel->state;
             $postalCode   = $addressModel->postalCode;
             $country      = $addressModel->country;
+            $latitude     = $addressModel->latitude;
+            $longitude    = $addressModel->longitude;
+            $invalid      = $addressModel->invalid;
             $content = null;
             if (!empty($street1))
             {
@@ -70,11 +74,15 @@
             }
             if (!empty($postalCode))
             {
-                $content .= Yii::app()->format->text($postalCode) . "<br/>\n";
+                $content .= Yii::app()->format->text($postalCode);
             }
             if (!empty($country))
             {
-                $content .= Yii::app()->format->text($country);
+                $content .= "<br/>\n" . Yii::app()->format->text($country);
+            }
+            if (!$invalid && $addressModel->makeAddress() != '')
+            {
+                $content .= $this->renderMapLink($addressModel);
             }
             return $content;
         }
@@ -89,15 +97,19 @@
         {
             assert('$this->model->{$this->attribute} instanceof Address');
             $addressModel = $this->model->{$this->attribute};
-            $content      = '';
-            foreach (array('street1', 'street2', 'city', 'state', 'postalCode', 'country') as $attribute)
-            {
-                $content .= $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, $attribute) . "<br/>\n";
-            }
-            return $content;
+            $content  = $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, 'street1')          . "\n";
+            $content .= $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, 'street2')          . "\n";
+            $content .= $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, 'city')             . "\n";
+            $content .= '<div class="hasHalfs">';
+            $content .= $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, 'state', true)      . "\n";
+            $content .= $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, 'postalCode', true) . "\n";
+      $content .= '</div>';
+            $content .= $this->renderEditableAddressTextField($addressModel, $this->form, $this->attribute, 'country')          . "\n";
+            return '<div class="address-fields">' . $content . '</div>';
         }
 
-        protected function renderEditableAddressTextField($model, $form, $inputNameIdPrefix, $attribute)
+        protected function renderEditableAddressTextField($model, $form, $inputNameIdPrefix, $attribute,
+                                                          $renderAsHalfSize = false)
         {
             $id          = $this->getEditableInputId($inputNameIdPrefix, $attribute);
             $htmlOptions = array(
@@ -107,7 +119,46 @@
             $label       = $form->labelEx  ($model, $attribute, array('for'   => $id));
             $textField   = $form->textField($model, $attribute, $htmlOptions);
             $error       = $form->error    ($model, $attribute);
-            return $label . "<br/>\n" . $textField . $error;
+            if ($model->$attribute != null)
+            {
+                 $label = null;
+            }
+            $halfClassString = null;
+            if ($renderAsHalfSize)
+            {
+                $halfClassString = ' half';
+            }
+            return CHtml::tag('div', array('class' => 'overlay-label-field' . $halfClassString), $label . $textField . $error);
+        }
+
+         /**
+         * Render a map link. This link calls a modal
+         * popup.
+         * @return The element's content as a string.
+         */
+        protected function renderMapLink($addressModel)
+        {
+            assert('$addressModel instanceof Address');
+            Yii::app()->getClientScript()->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.elements.assets')
+                    ) . '/Modal.js',
+                CClientScript::POS_END
+            );
+            $mapRenderUrl = Yii::app()->mappingHelper->resolveMappingLinkUrl(array(
+                                                                         'addressString' => $addressModel->makeAddress(),
+                                                                         'latitude'      => $addressModel->latitude,
+                                                                         'longitude'     => $addressModel->longitude));
+            $id           = $this->getEditableInputId($this->attribute, 'MapLink');
+            $content      = CHtml::ajaxLink(Yii::t('Default', 'map'), $mapRenderUrl, array(
+                                'onclick'    => '$("#modalContainer").dialog("open"); return false;',
+                                'update'     => '#modalContainer',
+                                'beforeSend' => 'js:function(){$(\'#' . $id . '\').parent().addClass(\'modal-model-select-link\');}',
+                                'complete'   => 'js:function(){$(\'#' . $id . '\').parent().removeClass(\'modal-model-select-link\');}'
+                                ),
+                                array('id' => $id, 'class' => 'map-link')
+            );
+            return $content;
         }
 
         protected function renderError()

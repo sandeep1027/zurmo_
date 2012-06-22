@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class DesignerTest extends BaseTest
+    class DesignerTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -243,7 +243,80 @@
         }
 
         /**
-         * @depends testGetModelAttributesAdapter
+         * @depends testSetMetadataFromLayoutWithAndWithOutRequiredDerivedField
+         */
+        public function testSetMetadataFromLayoutWithAndWithOutOnlyUniqueFields()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+
+            //First create a dependency
+            $mappingData = array(array('attributeName' => 'type'),
+                                 array('attributeName' => 'officePhone',
+                                        'valuesToParentValues' =>
+                                         array('b1' => 'a1',
+                                               'b2' => 'a2',
+                                               'b3' => 'a3',
+                                               'b4' => 'a4'
+                                         )));
+            $metadata = new DropDownDependencyDerivedAttributeMetadata();
+            $metadata->setScenario('nonAutoBuild');
+            $metadata->name               = 'aName';
+            $metadata->modelClassName     = 'Account';
+            $metadata->serializedMetadata = serialize(array('attributeLabels' => array('a' => 'b'),
+                                                            'mappingData' => $mappingData));
+            $this->assertTrue($metadata->save());
+
+            $layout = array('panels' =>
+                array(
+                    array(
+                        'rows' => array(
+                            array(
+                                'cells' => array(
+                                    array('element' => 'aName'),
+                                ),
+                            ),
+                            array(
+                                'cells' => array(
+                                    array('element' => 'type'),
+                                ),
+                            ),
+                            array(
+                                'cells' => array(
+                                    array('element' => 'officeFax'),
+                                ),
+                            ),
+                            array(
+                                'cells' => array(
+                                    array('element' => 'employees'),
+                                ),
+                            ),
+                        )
+                    )
+                )
+            );
+            $model = new Account();
+            $editableMetadata = AccountEditAndDetailsView::getMetadata();
+            $modelAttributesAdapter = new ModelAttributesAdapter($model);
+            $attributesLayoutAdapter = AttributesLayoutAdapterUtil::makeAttributesLayoutAdapter(
+                $modelAttributesAdapter->getAttributes(),
+                new EditAndDetailsViewDesignerRules(),
+                $editableMetadata
+            );
+
+            $adapter = new LayoutMetadataAdapter('AccountEditAndDetailsView',
+                'AccountsModule',
+                $editableMetadata,
+                new EditAndDetailsViewDesignerRules(),
+                $attributesLayoutAdapter->getPlaceableLayoutAttributes(),
+                $attributesLayoutAdapter->getRequiredDerivedLayoutAttributeTypes()
+            );
+            $x = $adapter->setMetadataFromLayout($layout, array());
+            $this->assertFalse($adapter->setMetadataFromLayout($layout, array()));
+            $this->assertEquals($adapter->getMessage(), 'All required fields must be placed in this layout.');
+        }
+
+        /**
+         * @depends testSetMetadataFromLayoutWithAndWithOutOnlyUniqueFields
          */
         public function testMakeLayoutAttributes()
         {
@@ -367,7 +440,7 @@
                 'en' => 'Name',
                 'es' => 'Nombre',
                 'fr' => 'Nom',
-                'it' => '??',
+                'it' => 'Nome',
             );
             $this->assertEquals($compareAttributeLabels, $attributeForm->attributeLabels);
             $this->assertEquals(64,     $attributeForm->maxLength);
@@ -671,7 +744,7 @@
 
             $this->assertEquals($originalMetadata['Account']['rules'], $metadata['Account']['rules']);
             $newRelation = $metadata['Account']['relations']['newRelation'];
-            $this->assertEquals(array(RedBeanModel::HAS_ONE,  'CustomField'), $newRelation);
+            $this->assertEquals(array(RedBeanModel::HAS_ONE,  'OwnedCustomField', RedBeanModel::OWNED), $newRelation);
             $this->assertEquals('Things', $metadata['Account']['customFields']['newRelation']);
 
             //on a new account, does the serialized data show correctly.
@@ -693,6 +766,274 @@
 
             //Test pulling a different CustomField first. This simulates caching the customField
             $this->assertEquals(array('thing 1', 'thing 2'), unserialize($account->newRelation->data->serializedData));
+        }
+
+        public function testStandardAttributeThatBecomesRequiredCanStillBeChangedToBeUnrequired()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+            $account                    = new Account();
+
+            //Name for example, is required by default.
+            $adapter       = new ModelAttributesAdapter($account);
+            $this->assertTrue($adapter->isStandardAttributeRequiredByDefault('name'));
+
+            //Industry is not required by default.
+            $adapter       = new DropDownModelAttributesAdapter($account);
+            $this->assertFalse($adapter->isStandardAttributeRequiredByDefault('industry'));
+
+            $attributeForm = AttributesFormFactory::createAttributeFormByAttributeName($account, 'industry');
+            $this->assertFalse($attributeForm->isRequired);
+            $this->assertTrue($attributeForm->canUpdateAttributeProperty('isRequired'));
+
+            //Now make industry required.
+            $attributeForm->isRequired = true;
+
+            $modelAttributesAdapterClassName = $attributeForm::getModelAttributeAdapterNameForSavingAttributeFormData();
+            $adapter = new $modelAttributesAdapterClassName(new Account());
+            try
+            {
+                $adapter->setAttributeMetadataFromForm($attributeForm);
+            }
+            catch (FailedDatabaseSchemaChangeException $e)
+            {
+                echo $e->getMessage();
+                $this->fail();
+            }
+            RedBeanModelsCache::forgetAll();
+
+            $account       = new Account();
+            $adapter       = new DropDownModelAttributesAdapter($account);
+            $this->assertFalse($adapter->isStandardAttributeRequiredByDefault('industry'));
+            $attributeForm = AttributesFormFactory::createAttributeFormByAttributeName($account, 'industry');
+            $this->assertTrue($attributeForm->isRequired);
+            $this->assertTrue($attributeForm->canUpdateAttributeProperty('isRequired'));
+        }
+
+        public function testIsStandardAttributeRequiredByDefault()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+            //Testing an attribute that is not on the specified model, but requires a casting up.
+            $contact       = new Contact();
+            $adapter       = new ModelAttributesAdapter($contact);
+            $this->assertTrue($adapter->isStandardAttributeRequiredByDefault('lastName'));
+        }
+
+        public function testSetMetadataFormLayoutWithAndWithOutRequiredCustomFieldForDropDownDependencyAttribute()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+
+            $education = array(
+                'aaaa',
+                'bbbb',
+            );
+            $education_labels = array('fr' => array('aaaa fr', 'bbbb fr'),
+                                      'de' => array('aaaa de', 'bbbb de'),
+            );
+            $educationFieldData                   = CustomFieldData::getByName('Education');
+            $educationFieldData->serializedData   = serialize($education);
+            $this->assertTrue($educationFieldData->save());
+
+            $attributeForm                        = new DropDownAttributeForm();
+            $attributeForm->attributeName         = 'testEducation';
+            $attributeForm->attributeLabels       = array(
+                'de' => 'Test Education 2 de',
+                'en' => 'Test Education 2 en',
+                'es' => 'Test Education 2 es',
+                'fr' => 'Test Education 2 fr',
+                'it' => 'Test Education 2 it',
+            );
+            $attributeForm->isAudited             = true;
+            $attributeForm->isRequired            = false;
+            $attributeForm->customFieldDataData   = $education;
+            $attributeForm->customFieldDataName   = 'Education';
+            $attributeForm->customFieldDataLabels = $education_labels;
+
+            $modelAttributesAdapterClassName      = $attributeForm::getModelAttributeAdapterNameForSavingAttributeFormData();
+            $adapter = new $modelAttributesAdapterClassName(new Account());
+            try
+            {
+                $adapter->setAttributeMetadataFromForm($attributeForm);
+            }
+            catch (FailedDatabaseSchemaChangeException $e)
+            {
+                echo $e->getMessage();
+                $this->fail();
+            }
+
+            $stream = array(
+                'aaa1',
+                'aaa2',
+                'bbb1',
+                'bbb2',
+            );
+            $stream_labels = array('fr' => array('aaa1 fr', 'aaa2 fr', 'bbb1 fr', 'bbb2 fr'),
+                                   'de' => array('aaa1 de', 'aaa2 de', 'bbb1 de', 'bbb2 de'),
+            );
+            $streamFieldData                      = CustomFieldData::getByName('Stream');
+            $streamFieldData->serializedData      = serialize($stream);
+            $this->assertTrue($streamFieldData->save());
+
+            $attributeForm                        = new DropDownAttributeForm();
+            $attributeForm->attributeName         = 'testStream';
+            $attributeForm->attributeLabels       = array(
+                'de' => 'Test Stream 2 de',
+                'en' => 'Test Stream 2 en',
+                'es' => 'Test Stream 2 es',
+                'fr' => 'Test Stream 2 fr',
+                'it' => 'Test Stream 2 it',
+            );
+            $attributeForm->isAudited             = true;
+            $attributeForm->isRequired            = true;
+            $attributeForm->customFieldDataData   = $stream;
+            $attributeForm->customFieldDataName   = 'Stream';
+            $attributeForm->customFieldDataLabels = $stream_labels;
+
+            $modelAttributesAdapterClassName      = $attributeForm::getModelAttributeAdapterNameForSavingAttributeFormData();
+            $adapter                              = new $modelAttributesAdapterClassName(new Account());
+            try
+            {
+                $adapter->setAttributeMetadataFromForm($attributeForm);
+            }
+            catch (FailedDatabaseSchemaChangeException $e)
+            {
+                echo $e->getMessage();
+                $this->fail();
+            }
+
+            $attributeName = "testQualification";
+            $attributeForm = new DropDownDependencyAttributeForm();
+            $attributeForm->attributeName    = $attributeName;
+            $attributeForm->attributeLabels  = array(
+                'de' => 'Test Qualification Value 2 de',
+                'en' => 'Test Qualification Value 2 en',
+                'es' => 'Test Qualification Value 2 es',
+                'fr' => 'Test Qualification Value 2 fr',
+                'it' => 'Test Qualification Value 2 it',
+            );
+            $attributeForm->mappingData      = array(
+                                                    array('attributeName'        => 'testEducation'),
+                                                    array('attributeName'        => 'testStream',
+                                                          'valuesToParentValues' => array('aaa1' => 'aaaa',
+                                                                                          'aaa2' => 'aaaa',
+                                                                                          'bbb1' => 'bbbb',
+                                                                                          'bbb2' => 'bbbb'
+                                                                                    )));
+
+            $modelAttributesAdapterClassName = $attributeForm::getModelAttributeAdapterNameForSavingAttributeFormData();
+            $adapter = new $modelAttributesAdapterClassName(new Account());
+            try
+            {
+                $adapter->setAttributeMetadataFromForm($attributeForm);
+            }
+            catch (FailedDatabaseSchemaChangeException $e)
+            {
+                echo $e->getMessage();
+                $this->fail();
+            }
+
+            $layout = array('panels' =>
+                array(
+                    array(
+                        'rows' => array(
+                        array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'createdDateTime',
+                                    ),
+                                    array(
+                                        'element' => 'modifiedDateTime',
+                                    ),
+                                )
+                            ),
+                            array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'owner',
+                                    ),
+                                    array(
+                                        'element' => 'name',
+                                    ),
+                                )
+                            ),
+                            array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'industry',
+                                    ),
+                                )
+                            ),
+                        )
+                    )
+                )
+            );
+            $layout2 = array('panels' =>
+                array(
+                    array(
+                        'rows' => array(
+                            array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'createdDateTime',
+                                    ),
+                                    array(
+                                        'element' => 'modifiedDateTime',
+                                    ),
+                                )
+                            ),
+                            array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'owner',
+                                    ),
+                                    array(
+                                        'element' => 'name',
+                                    ),
+                                )
+                            ),
+                            array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'industry',
+                                    ),
+                                )
+                            ),
+                            array('cells' =>
+                                array(
+                                    array(
+                                        'element' => 'testEducation',
+                                    ),
+                                    array(
+                                        'element' => 'testStream',
+                                    ),
+                                )
+                            ),
+                        )
+                    )
+                )
+            );
+
+            $model = new Account();
+            $editableMetadata = AccountEditAndDetailsView::getMetadata();
+            $modelAttributesAdapter = new ModelAttributesAdapter($model);
+            $attributesLayoutAdapter = AttributesLayoutAdapterUtil::makeAttributesLayoutAdapter(
+                $modelAttributesAdapter->getAttributes(),
+                new EditAndDetailsViewDesignerRules(),
+                $editableMetadata
+            );
+
+            $adapter = new LayoutMetadataAdapter('AccountEditAndDetailsView',
+                'AccountsModule',
+                $editableMetadata,
+                new EditAndDetailsViewDesignerRules(),
+                $attributesLayoutAdapter->getPlaceableLayoutAttributes(),
+                $attributesLayoutAdapter->getRequiredDerivedLayoutAttributeTypes()
+            );
+
+            $this->assertFalse($adapter->setMetadataFromLayout($layout, array()));
+            $this->assertNotEmpty($adapter->getMessage());
+            $this->assertEquals($adapter->getMessage(), 'All required fields must be placed in this layout.');
+            $this->assertTrue($adapter->setMetadataFromLayout($layout2, array()));
+            $this->assertEquals($adapter->getMessage(), 'Layout saved successfully.');
         }
     }
 ?>

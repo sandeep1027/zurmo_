@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -44,26 +44,38 @@
          */
         protected $allStepsMessage;
 
-        public function __construct($containedView, $allStepsMessage)
+        protected $title;
+
+        public function __construct($containedView, $allStepsMessage, $title = null)
         {
             assert('$containedView instanceof SequentialProcessView');
             assert('is_string($allStepsMessage)');
+            assert('is_string($title) || $title == null');
             $this->containedView   = $containedView;
             $this->allStepsMessage = $allStepsMessage;
+            $this->title           = $title;
         }
 
         protected function renderContent()
         {
-            $content  = '<div class="horizontal-line">';
-            $content .= '</div>';
+            $content  = '<div>';
+            $content .= $this->renderTitleContent();
             $content .= '<div class="process-container-view">';
-            $content .= "<h1>" . $this->allStepsMessage . '</h1>';
+            $content .= "<h3>" . $this->allStepsMessage . '</h3>';
             $content .= $this->renderProgressBarContent();
             $content .= '</div>';
             $content .= '<div id="' . $this->containerViewId . '" class="process-container-view">';
             $content .= $this->containedView->render();
-            $content .= '</div>';
+            $content .= '</div></div>';
             return $content;
+        }
+
+        protected function renderTitleContent()
+        {
+            if ($this->title != null)
+            {
+                return '<h1>' . $this->title . "</h1>";
+            }
         }
 
         protected function renderProgressBarContent()

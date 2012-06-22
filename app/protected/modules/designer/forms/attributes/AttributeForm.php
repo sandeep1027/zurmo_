@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -43,7 +43,6 @@
                 $this->attributeName     = $attributeName;
                 $this->attributeLabels   = $model->getAttributeLabelsForAllSupportedLanguagesByAttributeName(
                                                     $attributeName);
-                //should be $model->getAttributeLabelsForAllSupportedLanguagesByAttributeName($attributeName);
                 $this->attributePropertyToDesignerFormAdapter = new AttributePropertyToDesignerFormAdapter();
                 $validators = $model->getValidators($attributeName);
                 foreach ($validators as $validator)
@@ -56,7 +55,8 @@
                     {
                         $this->isRequired = true;
                         $modelAttributesAdapter = new ModelAttributesAdapter($model);
-                        if ($modelAttributesAdapter->isStandardAttribute($attributeName))
+                        if ($modelAttributesAdapter->isStandardAttribute($attributeName) &&
+                            $modelAttributesAdapter->isStandardAttributeRequiredByDefault($attributeName))
                         {
                             $this->attributePropertyToDesignerFormAdapter->setUpdateRequiredFieldStatus(false);
                         }
@@ -178,6 +178,11 @@
             $this->modelClassName = $modelClassName;
         }
 
+        public function getModelClassName()
+        {
+            return $this->modelClassName;
+        }
+
         /**
          * Override if you need to specify a different ModelAttributeAdapterType when saving attributeForm data.
          * This is needed because you can have different logic for calling setting attribute metadata from a form.
@@ -187,6 +192,17 @@
         public static function getModelAttributeAdapterNameForSavingAttributeFormData()
         {
             return 'ModelAttributesAdapter';
+        }
+
+        /**
+         * Wrapper method to allow any special sanitization to be done on post data prior to setting the attribute values.
+         * Override and extend as needed.
+         * @param array $values
+         */
+        public function sanitizeFromPostAndSetAttributes($values)
+        {
+            assert('is_array($values)');
+            $this->setAttributes($values);
         }
     }
 ?>

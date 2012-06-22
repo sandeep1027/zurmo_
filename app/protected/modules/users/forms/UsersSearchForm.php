@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,40 +26,36 @@
 
     class UsersSearchForm extends SearchForm
     {
-        public $anyCity;
-        public $anyStreet;
-        public $anyState;
-        public $anyPostalCode;
-        public $anyCountry;
         public $anyEmail;
-        public $anyInvalidEmail;
-        public $anyOptOutEmail;
+        public $fullName;
 
         public function rules()
         {
             return array_merge(parent::rules(), array(
-                array('anyCity', 'safe'),
-                array('anyStreet', 'safe'),
-                array('anyState', 'safe'),
-                array('anyPostalCode', 'safe'),
-                array('anyCountry', 'safe'),
                 array('anyEmail', 'safe'),
-                array('anyInvalidEmail', 'boolean'),
-                array('anyOptOutEmail', 'boolean'),
+                array('fullName', 'safe'),
             ));
         }
 
         public function attributeLabels()
         {
             return array_merge(parent::attributeLabels(), array(
-                'anyCity'            => Yii::t('Default', 'Any City'),
-                'anyStreet'          => Yii::t('Default', 'Any Street'),
-                'anyState'           => Yii::t('Default', 'Any State'),
-                'anyPostalCode'      => Yii::t('Default', 'Any Postal Code'),
-                'anyCountry'         => Yii::t('Default', 'Any Country'),
                 'anyEmail'           => Yii::t('Default', 'Any Email Address'),
-                'anyInvalidEmail'    => Yii::t('Default', 'Any Invalid Email'),
-                'anyOptOutEmail'     => Yii::t('Default', 'Any Opted Out Email'),
+                'fullName'           => Yii::t('Default', 'Name'),
+            ));
+        }
+
+        public function getAttributesMappedToRealAttributesMetadata()
+        {
+            return array_merge(parent::getAttributesMappedToRealAttributesMetadata(), array(
+                'anyEmail' => array(
+                    array('primaryEmail',   'emailAddress'),
+                ),
+                'fullName' => array(
+                    array('firstName'),
+                    array('lastName'),
+                    array('concatedAttributeNames' => array('firstName', 'lastName'))
+                ),
             ));
         }
     }

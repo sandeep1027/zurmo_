@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -51,6 +51,10 @@
             {
                 return in_array($operatorType, array('greaterThan', 'lessThan', 'equals', 'doesNotEqual',
                                                      'greaterThanOrEqualTo', 'lessThanOrEqualTo'));
+            }
+            elseif ($value === null)
+            {
+                return in_array($operatorType, array('isNull', 'isNotNull', 'isEmpty', 'isNotEmpty'));
             }
             return false;
         }
@@ -154,11 +158,11 @@
                 {
                     if ($ignoreStringToLower)
                     {
-                        $inPart .= "'" . $theValue . "'";
+                        $inPart .= "'" . DatabaseCompatibilityUtil::escape($theValue) . "'";
                     }
                     else
                     {
-                        $inPart .= "lower('" . $theValue . "')";
+                        $inPart .= "'" . DatabaseCompatibilityUtil::escape($theValue) . "'";
                     }
                 }
                 elseif (is_numeric($theValue))
@@ -181,6 +185,27 @@
             return 'IN(' . $inPart . ')';
         }
 
+        public static function resolveOperatorAndValueForNullOrEmpty($operatorType)
+        {
+            assert('in_array($operatorType, array("isNull", "isNotNull", "isEmpty", "isNotEmpty"))');
+            if ($operatorType == 'isNull')
+            {
+                return 'IS NULL'; // Not Coding Standard
+            }
+            elseif ($operatorType == 'isNotNull')
+            {
+                return 'IS NOT NULL'; // Not Coding Standard
+            }
+            elseif ($operatorType == 'isEmpty')
+            {
+                return "= ''";
+            }
+            else
+            {
+                return "!= ''";
+            }
+        }
+
         /**
          * @return boolean
          */
@@ -196,7 +221,25 @@
                 'lessThanOrEqualTo',
                 'greaterThan',
                 'lessThan',
-                'oneOf')))
+                'oneOf',
+                'isNull',
+                'isNotNull',
+                'isEmpty',
+                'isNotEmpty')))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static function doesOperatorTypeAllowNullValues($type)
+        {
+            assert('is_string($type)');
+            if (in_array($type, array(
+                'isNull',
+                'isNotNull',
+                'isEmpty',
+                'isNotEmpty')))
             {
                 return true;
             }

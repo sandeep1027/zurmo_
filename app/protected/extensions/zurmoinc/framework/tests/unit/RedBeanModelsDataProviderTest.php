@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -94,15 +94,15 @@
                                                                     null, false, 2, 7);
             $compareSubsetSql  = "(";
             $compareSubsetSql .= "select {$quote}i{$quote}.{$quote}id{$quote} id, 'I' modelClassName from {$quote}i{$quote} ";
-            $compareSubsetSql .= "where ({$quote}i{$quote}.{$quote}imember{$quote} like lower('iString%'))";
+            $compareSubsetSql .= "where ({$quote}i{$quote}.{$quote}imember{$quote} like 'iString%')";
             $compareSubsetSql .= ") ";
             $compareSubsetSql .= "UNION (";
             $compareSubsetSql .= "select {$quote}j{$quote}.{$quote}id{$quote} id, 'J' modelClassName from {$quote}j{$quote} ";
-            $compareSubsetSql .= "where ({$quote}j{$quote}.{$quote}jmember{$quote} like lower('jString%'))";
+            $compareSubsetSql .= "where ({$quote}j{$quote}.{$quote}jmember{$quote} like 'jString%')";
             $compareSubsetSql .= ") ";
             $compareSubsetSql .= "UNION (";
             $compareSubsetSql .= "select {$quote}k{$quote}.{$quote}id{$quote} id, 'K' modelClassName from {$quote}k{$quote} ";
-            $compareSubsetSql .= "where ({$quote}k{$quote}.{$quote}kmember{$quote} like lower('kString%'))";
+            $compareSubsetSql .= "where ({$quote}k{$quote}.{$quote}kmember{$quote} like 'kString%')";
             $compareSubsetSql .= ") ";
             $compareSubsetSql .= 'limit 7 offset 2';
             $this->assertEquals($compareSubsetSql, $unionSql);
@@ -248,7 +248,7 @@
                     'attributeName'        => 'ks',
                     'relatedAttributeName' => 'kMember',
                     'operatorType'         => 'oneOf',
-                    'value'                => array('d', 'e', 'f')
+                    'value'                => array('d', "e'd", 'f')
             );
             $searchAttributeDataForI['structure'] = '1';
             $modelClassNamesAndSearchAttributeData = array(
@@ -267,14 +267,14 @@
             $compareSubsetSql .= "from ({$quote}i{$quote}, {$quote}h{$quote}) ";
             $compareSubsetSql .= "left join {$quote}k{$quote} on {$quote}k{$quote}.{$quote}i_id{$quote} = ";
             $compareSubsetSql .= "{$quote}i{$quote}.{$quote}id{$quote} ";
-            $compareSubsetSql .= "where ({$quote}k{$quote}.{$quote}kmember{$quote} IN(lower('d'),lower('e'),lower('f')))"; // Not Coding Standard
+            $compareSubsetSql .= "where ({$quote}k{$quote}.{$quote}kmember{$quote} IN('d','e\'d','f'))"; // Not Coding Standard
             $compareSubsetSql .= " and {$quote}h{$quote}.{$quote}id{$quote} = {$quote}i{$quote}.{$quote}h_id{$quote}";
             $compareSubsetSql .= ") ";
             $compareSubsetSql .= "UNION (";
             $compareSubsetSql .= "select {$quote}j{$quote}.{$quote}id{$quote} id";
             $compareSubsetSql .= ", 'J' modelClassName, {$quote}j{$quote}.{$quote}jmember{$quote} orderByColumn ";
             $compareSubsetSql .= "from {$quote}j{$quote} ";
-            $compareSubsetSql .= "where ({$quote}j{$quote}.{$quote}jmember{$quote} IN(lower('a'),lower('b'),lower('c')))"; // Not Coding Standard
+            $compareSubsetSql .= "where ({$quote}j{$quote}.{$quote}jmember{$quote} IN('a','b','c'))"; // Not Coding Standard
             $compareSubsetSql .= ") ";
             $compareSubsetSql .= "order by orderByColumn desc ";
             $compareSubsetSql .= 'limit 7 offset 2';

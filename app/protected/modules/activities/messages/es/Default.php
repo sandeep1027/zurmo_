@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -31,25 +31,39 @@
     return array(
         'Activities'
             => 'Actividades',
+        'Activity'
+            => 'Actividad',
         'Activity Items'
             => 'Elementos de actividad',
+        'Activity Summary'
+            => 'Actividades recientes',
         'All Activities'
             => 'Todas las actividades',
+        'for {relatedModelsStringContent}'
+            => 'para {relatedModelsStringContent}',
+        'Latest Activities'
+            => 'Resumen de las actividades',
         'Latest Date Time'
             => 'Última fecha/hora',
+        'Mine'
+            => 'A mí',
         'No Activities found.'
             => 'Actividades no encontradas',
         'Related'
             => 'Relacionados',
         'Related to'
             => 'Relacionados con',
-        'Roll Up Off'
-            => 'Roll up desactivado',
-        'Roll Up On'
-            => 'Roll up activado',
+        'Roll Up'
+            => 'Roll Up', // Same Word Translated
         'Show more'
             => 'Mostrar más',
         'Summary'
             => 'Sumario',
+        'Turn roll up on to see activities from related records.'
+            => 'Activar enrollar para ver las actividades conectadas.',
+        'View'
+            => 'Vista',
+        'with {relatedContactsStringContent}'
+            => 'con {relatedContactsStringContent}',
     );
 ?>

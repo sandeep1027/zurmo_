@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,9 +34,9 @@
             assert('$message != null && is_string($message)');
             return '
             <div class="ui-widget">
-                <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                <div class="ui-state-highlight ui-corner-all">
 
-                    <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;">&#160;</span>
+                    <p><span class="ui-icon ui-icon-info">&#160;</span>
                     ' . $message .'
                     </p>
                 </div>
@@ -48,8 +48,8 @@
             assert('$message != null && is_string($message)');
             return '
             <div class="ui-widget">
-                <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-                    <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;">&#160;</span>
+                <div class="ui-state-error ui-corner-all">
+                    <p><span class="ui-icon ui-icon-alert">&#160;</span>
                     <strong>' . Yii::t('Default', 'Alert') . ':</strong> ' . $message . '
                     </p>
                 </div>

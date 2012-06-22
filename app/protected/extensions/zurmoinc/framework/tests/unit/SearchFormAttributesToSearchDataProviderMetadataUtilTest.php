@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -130,6 +130,31 @@
                                   getMetadata($searchForm, 'date__Date', $value);
             $compareData        = array(array('date' => array('value' => '2011-05-04',
                                                               'operatorType' => 'lessThanOrEqualTo')));
+            $this->assertEquals($compareData, $metadata);
+
+            //Test Date = On X
+            $value              = array();
+            $value['type']      = MixedDateTypesSearchFormAttributeMappingRules::TYPE_ON;
+            $value['firstDate'] = '2011-05-04';
+            $metadata           = SearchFormAttributesToSearchDataProviderMetadataUtil::
+                                  getMetadata($searchForm, 'date__Date', $value);
+            $compareData        = array(array('date' => array('value' => '2011-05-04',
+                                                              'operatorType' => 'equals')));
+            $this->assertEquals($compareData, $metadata);
+
+            //Test Date = Between X and Y
+            $value              = array();
+            $value['type']      = MixedDateTypesSearchFormAttributeMappingRules::TYPE_BETWEEN;
+            $value['firstDate'] = '2011-05-04';
+            $value['secondDate'] = '2011-06-04';
+            $metadata           = SearchFormAttributesToSearchDataProviderMetadataUtil::
+                                  getMetadata($searchForm, 'date__Date', $value);
+            $compareData        = array(array('date' => array('value' => '2011-05-04',
+                                                              'operatorType' => 'greaterThanOrEqualTo',
+                                                              'appendStructureAsAnd' => true)),
+                                        array('date' => array('value' => '2011-06-04',
+                                                              'operatorType' => 'lessThanOrEqualTo',
+                                                              'appendStructureAsAnd' => true)));
             $this->assertEquals($compareData, $metadata);
 
             //Test Date next 7 days
@@ -312,6 +337,44 @@
                                     array('dateTime'  =>
                                         array('value' =>
                                             DateTimeUtil::convertDateIntoTimeZoneAdjustedDateTimeEndOfDay($today),
+                                              'operatorType'         => 'lessThanOrEqualTo',
+                                              'appendStructureAsAnd' => true)));
+            $this->assertEquals($compareData, $metadata);
+        }
+
+        public function testGetMetadataForDynamicDateTimeAttributeThatIsOnManyRelatedModel()
+        {
+            $super                      = User::getByUsername('super');
+            Yii::app()->user->userModel = $super;
+
+            $searchForm = new ASearchFormTestModel(new MixedRelationsModel());
+
+            //Make sure the timeZone is different than UTC for testing.
+            Yii::app()->user->userModel->timeZone = 'America/Chicago';
+
+            //TEST when no value present
+            $metadata = SearchFormAttributesToSearchDataProviderMetadataUtil::
+                        getMetadata($searchForm, 'dateDateTimeADate__Date', null);
+            $compareData = array(array('manyMany' => array('value' => array('aDate' => null))));
+            $this->assertEquals($compareData, $metadata);
+
+            //Test Date = Today
+            $value              = array();
+            $value['type']      = MixedDateTypesSearchFormAttributeMappingRules::TYPE_TODAY;
+            $metadata           = SearchFormAttributesToSearchDataProviderMetadataUtil::
+                                  getMetadata($searchForm, 'dateDateTimeADateTime__DateTime', $value);
+            $todayDateTime      = new DateTime(null, new DateTimeZone(Yii::app()->timeZoneHelper->getForCurrentUser()));
+            $today              = Yii::app()->dateFormatter->format(DatabaseCompatibilityUtil::getDateFormat(),
+                                  $todayDateTime->getTimeStamp());
+            $compareData        = array(
+                                    array('manyMany'  =>
+                                        array('value' => array(
+                                              'aDateTime' => DateTimeUtil::convertDateIntoTimeZoneAdjustedDateTimeBeginningOfDay($today)),
+                                              'operatorType'         => 'greaterThanOrEqualTo',
+                                              'appendStructureAsAnd' => true)),
+                                    array('manyMany'  =>
+                                        array('value' => array(
+                                              'aDateTime' => DateTimeUtil::convertDateIntoTimeZoneAdjustedDateTimeEndOfDay($today)),
                                               'operatorType'         => 'lessThanOrEqualTo',
                                               'appendStructureAsAnd' => true)));
             $this->assertEquals($compareData, $metadata);

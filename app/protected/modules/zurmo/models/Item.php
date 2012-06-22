@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,7 +29,6 @@
         private $insideOnModified;
 
         protected $isSetting = false;
-        protected $isNewModel = false;
 
         // On changing a member value the original value
         // is saved (ie: on change it again the original
@@ -89,7 +88,7 @@
         public function delete()
         {
             AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_DELETED, strval($this), $this);
-            parent::delete();
+            return parent::delete();
         }
 
         // Makes Item appear on the stack so that auditing can ensure
@@ -171,10 +170,10 @@
                     array('createdDateTime',  'required'),
                     array('createdDateTime',  'readOnly'),
                     array('createdDateTime',  'type', 'type' => 'datetime'),
+                    array('createdByUser',    'readOnly'),
                     array('modifiedDateTime', 'required'),
                     array('modifiedDateTime', 'readOnly'),
                     array('modifiedDateTime', 'type', 'type' => 'datetime'),
-                    array('createdByUser',    'readOnly'),
                     array('modifiedByUser',   'readOnly'),
                 ),
                 'elements' => array(
@@ -188,11 +187,6 @@
         public static function isTypeDeletable()
         {
             return false;
-        }
-
-        public static function getModuleClassName()
-        {
-            return null;
         }
 
         /**
@@ -245,6 +239,14 @@
                 }
             }
             return false;
+        }
+
+        /**
+         * @return string of gamificationRulesType Override for a child class as needed.
+         */
+        public static function getGamificationRulesType()
+        {
+            return null;
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -47,7 +47,6 @@
             //Test all default controller actions that do not require any POST/GET variables to be passed.
             //This does not include portlet controller actions.
             $this->runControllerWithNoExceptionsAndGetContent     ('zurmo/default/about');
-            $this->runControllerWithNoExceptionsAndGetContent     ('zurmo/default/recentlyViewed');
             $this->runControllerWithNoExceptionsAndGetContent     ('zurmo/group');
             $this->runControllerWithNoExceptionsAndGetContent     ('zurmo/group/create');
             $this->runControllerWithNoExceptionsAndGetContent     ('zurmo/group/index');

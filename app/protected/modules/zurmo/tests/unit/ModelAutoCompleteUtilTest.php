@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class ModelAutoCompleteUtilTest extends BaseTest
+    class ModelAutoCompleteUtilTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -36,8 +36,43 @@
             assert('$loaded'); // Not Coding Standard
         }
 
+        public function testGetCustomFieldDataByPartialName()
+        {
+            Yii::app()->user->userModel = User::getByUsername('super');
+
+            $values = array(
+                'Automotive',
+                'Adult Entertainment',
+                'Financial Services',
+                'Mercenaries & Armaments',
+                'autam',
+            );
+            $industryFieldData = CustomFieldData::getByName('testData');
+            $industryFieldData->defaultValue = $values[0];
+            $industryFieldData->serializedData = serialize($values);
+            $this->assertTrue($industryFieldData->save());
+            $results = ModelAutoCompleteUtil::getCustomFieldDataByPartialName('testData', 'a');
+            $this->assertEquals(3, count($results));
+
+            $results = ModelAutoCompleteUtil::getCustomFieldDataByPartialName('testData', 'Au');
+            $this->assertEquals(2, count($results));
+
+            $results = ModelAutoCompleteUtil::getCustomFieldDataByPartialName('testData', 'Mer');
+            $this->assertEquals(1, count($results));
+
+            $results = ModelAutoCompleteUtil::getCustomFieldDataByPartialName('testData', 'sat');
+            $this->assertEquals(0, count($results));
+
+            $results = ModelAutoCompleteUtil::getCustomFieldDataByPartialName('testData', 'Aux');
+            $this->assertEquals(0, count($results));
+        }
+
+        /**
+         * @depends testGetCustomFieldDataByPartialName
+         */
         public function testGetByPartialName()
         {
+            Yii::app()->user->userModel = User::getByUsername('super');
             $userData = array(
                 'Billy',
                 'Jimmy',
@@ -222,6 +257,34 @@
 
         /**
          * @depends testGetGlobalSearchResultsByPartialTerm
+         */
+        public function testGetGlobalSearchResultsByPartialTermUsingScope()
+        {
+            //Unfrozen, there are too many attributes that have to be columns in the database at this point, so
+            //now this is just a frozen test.
+            if (RedBeanDatabase::isFrozen())
+            {
+                $super = User::getByUsername('super');
+                Yii::app()->user->userModel = $super;
+
+                $data = ModelAutoCompleteUtil::getGlobalSearchResultsByPartialTerm('animal', 5, $super, array('accounts'));
+                $this->assertEquals(1, count($data));
+                $this->assertEquals('The Zoo - Account', $data[0]['label']);
+
+                $data = ModelAutoCompleteUtil::getGlobalSearchResultsByPartialTerm('animal', 5, $super, array('contacts'));
+                $this->assertEquals(1, count($data));
+                $this->assertEquals('Big Elephant - Contact', $data[0]['label']);
+
+                $data = ModelAutoCompleteUtil::getGlobalSearchResultsByPartialTerm('animal', 5, $super,
+                                                                                   array('contacts', 'opportunities'));
+                $this->assertEquals(2, count($data));
+                $this->assertEquals('Big Elephant - Contact', $data[0]['label']);
+                $this->assertEquals('Animal Crackers - Opportunity', $data[1]['label']);
+            }
+        }
+
+        /**
+         * @depends testGetGlobalSearchResultsByPartialTermUsingScope
          */
         public function testGetGlobalSearchResultsByPartialTermWithRegularUserAndElevationStepsForRegularUser()
         {

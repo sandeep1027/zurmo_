@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,7 +34,7 @@
         public $scriptFile = array('jquery.fileupload.js',
                                    'jquery.fileupload-ui.js', 'jquery.tmpl.min.js', 'jquery.iframe-transport.js');
 
-        public $cssFile    = 'jquery.fileupload-ui.css';
+        public $cssFile    = null;
 
         public $assetFolderName = 'fileUpload';
 
@@ -186,7 +186,6 @@ $(function () {
     $('.fileupload-buttonbar').removeClass('ui-widget-header ui-corner-top');
     $('.fileupload-content').removeClass('ui-widget-content ui-corner-bottom');
     $('#fileUpload{$id}').bind('fileuploaddestroy', function (e, data) {
-    $('#ImportWizardForm_rowColumnDelimiter').removeAttr('readonly');
             {$this->afterDeleteAction}
     });
     $('#fileUpload{$id}').bind('fileuploadalways', function (e, data) {
@@ -245,7 +244,7 @@ $scriptContent = <<<EOD
             <td class="name" colspan="4">\${name}</td>
             <td class="size">\${size}</td>
             <td class="delete">
-                <button data-url="{$this->deleteUrl}&id=\${id}">{$deleteLabel}</button>
+                <button data-url="{$this->deleteUrl}?id=\${id}">{$deleteLabel}</button>
             </td>
         {{/if}}
 
@@ -265,7 +264,7 @@ $scriptContent = <<<EOD
 <script id="template-upload" type="text/x-jquery-tmpl">
     <tr class="template-upload{{if error}} ui-state-error{{/if}}">
         <td class="preview"></td>
-        <td class="name">\${name}</td>
+        <td class="name" colspan="4">\${name}</td>
         <td class="size">\${sizef}</td>
         {{if error}}
             <td class="error" colspan="2">\${error}</td>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -44,11 +44,9 @@
         {
             assert('$externalSystemId == null || is_string($externalSystemId)');
             $columnName = self::EXTERNAL_SYSTEM_ID_COLUMN_NAME;
-            $tableName  = $model::getTableName(get_class_name($model));
-            RedBean_Plugin_Optimizer_ExternalSystemId::
-            ensureColumnIsVarchar($tableName, $columnName);
-            R::exec("update " . $tableName . " set $columnName = ':externalSystemId' where id = :id",
-                    array('externalSystemId' => $externalSystemId, 'id' => $model->id));
+            $tableName  = $model::getTableName(get_class($model));
+            RedBean_Plugin_Optimizer_ExternalSystemId::ensureColumnIsVarchar($tableName, $columnName);
+            R::exec("update " . $tableName . " set $columnName = '" . $externalSystemId . "' where id = " . $model->id);
         }
     }
 ?>

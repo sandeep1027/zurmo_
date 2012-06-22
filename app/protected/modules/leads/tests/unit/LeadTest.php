@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class LeadTest extends BaseTest
+    class LeadTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -280,6 +280,25 @@
             }
         }
 
+        public function testIsStateALeadByStateName()
+        {
+            $allContactStates = ContactState::GetAll();
+            $this->assertGreaterThan(1, count($allContactStates));
+            foreach ($allContactStates as $contactState)
+            {
+                if ($contactState->id < ContactsUtil::getStartingStateId())
+                {
+                    $isStateALeadByStateNameCorrect = true;
+                }
+                else
+                {
+                    $isStateALeadByStateNameCorrect = false;
+                }
+                $isStateALead = LeadsUtil::isStateALeadByStateName($contactState->name);
+                $this->assertEquals($isStateALead, $isStateALeadByStateNameCorrect);
+            }
+        }
+
         public function testGetLeadStateDataFromStartingStateKeyedByIdAndLabelByLanguage()
         {
             $newStates        = ContactState::getByName('New');
@@ -298,6 +317,26 @@
                                  $recycledStates[0]->id    => 'Réactivé',
                                  $deadStates[0]->id        => 'Mort');
             $this->assertEquals($compareData, $data);
+        }
+
+        public function testLeadsStateMetadataAdapterWithNoStates()
+        {
+            $metadata = ContactsModule::getMetadata();
+            $metadata['global']['startingStateId'] = LeadsUtil::getStartingState()->id;
+            ContactsModule::setMetadata($metadata);
+            $adapter = new LeadsStateMetadataAdapter(array('clauses' => array(), 'structure' => ''));
+            $adaptedMetadata = $adapter->getAdaptedDataProviderMetadata();
+            $compareMetadata = array(
+                'clauses' => array(
+                    1 => array(
+                        'attributeName' => 'state',
+                        'operatorType' => 'equals',
+                        'value' => '-1'
+                    ),
+                ),
+                'structure' => '(1)',
+            );
+            $this->assertEquals($compareMetadata, $adaptedMetadata);
         }
     }
 ?>

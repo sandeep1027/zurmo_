@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -30,40 +30,60 @@
     // DON'T MAKE A MESS!
     return array(
         '1 Column'
-            => '??',
+            => '1 Spalte',
         '2 Columns'
-            => '??',
+            => '2 Spalten',
         '2 Columns Left Strong'
-            => '??',
+            => '2 Spalten links stark',
         '2 Columns Right Strong'
-            => '??',
+            => '2 Spalten rechts stark',
         'Access Dashboards'
-            => '??',
+            => 'Zugang Dashboards',
         'Add Portlet'
-            => '??',
+            => 'Portlet hinzufügen',
         'Are you sure want to delete this dashboard?'
-            => '??',
+            => 'Dieses Dashboard wirklich löschen?',
         'Create Dashboard'
-            => '??',
+            => 'Dashboard erstellen',
         'Create Dashboards'
-            => '??',
+            => 'Dashboards erstellen',
         'Dashboard'
-            => '??',
+            => 'Dashboard', // Same Word Translated
         'Delete Dashboard'
-            => '??',
+            => 'Dashboard löschen',
         'Delete Dashboards'
-            => '??',
+            => 'Dashboards löschen',
+        'Don\'t show me this screen again (Don\'t worry you can turn it on again)'
+            => 'Zeige mir nicht diesen Bildschirm wieder (Keine Sorge, du kannst es wieder einschalten)',
         'Edit Dashboard'
-            => '??',
+            => 'Dashboard bearbeiten',
+        'Go to the dashboard'
+            => 'Weiter zum Dashboard',
+        'Helpful Links'
+            => 'Nützliche Links',
         'Home'
-            => '??',
+            => 'Startseite',
         'Is Default'
-            => '??',
+            => 'Ist Standard',
+        'Join the forum'
+            => 'Forum beitreten',
         'Layout Id'
-            => '??',
+            => 'Layout Id', // Same Word Translated
         'Layout Type'
-            => '??',
+            => 'Layout-Typ',
+        'Read the wiki'
+            => 'Wiki Lesen',
         'Return to Home'
-            => '??',
+            => 'Zurück zur Startseite',
+        'Tip of the Day'
+            => 'Tipp des Tages',
+        'Using a CRM shouldn\'t be a chore. With Zurmo, you can earn points, ' .
+        'collect badges, and compete against co-workers while getting your job done.'
+            => 'CRM sollte keine langweilige Aufgabe sein. Mit Zurmo du kannst Punkte und ' .
+               'Badges sammeln, und freundschaftlichen Wettbewerb mit deinen Kollegen haben.',
+        'View a tutorial'
+            => 'Ein Tutorial Anzeigen',
+        'Watch a video'
+            => 'Ein Video sehen',
     );
 ?>

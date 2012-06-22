@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -95,7 +95,7 @@
          * @param array $requiredAttributeCollection
          * @param array $mappedAttributeImportRulesCollection
          * @throws NotSupportedException - Throws an error if the $mappedAttributeImportRulesCollection contains
-         * 								   any attribute rules that are not AttributeImportRules.
+         *                                 any attribute rules that are not AttributeImportRules.
          * @return boolean true - all required are mapped, otherwise false.
          */
         public static function areAllRequiredAttributesMappedOrHaveRules(& $requiredAttributeCollection,
@@ -150,19 +150,29 @@
         {
             assert('is_array($mappedAttributeImportRulesCollection)');
             $mappedModelAttributeNames = array();
-            foreach ($mappedAttributeImportRulesCollection as $attributeImportRules)
+            foreach ($mappedAttributeImportRulesCollection as $attributeIndexOrDerivedAttributeType => $attributeImportRules)
             {
+                $relationNameAndAttributeName = explode(FormModelUtil::DELIMITER, $attributeIndexOrDerivedAttributeType);
+                if (count($relationNameAndAttributeName) == 2)
+                {
+                    $relationName = $relationNameAndAttributeName[0];
+                }
+                else
+                {
+                    $relationName = 'None';
+                }
                 if ($attributeImportRules instanceof AttributeImportRules)
                 {
                     $modelAttributeNames       = $attributeImportRules->getRealModelAttributeNames();
                     foreach ($modelAttributeNames as $modelAttributeName)
                     {
-                        if (in_array($modelAttributeName, $mappedModelAttributeNames))
+                        if (isset($mappedModelAttributeNames[$relationName]) &&
+                            in_array($modelAttributeName, $mappedModelAttributeNames[$relationName]))
                         {
                             $displayLabel = $attributeImportRules->getDisplayLabelByAttributeName($modelAttributeName);
                             throw new ImportAttributeMappedMoreThanOnceException($displayLabel);
                         }
-                        $mappedModelAttributeNames[] = $modelAttributeName;
+                        $mappedModelAttributeNames[$relationName][] = $modelAttributeName;
                     }
                 }
                 else

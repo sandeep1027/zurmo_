@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -75,44 +75,44 @@
             $metadata = parent::getDefaultMetadata();
             $metadata[__CLASS__] = array(
                 'members' => array(
-                    'description',
                     'companyName',
+                    'description',
                     'website',
                 ),
                 'relations' => array(
+                    'account'          => array(RedBeanModel::HAS_ONE,   'Account'),
+                    'industry'         => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                    'opportunities'    => array(RedBeanModel::MANY_MANY, 'Opportunity'),
                     'secondaryAddress' => array(RedBeanModel::HAS_ONE,   'Address',          RedBeanModel::OWNED),
                     'secondaryEmail'   => array(RedBeanModel::HAS_ONE,   'Email',            RedBeanModel::OWNED),
                     'source'           => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
-                    'account'          => array(RedBeanModel::HAS_ONE,   'Account'),
                     'state'            => array(RedBeanModel::HAS_ONE,   'ContactState'),
-                    'industry'         => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
-                    'opportunities'    => array(RedBeanModel::MANY_MANY, 'Opportunity'),
                 ),
                 'rules' => array(
-                    array('description',      'type',    'type' => 'string'),
                     array('companyName',      'type',    'type' => 'string'),
                     array('companyName',      'length',  'min'  => 3, 'max' => 64),
-                    array('website',          'url'),
+                    array('description',      'type',    'type' => 'string'),
                     array('state',            'required'),
+                    array('website',          'url'),
                 ),
                 'elements' => array(
-                    'description'      => 'TextArea',
                     'account'          => 'Account',
+                    'description'      => 'TextArea',
                     'secondaryEmail'   => 'EmailAddressInformation',
                     'secondaryAddress' => 'Address',
                     'state'            => 'ContactState',
                 ),
                 'customFields' => array(
-                    'source'   => 'LeadSources',
                     'industry' => 'Industries',
+                    'source'   => 'LeadSources',
                 ),
                 'defaultSortAttribute' => 'lastName',
                 'rollupRelations' => array(
                     'opportunities',
                 ),
                 'noAudit' => array(
-                    'website',
-                    'description'
+                    'description',
+                    'website'
                 ),
             );
             return $metadata;
@@ -131,6 +131,11 @@
         public static function hasReadPermissionsOptimization()
         {
             return true;
+        }
+
+        public static function getGamificationRulesType()
+        {
+            return 'ContactGamification';
         }
     }
 ?>

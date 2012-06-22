@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -24,7 +24,7 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      ********************************************************************************/
 
-    class ZurmoLanguageHelperTest extends BaseTest
+    class ZurmoLanguageHelperTest extends ZurmoBaseTest
     {
         public static function setUpBeforeClass()
         {
@@ -164,12 +164,11 @@
         public function testLanguagesToLanguageCollectionViewUtil()
         {
             $data = LanguagesToLanguageCollectionViewUtil::getLanguagesData();
-            $compareData = array(/* Enable once German is completed.
-                                    'de' => array(
+            $compareData = array('de' => array(
                                     'label' => 'German',
                                     'active' => true,
                                     'canInactivate' => true,
-                                 ), */
+                                 ),
                                  'en' => array(
                                     'label' => 'English',
                                     'active' => true,
@@ -185,27 +184,26 @@
                                     'active' => true,
                                     'canInactivate' => false,
                                  ),
-                                 /* Enable once Italian is completed.
                                  'it' => array(
                                     'label' => 'Italian',
                                     'active' => false,
                                     'canInactivate' => true,
-                                 )*/);
+                                 ));
             $this->assertEquals($compareData, $data);
         }
 
         /**
          * This test shows that accents are maybe not in the right encoding in the message file. This is just an example
          * of something that was not working in windows correctly. The result was the label would not display in the
-         * input box in the browser in the module general edit in designer.
+         * input box in the browser in the module general in designer.
          */
         public function testAccentsAreEncodingProperly()
         {
             $this->assertEquals('Opportunité', CHtml::encode('Opportunité'));
 
             $label = OpportunitiesModule::getModuleLabelByTypeAndLanguage('SingularLowerCase', 'fr');
-            $this->assertEquals('Opportunité', $label); //failing. What encoding is this Opportunité in vs. the message file?
-            $this->assertEquals('Opportunité', CHtml::encode($label));
+            $this->assertEquals('opportunité', $label);
+            $this->assertEquals('opportunité', CHtml::encode($label));
         }
     }
 ?>

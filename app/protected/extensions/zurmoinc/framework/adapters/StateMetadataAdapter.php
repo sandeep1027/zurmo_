@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -47,28 +47,38 @@
         {
             $metadata = $this->metadata;
             $stateIds = $this->getStateIds();
-            if (empty($stateIds))
-            {
-                return $metadata;
-            }
             $clauseCount = count($metadata['clauses']);
             $startingCount = $clauseCount + 1;
             $structure = '';
             $first = true;
-            foreach ($stateIds as $stateId)
+            //No StateIds mean the list should come up empty
+            if (count($stateIds) == 0)
             {
                 $metadata['clauses'][$startingCount] = array(
                     'attributeName' => 'state',
                     'operatorType'  => 'equals',
-                    'value'         => $stateId
+                    'value'         => -1
                 );
-                if (!$first)
-                {
-                    $structure .= ' or ';
-                }
-                $first = false;
                 $structure .= $startingCount;
                 $startingCount++;
+            }
+            else
+            {
+                foreach ($stateIds as $stateId)
+                {
+                    $metadata['clauses'][$startingCount] = array(
+                        'attributeName' => 'state',
+                        'operatorType'  => 'equals',
+                        'value'         => $stateId
+                    );
+                    if (!$first)
+                    {
+                        $structure .= ' or ';
+                    }
+                    $first = false;
+                    $structure .= $startingCount;
+                    $startingCount++;
+                }
             }
             if (empty($metadata['structure']))
             {

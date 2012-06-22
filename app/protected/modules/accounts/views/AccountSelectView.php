@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -29,14 +29,24 @@
      */
     class AccountSelectView extends MetadataView
     {
+        protected $controllerId;
+
+        protected $moduleId;
+
+        protected $model;
+
         /**
          * Construct the view to display an input to select an account
          */
-        public function __construct($model)
+        public function __construct($controllerId, $moduleId, $modelId, $model)
         {
             assert('$model != null');
             assert('$model instanceof AccountSelectForm');
-            $this->model    = $model;
+
+            $this->controllerId   = $controllerId;
+            $this->moduleId       = $moduleId;
+            $this->modelId        = $modelId;
+            $this->model          = $model;
         }
 
         /**
@@ -70,7 +80,16 @@
             $content .= '</tr>';
             $content .= '</tbody>';
             $content .= '</table>';
-            $content .= CHtml::submitButton(Yii::t('Default', 'Complete Conversion'));
+            $cancelLink = new CancelConvertLinkActionElement($this->controllerId, $this->moduleId, $this->modelId);
+            $content .= '<div class="view-toolbar-container clearfix"><div class="form-toolbar">';
+            $content .= $cancelLink->render() . '&#160;';
+            $element  =   new SaveButtonActionElement($this->controllerId, $this->moduleId,
+                                                      null,
+                                                      array('htmlOptions' =>
+                                                          array('name'   => 'AccountSelect', 'id' => 'AccountSelect'),
+                                                                'label'  => Yii::t('Default', 'Complete Conversion')));
+            $content .= $element->render();
+            $content .= '</div></div>';
             return $content;
         }
     }

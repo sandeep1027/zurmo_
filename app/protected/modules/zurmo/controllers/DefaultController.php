@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -103,7 +103,8 @@
 
         public function actionAbout()
         {
-            $view = new AboutPageView($this);
+            $view = new AboutPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, new AboutView()));
             echo $view->render();
         }
 
@@ -123,29 +124,47 @@
                     $this->redirect(Yii::app()->createUrl('configuration/default/index'));
                 }
             }
-            $titleBarAndEditView = new TitleBarAndConfigurationEditAndDetailsView(
+            $editView = new ZurmoConfigurationEditAndDetailsView(
+                                    'Edit',
                                     $this->getId(),
                                     $this->getModule()->getId(),
-                                    $configurationForm,
-                                    'ZurmoConfigurationEditAndDetailsView',
-                                    'Edit',
-                                    Yii::t('Default', 'Global Configuration')
-            );
-            $view = new ZurmoConfigurationPageView($this, $titleBarAndEditView);
+                                    $configurationForm);
+            $editView->setCssClasses( array('AdministrativeArea') );
+            $view = new ZurmoConfigurationPageView(ZurmoDefaultAdminViewUtil::
+                                         makeStandardViewForCurrentUser($this, $editView));
             echo $view->render();
-        }
-
-        public function actionRecentlyViewed()
-        {
-            echo AuditEventsRecentlyViewedUtil::getRecentlyViewedAjaxContentByUser(Yii::app()->user->userModel, 10);
         }
 
         public function actionGlobalSearchAutoComplete($term)
         {
-            $pageSize = Yii::app()->pagination->resolveActiveForCurrentUserByType(
+            $scopeData = GlobalSearchUtil::resolveGlobalSearchScopeFromGetData($_GET);
+            $pageSize  = Yii::app()->pagination->resolveActiveForCurrentUserByType(
                             'autoCompleteListPageSize', get_class($this->getModule()));
             $autoCompleteResults = ModelAutoCompleteUtil::
-                                   getGlobalSearchResultsByPartialTerm($term, $pageSize, Yii::app()->user->userModel);
+                                   getGlobalSearchResultsByPartialTerm($term, $pageSize, Yii::app()->user->userModel,
+                                                                       $scopeData);
+            echo CJSON::encode($autoCompleteResults);
+        }
+
+        /**
+         * Given a name of a customFieldData object and a term to search on return a JSON encoded
+         * array of autocomplete search results.
+         * @param string $name - Name of CustomFieldData
+         * @param string $term - term to search on
+         */
+        public function actionAutoCompleteCustomFieldData($name, $term)
+        {
+            assert('is_string($name)');
+            assert('is_string($term)');
+            $autoCompleteResults = ModelAutoCompleteUtil::getCustomFieldDataByPartialName(
+                                       $name, $term);
+            if (count($autoCompleteResults) == 0)
+            {
+                $data = 'No Results Found';
+                $autoCompleteResults[] = array('id'    => '',
+                                               'name' => $data
+                );
+            }
             echo CJSON::encode($autoCompleteResults);
         }
     }

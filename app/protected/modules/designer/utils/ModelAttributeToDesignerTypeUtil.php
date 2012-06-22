@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -40,6 +40,10 @@
          */
         public static function getDesignerType($model, $attributeName)
         {
+            if (!$model->isAttribute($attributeName))
+            {
+                return DerivedAttributeToMixedTypeUtil::getType(get_class($model), $attributeName);
+            }
             return ModelAttributeToMixedTypeUtil::getType($model, $attributeName);
         }
 
@@ -66,7 +70,7 @@
                     $classToEvaluate     = new ReflectionClass($formClassName);
                     if (is_subclass_of($formClassName, 'AttributeForm') && !$classToEvaluate->isAbstract())
                     {
-$designerTypes[] = substr($formClassName, 0, strlen($formClassName) - strlen('AttributeForm'));
+                        $designerTypes[] = substr($formClassName, 0, strlen($formClassName) - strlen('AttributeForm'));
                     }
                 }
             }
@@ -81,16 +85,19 @@ $designerTypes[] = substr($formClassName, 0, strlen($formClassName) - strlen('At
         public static function getAvailableCustomAttributeTypes()
         {
             return array(
+                'CalculatedNumber',
                 'CheckBox',
                 'CurrencyValue',
                 'Date',
                 'DateTime',
                 'Decimal',
+                'DropDownDependency',
                 'DropDown',
                 'Integer',
-                //'MultiSelectDropDown', Turn on once this feature is finished.
+                'MultiSelectDropDown',
                 'Phone',
                 'RadioDropDown',
+                'TagCloud',
                 'Text',
                 'TextArea',
                 'Url',

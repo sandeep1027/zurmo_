@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,17 +34,19 @@
          * Constructs a user membershipview specifying the controller as
          * well as the model that will have its details displayed.
          */
-        public function __construct($controllerId, $moduleId, $model, $modelId)
+        public function __construct($controllerId, $moduleId, $model, $modelId, $title)
         {
             assert('$controllerId != null');
             assert('$moduleId != null');
             assert('$model instanceof GroupUserMembershipForm');
             assert('$modelId != null');
+            assert('is_string($title) || $title == null');
             $this->controllerId   = $controllerId;
             $this->moduleId       = $moduleId;
             $this->model          = $model;
             $this->modelClassName = get_class($model);
             $this->modelId        = $modelId;
+            $this->title          = $title;
         }
 
         /**

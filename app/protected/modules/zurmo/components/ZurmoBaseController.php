@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,23 +37,23 @@
             if (is_subclass_of($moduleClassName, 'SecurableModule'))
             {
                 $filters[] = array(
-                        ZurmoBaseController::RIGHTS_FILTER_PATH,
+                        self::getRightsFilterPath(),
                         'moduleClassName' => $moduleClassName,
                         'rightName' => $moduleClassName::getAccessRight(),
                 );
                 $filters[] = array(
-                        ZurmoBaseController::RIGHTS_FILTER_PATH . ' + create, createFromRelation, inlineCreateSave',
+                        self::getRightsFilterPath() . ' + create, createFromRelation, inlineCreateSave',
                         'moduleClassName' => $moduleClassName,
                         'rightName' => $moduleClassName::getCreateRight(),
                 );
                 $filters[] = array(
-                        ZurmoBaseController::RIGHTS_FILTER_PATH . ' + delete',
+                        self::getRightsFilterPath() . ' + delete',
                         'moduleClassName' => $moduleClassName,
                         'rightName' => $moduleClassName::getDeleteRight(),
                 );
             }
             $filters[] = array(
-                ZurmoBaseController::RIGHTS_FILTER_PATH . ' + massEdit, massEditProgressSave',
+                self::getRightsFilterPath() . ' + massEdit, massEditProgressSave',
                 'moduleClassName' => 'ZurmoModule',
                 'rightName' => ZurmoModule::RIGHT_BULK_WRITE,
             );
@@ -63,6 +63,19 @@
         public function __construct($id, $module = null)
         {
             parent::__construct($id, $module);
+        }
+
+        /**
+         * Override if the module is a nested module such as groups or roles.
+         */
+        public function resolveAndGetModuleId()
+        {
+            return $this->getModule()->getId();
+        }
+
+        public static function getRightsFilterPath()
+        {
+            return static::RIGHTS_FILTER_PATH;
         }
 
         protected function makeSearchFilterListView(
@@ -91,10 +104,32 @@
                 $this->getModule()->getPluralCamelCasedName(),
                 $dataProvider,
                 GetUtil::resolveSelectedIdsFromGet(),
-                GetUtil::resolveSelectAllFromGet(),
                 $filteredListData,
                 $filteredListId,
                 $title
+            );
+        }
+
+        protected function makeActionBarSearchAndListView(
+            $searchModel,
+            $pageSize,
+            $title,
+            $userId,
+            $dataProvider,
+            $actionBarViewClassName = 'SecuredActionBarForSearchAndListView'
+            )
+        {
+            assert('is_string($actionBarViewClassName)');
+            $listModel = $searchModel->getModel();
+            return new ActionBarSearchAndListView(
+                $this->getId(),
+                $this->getModule()->getId(),
+                $searchModel,
+                $listModel,
+                $this->getModule()->getPluralCamelCasedName(),
+                $dataProvider,
+                GetUtil::resolveSelectedIdsFromGet(),
+                $actionBarViewClassName
             );
         }
 
@@ -162,6 +197,7 @@
         {
             assert('$searchModel != null');
             assert('$searchModel instanceof RedBeanModel || $searchModel instanceof ModelForm');
+            static::resolveToTriggerOnSearchEvents($listModelClassName);
             if (!empty($_GET['filteredListId']) && empty($_POST['search']))
             {
                 $filteredListId = (int)$_GET['filteredListId'];
@@ -184,6 +220,15 @@
                     $stateMetadataAdapterClassName);
             }
             return $dataProvider;
+        }
+
+        protected function resolveToTriggerOnSearchEvents($listModelClassName)
+        {
+            $pageVariableName = $listModelClassName . '_page';
+            if (isset($_GET[$pageVariableName]) && $_GET[$pageVariableName] == null)
+            {
+                Yii::app()->gameHelper->triggerSearchModelsEvent($listModelClassName);
+            }
         }
 
         protected function getDataProviderByResolvingSelectAllFromGet(
@@ -250,6 +295,7 @@
                     if ($passedOwnerValidation)
                     {
                         MassEditInsufficientPermissionSkipSavingUtil::clear($modelClassName);
+                        Yii::app()->gameHelper->triggerMassEditEvent(get_class($listModel));
                         $this->saveMassEdit(
                             get_class($listModel),
                             $modelClassName,
@@ -258,9 +304,11 @@
                             $_GET[$modelClassName . '_page'],
                             $pageSize
                         );
+                        //cancel diminish of save scoring
                         if ($selectedRecordCount > $pageSize)
                         {
-                            $view = new $pageViewClassName($this,
+                            $view = new $pageViewClassName(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this,
                                 $this->makeMassEditProgressView(
                                     $listModel,
                                     1,
@@ -269,7 +317,7 @@
                                     $pageSize,
                                     $title,
                                     null)
-                            );
+                            ));
                             echo $view->render();
                             Yii::app()->end(0, false);
                         }
@@ -290,7 +338,7 @@
                                         $skipCount, $modelClassName);
                             }
                             Yii::app()->user->setFlash('notification', $notificationContent);
-                            $this->redirect(array('default/index'));
+                            $this->redirect(array('default/'));
                             Yii::app()->end(0, false);
                         }
                     }
@@ -366,6 +414,7 @@
          */
         protected function saveMassEdit($modelClassName, $postVariableName, $selectedRecordCount, $dataProvider, $page, $pageSize)
         {
+            Yii::app()->gameHelper->muteScoringModelsOnSave();
             $modelsToSave = $this->getModelsToSave($modelClassName, $dataProvider, $selectedRecordCount, $page, $pageSize);
             foreach ($modelsToSave as $modelToSave)
             {
@@ -386,13 +435,14 @@
                         $modelClassName, $modelToSave->id, $modelToSave->name);
                 }
             }
+            Yii::app()->gameHelper->unmuteScoringModelsOnSave();
         }
 
         /**
          * Check if form is posted. If form is posted attempt to save. If save is complete, confirm the current
          * user can still read the model.  If not, then redirect the user to the index action for the module.
          */
-        protected function attemptToSaveModelFromPost($model, $redirectUrlParams = null)
+        protected function attemptToSaveModelFromPost($model, $redirectUrlParams = null, $redirect = true)
         {
             assert('$redirectUrlParams == null || is_array($redirectUrlParams) || is_string($redirectUrlParams)');
             $savedSucessfully   = false;
@@ -404,7 +454,7 @@
                 $model            = ZurmoControllerUtil::
                                     saveModelFromPost($postData, $model, $savedSucessfully, $modelToStringValue);
             }
-            if ($savedSucessfully)
+            if ($savedSucessfully && $redirect)
             {
                 $this->actionAfterSuccessfulModelSave($model, $modelToStringValue, $redirectUrlParams);
             }

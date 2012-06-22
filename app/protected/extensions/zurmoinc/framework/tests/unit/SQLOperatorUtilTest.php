@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -37,6 +37,10 @@
             $this->assertFalse(SQLOperatorUtil::isValidOperatorTypeByValue ('oneOf', null));
             $this->assertTrue(SQLOperatorUtil::isValidOperatorTypeByValue  ('greaterThanOrEqualTo', 'abc'));
             $this->assertTrue(SQLOperatorUtil::isValidOperatorTypeByValue  ('lessThanOrEqualTo', 'abc'));
+            $this->assertTrue(SQLOperatorUtil::isValidOperatorTypeByValue ('isNull', null));
+            $this->assertTrue(SQLOperatorUtil::isValidOperatorTypeByValue ('isNotNull', null));
+            $this->assertTrue(SQLOperatorUtil::isValidOperatorTypeByValue ('isEmpty', null));
+            $this->assertTrue(SQLOperatorUtil::isValidOperatorTypeByValue ('isNotEmpty', null));
         }
 
         public function testGetOperatorByType()
@@ -50,7 +54,23 @@
             $compareQueryPart = "IN(5,6,7)"; // Not Coding Standard
             $this->assertEquals($compareQueryPart, $queryPart);
             $queryPart = SQLOperatorUtil::resolveOperatorAndValueForOneOf('oneOf', array('a', 'b', 'c'));
-            $compareQueryPart = "IN(lower('a'),lower('b'),lower('c'))"; // Not Coding Standard
+            $compareQueryPart = "IN('a','b','c')"; // Not Coding Standard
+            $this->assertEquals($compareQueryPart, $queryPart);
+        }
+
+        public function testResolveOperatorAndValueForNullOrEmpty()
+        {
+            $queryPart = SQLOperatorUtil::resolveOperatorAndValueForNullOrEmpty('isNull');
+            $compareQueryPart = "IS NULL"; // Not Coding Standard
+            $this->assertEquals($compareQueryPart, $queryPart);
+            $queryPart = SQLOperatorUtil::resolveOperatorAndValueForNullOrEmpty('isNotNull');
+            $compareQueryPart = "IS NOT NULL"; // Not Coding Standard
+            $this->assertEquals($compareQueryPart, $queryPart);
+            $queryPart = SQLOperatorUtil::resolveOperatorAndValueForNullOrEmpty('isEmpty');
+            $compareQueryPart = "= ''"; // Not Coding Standard
+            $this->assertEquals($compareQueryPart, $queryPart);
+            $queryPart = SQLOperatorUtil::resolveOperatorAndValueForNullOrEmpty('isNotEmpty');
+            $compareQueryPart = "!= ''"; // Not Coding Standard
             $this->assertEquals($compareQueryPart, $queryPart);
         }
 
@@ -60,6 +80,54 @@
         public function testResolveOperatorAndValueForOneOfUnsupportedValue()
         {
             SQLOperatorUtil::resolveOperatorAndValueForOneOf('oneOf', array(array()));
+        }
+
+        /**
+         * @expectedException NotSupportedException
+         */
+        public function testGetOperatorByTypeForNullIsUnsupported()
+        {
+            SQLOperatorUtil::GetOperatorByType('isNull');
+        }
+
+        /**
+         * @expectedException NotSupportedException
+         */
+        public function testGetOperatorByTypeForNotNullIsUnsupported()
+        {
+            SQLOperatorUtil::GetOperatorByType('isNotNull');
+        }
+
+        /**
+         * @expectedException NotSupportedException
+         */
+        public function testGetOperatorByTypeForEmptyIsUnsupported()
+        {
+            SQLOperatorUtil::GetOperatorByType('isEmpty');
+        }
+
+        /**
+         * @expectedException NotSupportedException
+         */
+        public function testGetOperatorByTypeForNotEmptyIsUnsupported()
+        {
+            SQLOperatorUtil::GetOperatorByType('isNotEmpty');
+        }
+
+        public function testResolveOperatorAndValueForOneOfWithEscapedContent()
+        {
+            $queryPart = SQLOperatorUtil::resolveOperatorAndValueForOneOf('oneOf', array('a', "b'd", 'c'));
+            $compareQueryPart = "IN('a','b\'d','c')"; // Not Coding Standard
+            $this->assertEquals($compareQueryPart, $queryPart);
+        }
+
+        public function testDoesOperatorTypeAllowNullValues()
+        {
+            $this->assertTrue(SQLOperatorUtil::doesOperatorTypeAllowNullValues('isNull'));
+            $this->assertTrue(SQLOperatorUtil::doesOperatorTypeAllowNullValues('isEmpty'));
+            $this->assertTrue(SQLOperatorUtil::doesOperatorTypeAllowNullValues('isNotNull'));
+            $this->assertTrue(SQLOperatorUtil::doesOperatorTypeAllowNullValues('isNotEmpty'));
+            $this->assertFalse(SQLOperatorUtil::doesOperatorTypeAllowNullValues('startsWith'));
         }
     }
 ?>

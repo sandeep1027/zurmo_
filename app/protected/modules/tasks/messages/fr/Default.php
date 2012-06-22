@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -31,12 +31,16 @@
     return array(
         'Access TasksModulePluralLabel'
             => 'Accès aux TasksModulePluralLabel',
+        'Close Task Check Box'
+            => 'Clore Tâche case à cocher',
         'Completed'
             => 'Réalisée',
         'Completed On'
             => 'Réalisé le',
         'Create TasksModulePluralLabel'
             => 'Créer TasksModulePluralLabel',
+        'Create TasksModuleSingularLabel'
+            => 'Créer TasksModuleSingularLabel',
         'Delete TasksModulePluralLabel'
             => 'Supprimer TasksModulePluralLabel',
         'Due On'
@@ -50,7 +54,7 @@
         'Tasks'
             => 'Tâches',
         'TasksModulePluralLabel'
-            => 'TasksModulePluralLabel',
+            => 'TasksModulePluralLabel', // Same Word Translated
         'TasksModulePluralLabel For AccountsModuleSingularLabel'
             => 'TasksModulePluralLabel pour AccountsModuleSingularLabel',
         'TasksModulePluralLabel For ContactsModuleSingularLabel'
@@ -58,6 +62,8 @@
         'TasksModulePluralLabel For OpportunitiesModuleSingularLabel'
             => 'TasksModulePluralLabel pour OpportunitiesModuleSingularLabel',
         'TasksModuleSingularLabel'
-            => 'TasksModuleSingularLabel',
+            => 'TasksModuleSingularLabel', // Same Word Translated
+        '{n} TasksModuleSingularLabel created|{n} TasksModulePluralLabel created'
+            => '{n} TasksModuleSingularLabel crée|{n} TasksModulePluralLabel crées',
     );
 ?>

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -68,7 +68,13 @@
                     throw new NotFoundException();
                 }
                 assert('serialize($model) == $serializedModel');
-                assert('crc32(serialize($model)) == $checksum');
+                if (YII_DEBUG)
+                {
+                    if (crc32(serialize($model)) != $checksum)
+                    {
+                        throw new ChecksumMismatchException();
+                    }
+                }
                 assert('$model instanceof RedBeanModel');
                 self::$modelIdentifiersToModels[$modelIdentifier] = $model;
                 return $model;

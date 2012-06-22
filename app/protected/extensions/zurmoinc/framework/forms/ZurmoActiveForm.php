@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,6 +26,13 @@
 
     class ZurmoActiveForm extends CActiveForm
     {
+        /**
+         * Allows the form to be bound as a live event. This will allow the form to stay active even after an ajax
+         * action done through the yiiGridView for example.
+         * @var boolean
+         */
+        public $bindAsLive = false;
+
         /**
          * Override to handle relation model error summary information.  This information needs to be parsed properly
          * otherwise it will show up as 'Array' for the error text.
@@ -65,6 +72,104 @@
 
             $this->summaryID = $htmlOptions['id'];
             return $html;
+        }
+
+        /**
+         * Override to allow for optional live binding of yiiactiveform. @see $bindAsLive.
+         */
+        public function run()
+        {
+            if (is_array($this->focus))
+            {
+                $this->focus="#" . CHtml::activeId($this->focus[0], $this->focus[1]);
+            }
+            echo CHtml::endForm();
+            $cs = Yii::app()->clientScript;
+            $cs->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('ext.zurmoinc.framework.views.assets')
+                    ) . '/FormUtils.js',
+                CClientScript::POS_END
+            );
+            if (!$this->enableAjaxValidation && !$this->enableClientValidation || empty($this->attributes))
+            {
+                if ($this->focus !== null)
+                {
+                    $cs->registerCoreScript('jquery');
+                    $cs->registerScript('CActiveForm#focus', "
+                        if (!window.location.hash)
+                            { $('" . $this->focus . "').focus(); }
+                    ");
+                }
+                return;
+            }
+            $options = $this->clientOptions;
+            if (isset($this->clientOptions['validationUrl']) && is_array($this->clientOptions['validationUrl']))
+            {
+                $options['validationUrl'] = CHtml::normalizeUrl($this->clientOptions['validationUrl']);
+            }
+
+            $options['attributes'] = array_values($this->attributes);
+
+            if ($this->summaryID !== null)
+            {
+                $options['summaryID'] = $this->summaryID;
+            }
+            if ($this->focus !== null)
+            {
+                $options['focus'] = $this->focus;
+            }
+
+            $options = CJavaScript::encode($options);
+            //Not registering via coreScript because it does not properly register when using ajax non-minified
+            //on home page myList config view.  Needs a better solution
+            $cs->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('system.web.js.source')
+                    ) . '/jquery.yii.js',
+                CClientScript::POS_END
+            );
+            $cs->registerScriptFile(
+                Yii::app()->getAssetManager()->publish(
+                    Yii::getPathOfAlias('system.web.js.source')
+                    ) . '/jquery.yiiactiveform.js',
+                CClientScript::POS_END
+            );
+            $id = $this->id;
+            if ($this->bindAsLive)
+            {
+                $cs->registerScript(__CLASS__. '#' . $id, "\$('#$id').live('focus', function(e)
+                {
+                    if ($(this).data('settings') == undefined)
+                    {
+                        $(this).yiiactiveform($options);
+                    }
+                });
+                ");
+            }
+            else
+            {
+                $cs->registerScript(__CLASS__. '#' . $id, "\$('#$id').yiiactiveform($options);");
+            }
+        }
+
+        /**
+         * Override to support adding label class = 'hasCheckBox'
+         * (non-PHPdoc)
+         * @see CActiveForm::checkBox()
+         */
+        public function checkBox($model, $attribute, $htmlOptions = array())
+        {
+            return ZurmoHtml::activeCheckBox($model, $attribute, $htmlOptions);
+        }
+
+        /**
+         * (non-PHPdoc)
+         * @see CActiveForm::checkBoxList()
+         */
+        public function checkBoxList($model, $attribute, $data, $htmlOptions = array())
+        {
+            return ZurmoHtml::activeCheckBoxList($model, $attribute, $data, $htmlOptions);
         }
     }
 ?>

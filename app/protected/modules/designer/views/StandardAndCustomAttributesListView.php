@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -26,35 +26,38 @@
 
     class StandardAndCustomAttributesListView extends GridView
     {
+        protected $cssClasses =  array( 'AdministrativeArea');
+
         public function __construct(
             $controllerId,
             $moduleId,
-            $moduleClassName,
+            $module,
             $moduleDisplayName,
             $standardAttributesCollection,
             $customAttributesCollection,
-            $modelClassName,
-            $breadcrumbLinks
+            $modelClassName
         )
         {
-            parent::__construct(5, 1);
-            $this->setView(new TitleBarView(Yii::t('Default', $moduleDisplayName), Yii::t('Default', 'Standard Fields')), 0, 0);
-            $this->setView(new DesignerBreadCrumbView($controllerId, $moduleId, $breadcrumbLinks), 1, 0);
-            $this->setView(new AttributesCollectionView(
-                $controllerId,
-                $moduleId,
-                $standardAttributesCollection,
-                $moduleClassName,
-                $modelClassName
-            ), 2, 0);
-            $this->setView(new TitleBarView(Yii::t('Default', $moduleDisplayName), Yii::t('Default', 'Custom Fields')), 3, 0);
+            parent::__construct(3, 1);
+            $this->setView(new ActionBarForDesignerModuleView($controllerId, $moduleId, $module, 'DesignerFieldsLink'), 0, 0);
+            $title = Yii::t('Default', $moduleDisplayName) . ': ' .  Yii::t('Default', 'Custom Fields');
             $this->setView(new CustomAttributesCollectionView(
                 $controllerId,
                 $moduleId,
                 $customAttributesCollection,
-                $moduleClassName,
-                $modelClassName
-            ), 4, 0);
+                get_class($module),
+                $modelClassName,
+                $title
+            ), 1, 0);
+            $title = Yii::t('Default', $moduleDisplayName) . ': ' .  Yii::t('Default', 'Standard Fields');
+            $this->setView(new AttributesCollectionView(
+                $controllerId,
+                $moduleId,
+                $standardAttributesCollection,
+                get_class($module),
+                $modelClassName,
+                $title
+            ), 2, 0);
         }
 
         public function isUniqueToAPage()

@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -38,10 +38,10 @@
         public function getDependencies()
         {
             return array(
-                'configuration',
-                'zurmo',
                 'accounts',
                 'contacts',
+                'configuration',
+                'zurmo',
             );
         }
 
@@ -64,6 +64,30 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'convertToAccountSetting' => LeadsModule::CONVERT_ACCOUNT_NOT_REQUIRED,
+                'convertToAccountAttributesMapping' => array(
+                    'industry'         => 'industry',
+                    'website'          => 'website',
+                    'primaryAddress'   => 'billingAddress',
+                    'secondaryAddress' => 'shippingAddress',
+                    'owner'            => 'owner',
+                    'officePhone'      => 'officePhone',
+                    'officeFax'        => 'officeFax',
+                    'companyName'      => 'name',
+                ),
+                'designerMenuItems' => array(
+                    'showFieldsLink'  => true,
+                    'showGeneralLink' => true,
+                    'showLayoutsLink' => true,
+                    'showMenusLink'   => true,
+                ),
+                'globalSearchAttributeNames' => array(
+                    'fullName',
+                    'anyEmail',
+                    'officePhone',
+                    'mobilePhone',
+                    'companyName'
+                ),
                 'tabMenuItems' => array(
                     array(
                         'label' => 'LeadsModulePluralLabel',
@@ -83,30 +107,13 @@
                         )
                     ),
                 ),
-                'designerMenuItems' => array(
-                    'showFieldsLink'  => true,
-                    'showGeneralLink' => true,
-                    'showLayoutsLink' => true,
-                    'showMenusLink'   => true,
+                'shortcutsCreateMenuItems' => array(
+                    array(
+                        'label' => 'LeadsModuleSingularLabel',
+                        'url'   => array('/leads/default/create'),
+                        'right' => self::RIGHT_CREATE_LEADS
+                    ),
                 ),
-                'convertToAccountSetting' => LeadsModule::CONVERT_ACCOUNT_NOT_REQUIRED,
-                'convertToAccountAttributesMapping' => array(
-                    'industry'         => 'industry',
-                    'website'          => 'website',
-                    'primaryAddress'   => 'billingAddress',
-                    'secondaryAddress' => 'shippingAddress',
-                    'owner'            => 'owner',
-                    'officePhone'      => 'officePhone',
-                    'officeFax'        => 'officeFax',
-                    'companyName'      => 'name',
-                ),
-                'globalSearchAttributeNames' => array(
-                    'fullName',
-                    'anyEmail',
-                    'officePhone',
-                    'mobilePhone',
-                    'companyName'
-                )
             );
             return $metadata;
         }

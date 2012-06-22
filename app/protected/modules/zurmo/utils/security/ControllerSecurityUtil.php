@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -60,12 +60,12 @@
             {
                 return;
             }
-            ControllerSecurityUtil::renderAccessFailureView($fromAjax);
+            static::processAccessFailure($fromAjax);
             Yii::app()->end(0, false);
         }
 
         /**
-         * If a current user cannot read the model, then render a AccessFailurePageView
+         * If a current user cannot write the model, then render a AccessFailurePageView
          * and end the application.
          * @param $model - RedBeanModel
          * @return null;
@@ -76,12 +76,12 @@
             {
                 return;
             }
-            ControllerSecurityUtil::renderAccessFailureView($fromAjax);
+            static::processAccessFailure($fromAjax);
             Yii::app()->end(0, false);
         }
 
         /**
-         * If a current user cannot read the model, then render a AccessFailurePageView
+         * If a current user cannot delete the model, then render a AccessFailurePageView
          * and end the application.
          * @param $model - RedBeanModel
          * @return null;
@@ -92,12 +92,12 @@
             {
                 return;
             }
-            ControllerSecurityUtil::renderAccessFailureView($fromAjax);
+            static::processAccessFailure($fromAjax);
             Yii::app()->end(0, false);
         }
 
         /**
-         * If a current user cannot read the module, then render a AccessFailurePageView
+         * If a current user cannot write the module, then render a AccessFailurePageView
          * and end the application.
          * @param $model - RedBeanModel
          * @return null;
@@ -110,7 +110,7 @@
             {
                 return;
             }
-            ControllerSecurityUtil::renderAccessFailureView($fromAjax);
+            static::processAccessFailure($fromAjax);
             Yii::app()->end(0, false);
         }
 
@@ -121,11 +121,16 @@
             {
                 return;
             }
-            ControllerSecurityUtil::renderAccessFailureView($fromAjax);
+            static::processAccessFailure($fromAjax);
             Yii::app()->end(0, false);
         }
 
-        protected static function renderAccessFailureView($fromAjax = false, $nonAjaxFailureMessageContent = null)
+        protected static function processAccessFailure($fromAjax = false, $nonAjaxFailureMessageContent = null)
+        {
+            static::renderAccessFailureContent($fromAjax, $nonAjaxFailureMessageContent);
+        }
+
+        protected static function renderAccessFailureContent($fromAjax = false, $nonAjaxFailureMessageContent = null)
         {
             if ($fromAjax)
             {

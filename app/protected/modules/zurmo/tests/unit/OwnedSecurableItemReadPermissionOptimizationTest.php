@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -31,7 +31,7 @@
         // These tests rely on the model ids being certain values, which relies
         // on it running on new tables, which is not the case when freezing.
 
-        class OwnedSecurableItemReadPermissionOptimizationTest extends BaseTest
+        class OwnedSecurableItemReadPermissionOptimizationTest extends ZurmoBaseTest
         {
             public static function setUpBeforeClass()
             {
@@ -127,7 +127,7 @@
                 $searchAttributeData = $metadataAdapter->getAdaptedMetadata();
                 $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('OwnedSecurableTestItem');
                 $where = RedBeanModelDataProvider::makeWhere('OwnedSecurableTestItem', $searchAttributeData, $joinTablesAdapter);
-                $compareWhere = "({$quote}ownedsecurabletestitem{$quote}.{$quote}member{$quote} like lower('test%'))";
+                $compareWhere = "({$quote}ownedsecurabletestitem{$quote}.{$quote}member{$quote} like 'test%')";
                 $this->assertEquals($compareWhere, $where);
                 $subsetSql = OwnedSecurableTestItem::makeSubsetOrCountSqlQuery('ownedsecurabletestitem',
                                                         $joinTablesAdapter, 1, 5, $where, null);
@@ -181,7 +181,7 @@
                 $searchAttributeData = $metadataAdapter->getAdaptedMetadata();
                 $joinTablesAdapter = new RedBeanModelJoinTablesQueryAdapter('OwnedSecurableTestItem');
                 $where = RedBeanModelDataProvider::makeWhere('OwnedSecurableTestItem', $searchAttributeData, $joinTablesAdapter);
-                $compareWhere = "({$quote}ownedsecurabletestitem{$quote}.{$quote}member{$quote} like lower('test%'))";
+                $compareWhere = "({$quote}ownedsecurabletestitem{$quote}.{$quote}member{$quote} like 'test%')";
                 $this->assertEquals($compareWhere, $where);
                 $subsetSql = OwnedSecurableTestItem::makeSubsetOrCountSqlQuery('ownedsecurabletestitem',
                                                         $joinTablesAdapter, 1, 5, $where, null);
@@ -270,8 +270,8 @@
                 );
                 $unionSql     = RedBeanModelsDataProvider::makeUnionSql($modelClassNamesAndSearchAttributeData,
                                                                         null, false, 2, 7);
-                $compareWhere = "({$quote}ownedsecurabletestitem{$quote}.{$quote}member{$quote} like lower('test4%'))";
-                $compareWhere2 = "({$quote}ownedsecurabletestitem2{$quote}.{$quote}member{$quote} like lower('test4%'))";
+                $compareWhere = "({$quote}ownedsecurabletestitem{$quote}.{$quote}member{$quote} like 'test4%')";
+                $compareWhere2 = "({$quote}ownedsecurabletestitem2{$quote}.{$quote}member{$quote} like 'test4%')";
                 $compareSubsetSql  = "(";
                 $compareSubsetSql .= "select distinct {$quote}ownedsecurabletestitem{$quote}.{$quote}id{$quote} id";
                 $compareSubsetSql .= ", 'OwnedSecurableTestItem' modelClassName ";

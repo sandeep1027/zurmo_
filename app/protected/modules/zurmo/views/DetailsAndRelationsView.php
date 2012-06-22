@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -52,13 +52,20 @@
         {
             $metadata = self::getMetadata();
             $leftBottomMetadataForPortlets['global'] = $metadata['global']['leftBottomView'];
-            $rightTopMetadataForPortlets['global']   = $metadata['global']['rightTopView'];
-
-            $detailsViewClassName = $metadata['global']['leftTopView']['viewClassName'];
-            $leftTopView = new $detailsViewClassName(                  'Details',
-                                                                        $this->params["controllerId"],
-                                                                        $this->params["relationModuleId"],
-                                                                        $this->params["relationModel"]);
+            $detailsViewClassName                    = $metadata['global']['leftTopView']['viewClassName'];
+            if (is_subclass_of($detailsViewClassName, 'EditAndDetailsView'))
+            {
+                $leftTopView    = new $detailsViewClassName('Details',
+                                                            $this->params["controllerId"],
+                                                            $this->params["relationModuleId"],
+                                                            $this->params["relationModel"]);
+            }
+            else
+            {
+                $leftTopView    = new $detailsViewClassName($this->params["controllerId"],
+                                                                            $this->params["relationModuleId"],
+                                                                            $this->params["relationModel"]);
+            }
             $leftBottomView = new ModelRelationsSecuredPortletFrameView($this->controllerId,
                                                                         $this->moduleId,
                                                                         $this->uniqueLayoutId . 'LeftBottomView',
@@ -67,26 +74,42 @@
                                                                         false,
                                                                         false,
                                                                         $metadata['global']['leftBottomView']['showAsTabbed']);
-            $rightTopView = new ModelRelationsSecuredPortletFrameView(  $this->controllerId,
-                                                                        $this->moduleId,
-                                                                        $this->uniqueLayoutId . 'RightBottomView',
-                                                                        $this->params,
-                                                                        $rightTopMetadataForPortlets,
-                                                                        false,
-                                                                        false);
+            if (isset($metadata['global']['rightTopView']))
+            {
+                $renderRightSide                         = true;
+                $rightTopMetadataForPortlets['global']   = $metadata['global']['rightTopView'];
+                $rightTopView = new ModelRelationsSecuredPortletFrameView(  $this->controllerId,
+                                                                            $this->moduleId,
+                                                                            $this->uniqueLayoutId . 'RightBottomView',
+                                                                            $this->params,
+                                                                            $rightTopMetadataForPortlets,
+                                                                            false,
+                                                                            false);
+            }
+            else
+            {
+                $renderRightSide = false;
+                $rightTopView    = null;
+            }
+            return $this->renderLeftAndRightGridViewContent($leftTopView, $leftBottomView, $rightTopView, $renderRightSide);
+        }
+
+        protected function renderLeftAndRightGridViewContent($leftTopView, $leftBottomView, $rightTopView, $renderRightSide)
+        {
+            assert('$leftTopView instanceof View');
+            assert('$leftBottomView instanceof View');
+            assert('$rightTopView instanceof View || $rightTopView == null');
+            assert('is_bool($renderRightSide)');
             $leftVerticalGridView  = new GridView(2, 1);
             $leftVerticalGridView->setView($leftTopView, 0, 0);
             $leftVerticalGridView->setView($leftBottomView, 1, 0);
-            $rightVerticalGridView  = new GridView(1, 1);
-            $rightVerticalGridView->setView($rightTopView, 0, 0);
-
-            $content  = '<table>' . "\n";
-            $content .= '<tr><td>' . "\n";
-            $content .= $leftVerticalGridView->render();
-            $content .= '</td><td width="300px">' . "\n";
-            $content .= $rightVerticalGridView->render();
-            $content .= '</td></tr>' . "\n";
-            $content .= '</table>' . "\n";
+            $content = $leftVerticalGridView->render();
+            if ($renderRightSide)
+            {
+                $rightVerticalGridView  = new GridView(1, 1);
+                $rightVerticalGridView->setView($rightTopView, 0, 0);
+                $content .= $rightVerticalGridView->render();
+            }
             return $content;
         }
     }

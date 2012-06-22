@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,12 +34,24 @@
             PermissionsCache::forgetAll();
             RightsCache::forgetAll();
             PoliciesCache::forgetAll();
+            Currency::resetCaches();  //php only cache
+            $activitiesObserver = new ActivitiesObserver();
+            $activitiesObserver->init(); //runs init();
+            Yii::app()->gameHelper;
+            Yii::app()->gamificationObserver; //runs init();
+            Yii::app()->gameHelper->resetDeferredPointTypesAndValuesByUserIdToAdd();
         }
 
         public static function tearDownAfterClass()
         {
             ZurmoDatabaseCompatibilityUtil::dropStoredFunctionsAndProcedures();
             parent::tearDownAfterClass();
+        }
+
+        public function setUp()
+        {
+            parent::setUp();
+            Yii::app()->gameHelper->resetDeferredPointTypesAndValuesByUserIdToAdd();
         }
 
         protected static function startOutputBuffer()

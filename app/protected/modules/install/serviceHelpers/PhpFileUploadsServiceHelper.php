@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -36,12 +36,12 @@
             $passed = true;
             if (!InstallUtil::isFileUploadsOn())
             {
-                $this->message = Yii::t('Default', 'PHP File Uploads is Off.  This should be on.');
+                $this->message = Yii::t('Default', 'PHP file_uploads is Off.  This should be on.');
                 $passed        = false;
             }
             else
             {
-                $this->message = Yii::t('Default', 'PHP File Uploads is on which is ok.');
+                $this->message = Yii::t('Default', 'PHP file_uploads is on which is ok.');
             }
             return $passed;
         }

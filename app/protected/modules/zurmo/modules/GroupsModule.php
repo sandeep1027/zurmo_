@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -49,6 +49,25 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'adminTabMenuItems' => array(
+                    array(
+                        'label' => 'Groups',
+                        'url'   => array('/zurmo/group'),
+                        'right' => self::RIGHT_ACCESS_GROUPS,
+                        'items' => array(
+                            array(
+                                'label' => 'Create Group',
+                                'url'   => array('/zurmo/group/create'),
+                                'right' => self::RIGHT_CREATE_GROUPS
+                            ),
+                            array(
+                                'label' => 'Groups',
+                                'url'   => array('/zurmo/group'),
+                                'right' => self::RIGHT_ACCESS_GROUPS
+                            ),
+                        ),
+                    ),
+                ),
                 'configureMenuItems' => array(
                     array(
                         'category'         => ZurmoModule::ADMINISTRATION_CATEGORY_GENERAL,
@@ -58,23 +77,12 @@
                         'right'            => self::RIGHT_ACCESS_GROUPS,
                     ),
                 ),
-                'shortcutsMenuItems' => array(
+                'headerMenuItems' => array(
                     array(
                         'label' => 'Groups',
-                        'url'   => array('/zurmo/group'),
+                        'url' => array('/zurmo/group'),
                         'right' => self::RIGHT_ACCESS_GROUPS,
-                        'items' => array(
-                            array(
-                                'label' => 'Create Group',
-                                'url'   => array('/zurmo/group/create'),
-                                'right' => self::RIGHT_ACCESS_GROUPS,
-                            ),
-                            array(
-                                'label' => 'Groups',
-                                'url'   => array('/zurmo/group'),
-                                'right' => self::RIGHT_ACCESS_GROUPS,
-                            ),
-                        ),
+                        'order' => 3,
                     ),
                 ),
             );

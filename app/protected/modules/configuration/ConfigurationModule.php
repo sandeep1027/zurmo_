@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -34,6 +34,21 @@
         protected static function getSingularModuleLabel()
         {
             return 'Configuration';
+        }
+
+        public static function getDefaultMetadata()
+        {
+            $metadata = array();
+            $metadata['global'] = array(
+                'adminTabMenuItems' => array(
+                    array(
+                        'label' => 'Settings',
+                        'url'   => array('/configuration/default'),
+                        'right' => ZurmoModule::RIGHT_ACCESS_ADMINISTRATION
+                    ),
+                ),
+            );
+            return $metadata;
         }
     }
 ?>
