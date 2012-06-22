@@ -95,5 +95,11 @@
             );
             return $metadata;
         }
+
+        protected function getNewModelTitleLabel()
+        {
+            return Yii::t('Default', 'Create AnimalsModuleSingularLabel',
+                                     LabelUtil::getTranslationParamsForAllModules());
+        }
     }
 ?>
