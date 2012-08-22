@@ -60,54 +60,6 @@
             return $metadata;
         }
 
-        public static function getDefaultMetadata2()
-        {
-            $metadata = array(
-                'global' => array(
-                    'panels' => array(
-                        array(
-                            'title' => 'Basic Search',
-                            'rows' => array(
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'name', 'type' => 'Text'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'type', 'type' => 'DropDown'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                            ),
-                        ),
-                        array(
-                            'title' => 'Advanced Search',
-                            'rows' => array(
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => null, 'type' => 'Null'), // Not Coding Standard
-                                            ),
-                                        ),
-                                    )
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            );
-            return $metadata;
-        }
-
         public static function getModelForMetadataClassName()
         {
             return 'AnimalsSearchForm';

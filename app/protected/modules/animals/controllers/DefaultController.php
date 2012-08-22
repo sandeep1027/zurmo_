@@ -47,15 +47,7 @@
                             'listPageSize', get_class($this->getModule()));
             $animal = new Animal(false);
             $searchForm = new AnimalsSearchForm($animal);
-            /*
-            $dataProvider = $this->makeSearchFilterListDataProvider(
-                $searchForm,
-                'Animal',
-                'AnimalsFilteredList',
-                $pageSize,
-                Yii::app()->user->userModel->id
-            );
-*/
+
             $dataProvider = $this->makeSearchDataProvider(
                 $searchForm,
                 'Animal',
