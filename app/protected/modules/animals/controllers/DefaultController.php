@@ -1,7 +1,7 @@
 <?php
     /*********************************************************************************
      * Zurmo is a customer relationship management program developed by
-     * Zurmo, Inc. Copyright (C) 2011 Zurmo Inc.
+     * Zurmo, Inc. Copyright (C) 2012 Zurmo Inc.
      *
      * Zurmo is free software; you can redistribute it and/or modify it under
      * the terms of the GNU General Public License version 3 as published by the
@@ -33,9 +33,13 @@
             return array_merge(parent::filters(),
                 array(
                     array(
-                        ZurmoBaseController::REQUIRED_ATTRIBUTES_FILTER_PATH . ' + create, edit',
+                        ZurmoBaseController::REQUIRED_ATTRIBUTES_FILTER_PATH . ' + create, createFromRelation, edit',
                         'moduleClassName' => get_class($this->getModule()),
                         'viewClassName'   => $viewClassName,
+                   ),
+                    array(
+                        ZurmoModuleController::ZERO_MODELS_CHECK_FILTER_PATH . ' + list, index',
+                        'controller' => $this,
                    ),
                )
             );
@@ -43,38 +47,46 @@
 
         public function actionList()
         {
-            $pageSize = Yii::app()->pagination->resolveActiveForCurrentUserByType(
-                            'listPageSize', get_class($this->getModule()));
-            $animal = new Animal(false);
-            $searchForm = new AnimalsSearchForm($animal);
-
-            $dataProvider = $this->makeSearchDataProvider(
+            $pageSize                       = Yii::app()->pagination->resolveActiveForCurrentUserByType(
+                                              'listPageSize', get_class($this->getModule()));
+            $animal                        = new Animal(false);
+            $searchForm                     = new AnimalsSearchForm($animal);
+            $listAttributesSelector         = new ListAttributesSelector('AnimalsListView', get_class($this->getModule()));
+            $searchForm->setListAttributesSelector($listAttributesSelector);
+            $dataProvider = $this->resolveSearchDataProvider(
                 $searchForm,
-                'Animal',
                 $pageSize,
                 null,
                 'AnimalsSearchView'
             );
-
-            $actionBarSearchAndListView = $this->makeActionBarSearchAndListView(
-                $searchForm,
-                $pageSize,
-                AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
-                Yii::app()->user->userModel->id,
-                $dataProvider
-            );
-
-            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
-                                         makeStandardViewForCurrentUser($this, $actionBarSearchAndListView));
+            if (isset($_GET['ajax']) && $_GET['ajax'] == 'list-view')
+            {
+                $mixedView = $this->makeListView(
+                    $searchForm,
+                    $dataProvider
+                );
+                $view = new AnimalsPageView($mixedView);
+            }
+            else
+            {
+                $mixedView = $this->makeActionBarSearchAndListView(
+                    $searchForm,
+                    $pageSize,
+                    AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
+                    $dataProvider
+                );
+                $view = new AnimalsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $mixedView));
+            }
             echo $view->render();
         }
 
         public function actionDetails($id)
-        {
+        {                
             $animal = static::getModelAndCatchNotFoundAndDisplayError('Animal', intval($id));
+            $breadCrumbView          = StickySearchUtil::resolveBreadCrumbViewForDetailsControllerAction($this, 'AnimalsSearchView', $animal);
             ControllerSecurityUtil::resolveAccessCanCurrentUserReadModel($animal);
             AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($animal), 'AnimalsModule'), $animal);
-
             $titleBarAndEditView = $this->makeEditAndDetailsView($animal, 'Details');
             $view = new AnimalsPageView(ZurmoDefaultViewUtil::
                                          makeStandardViewForCurrentUser($this, $titleBarAndEditView));
@@ -83,25 +95,21 @@
 
         public function actionCreate()
         {
-            $this->actionCreateByModel(new Animal());
-        }
-
-        protected function actionCreateByModel(Animal $animal, $redirectUrl = null)
-        {
-            $titleBarAndEditView = $this->makeEditAndDetailsView(
-                                            $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit');
+            $editAndDetailsView = $this->makeEditAndDetailsView(
+                                            $this->attemptToSaveModelFromPost(new Animal()), 'Edit');
             $view = new AnimalsPageView(ZurmoDefaultViewUtil::
-                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
+                                         makeStandardViewForCurrentUser($this, $editAndDetailsView));
             echo $view->render();
         }
 
         public function actionEdit($id, $redirectUrl = null)
         {
             $animal = Animal::getById(intval($id));
-            $titleBarAndEditView = $this->makeEditAndDetailsView(
-                                            $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit');
+            ControllerSecurityUtil::resolveAccessCanCurrentUserWriteModel($animal);
             $view = new AnimalsPageView(ZurmoDefaultViewUtil::
-                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
+                                         makeStandardViewForCurrentUser($this,
+                                             $this->makeEditAndDetailsView(
+                                                 $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit')));
             echo $view->render();
         }
 
@@ -127,12 +135,12 @@
             $activeAttributes = $this->resolveActiveAttributesFromMassEditPost();
             $dataProvider = $this->getDataProviderByResolvingSelectAllFromGet(
                 new AnimalsSearchForm($animal),
-                'Animal',
                 $pageSize,
                 Yii::app()->user->userModel->id,
-                'AnimalsFilteredList');
+                null,
+                'AnimalsSearchView');
             $selectedRecordCount = $this->getSelectedRecordCountByResolvingSelectAllFromGet($dataProvider);
-            $account = $this->processMassEdit(
+            $animal = $this->processMassEdit(
                 $pageSize,
                 $activeAttributes,
                 $selectedRecordCount,
@@ -145,7 +153,7 @@
                 $animal,
                 $activeAttributes,
                 $selectedRecordCount,
-                AccountsModule::getModuleLabelByTypeAndLanguage('Plural')
+                AnimalsModule::getModuleLabelByTypeAndLanguage('Plural')
             );
             $view = new AnimalsPageView(ZurmoDefaultViewUtil::
                                          makeStandardViewForCurrentUser($this, $massEditView));
@@ -165,16 +173,91 @@
                             'massEditProgressPageSize');
             $animal = new Animal(false);
             $dataProvider = $this->getDataProviderByResolvingSelectAllFromGet(
-                new AccountsSearchForm($account),
-                'Animal',
+                new AnimalsSearchForm($animal),
                 $pageSize,
                 Yii::app()->user->userModel->id,
-                'AnimalsFilteredList'
+                null,
+                'AnimalsSearchView'
             );
             $this->processMassEditProgressSave(
                 'Animal',
                 $pageSize,
-                AccountsModule::getModuleLabelByTypeAndLanguage('Plural'),
+                AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
+                $dataProvider
+            );
+        }
+
+        /**
+         * Action for displaying a mass delete form and also action when that form is first submitted.
+         * When the form is submitted, in the event that the quantity of models to delete is greater
+         * than the pageSize, then once the pageSize quantity has been reached, the user will be
+         * redirected to the makeMassDeleteProgressView.
+         * In the mass delete progress view, a javascript refresh will take place that will call a refresh
+         * action, usually makeMassDeleteProgressView.
+         * If there is no need for a progress view, then a flash message will be added and the user will
+         * be redirected to the list view for the model.  A flash message will appear providing information
+         * on the delete records.
+         * @see Controller->makeMassDeleteProgressView
+         * @see Controller->processMassDelete
+         * @see
+         */
+        public function actionMassDelete()
+        {
+            $pageSize = Yii::app()->pagination->resolveActiveForCurrentUserByType(
+                            'massDeleteProgressPageSize');
+            $animal = new Animal(false);
+
+            $activeAttributes = $this->resolveActiveAttributesFromMassDeletePost();
+            $dataProvider = $this->getDataProviderByResolvingSelectAllFromGet(
+                new AnimalsSearchForm($animal),
+                $pageSize,
+                Yii::app()->user->userModel->id,
+                null,
+                'AnimalsSearchView');
+            $selectedRecordCount = $this->getSelectedRecordCountByResolvingSelectAllFromGet($dataProvider);
+            $animal = $this->processMassDelete(
+                $pageSize,
+                $activeAttributes,
+                $selectedRecordCount,
+                'AnimalsPageView',
+                $animal,
+                AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
+                $dataProvider
+            );
+            $massDeleteView = $this->makeMassDeleteView(
+                $animal,
+                $activeAttributes,
+                $selectedRecordCount,
+                AnimalsModule::getModuleLabelByTypeAndLanguage('Plural')
+            );
+            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
+                                         makeStandardViewForCurrentUser($this, $massDeleteView));
+            echo $view->render();
+        }
+
+        /**
+         * Action called in the event that the mass delete quantity is larger than the pageSize.
+         * This action is called after the pageSize quantity has been delted and continues to be
+         * called until the mass delete action is complete.  For example, if there are 20 records to delete
+         * and the pageSize is 5, then this action will be called 3 times.  The first 5 are updated when
+         * the actionMassDelete is called upon the initial form submission.
+         */
+        public function actionMassDeleteProgress()
+        {
+            $pageSize = Yii::app()->pagination->resolveActiveForCurrentUserByType(
+                            'massDeleteProgressPageSize');
+            $animal = new Animal(false);
+            $dataProvider = $this->getDataProviderByResolvingSelectAllFromGet(
+                new AnimalsSearchForm($animal),
+                $pageSize,
+                Yii::app()->user->userModel->id,
+                null,
+                'AnimalsSearchView'
+            );
+            $this->processMassDeleteProgress(
+                'Animal',
+                $pageSize,
+                AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
                 $dataProvider
             );
         }
@@ -185,44 +268,26 @@
                                             $_GET['modalTransferInformation']['sourceIdFieldId'],
                                             $_GET['modalTransferInformation']['sourceNameFieldId']
             );
-            echo ModalSearchListControllerUtil::setAjaxModeAndRenderModalSearchList($this, $modalListLinkProvider,
-                                                Yii::t('Default', 'AnimalsModuleSingularLabel Search',
-                                                LabelUtil::getTranslationParamsForAllModules()));
+            echo ModalSearchListControllerUtil::
+                 setAjaxModeAndRenderModalSearchList($this, $modalListLinkProvider);
         }
 
         public function actionDelete($id)
         {
             $animal = Animal::GetById(intval($id));
+            ControllerSecurityUtil::resolveAccessCanCurrentUserDeleteModel($animal);
             $animal->delete();
             $this->redirect(array($this->getId() . '/index'));
         }
 
-        /**
-         * Override to provide an animal specific label for the modal page title.
-         * @see ZurmoModuleController::actionSelectFromRelatedList()
-         */
-        public function actionSelectFromRelatedList($portletId,
-                                                    $uniqueLayoutId,
-                                                    $relationAttributeName,
-                                                    $relationModelId,
-                                                    $relationModuleId,
-                                                    $pageTitle = null,
-                                                    $stateMetadataAdapterClassName = null)
+        protected static function getSearchFormClassName()
         {
-            $pageTitle = Yii::t('Default',
-                                'AnimalsModuleSingularLabel Search',
-                                 LabelUtil::getTranslationParamsForAllModules());
-            parent::actionSelectFromRelatedList($portletId,
-                                                    $uniqueLayoutId,
-                                                    $relationAttributeName,
-                                                    $relationModelId,
-                                                    $relationModuleId,
-                                                    $pageTitle);
+            return 'AnimalsSearchForm';
         }
 
         public function actionExport()
         {
-            $this->export();
+            $this->export('AnimalsSearchView');
         }
     }
 ?>

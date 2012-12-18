@@ -30,14 +30,11 @@
         {
             $metadata = array(
                 'global' => array(
-                    'definedNestedAttributes' => array(),
-                    'derivedAttributeTypes' => array(),
-                    'nonPlaceableAttributeNames' => array(),
                     'panels' => array(
                         array(
                             'locked' => true,
                             'title'  => 'Basic Search',
-                            'rows' => array(
+                            'rows'   => array(
                                 array('cells' =>
                                     array(
                                         array(

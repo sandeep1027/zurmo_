@@ -27,15 +27,26 @@
     /**
      * Class to make default data that needs to be created upon an installation.
      */
-    class AnimalsDefaultDataMaker extends DefaultDataMaker
-    {
-        public function make()
-        {
-            $values = array(
-                'Invertebrate',
-                'Vertebrate',
-            );
-            static::makeCustomFieldDataByValuesAndDefault('AnimalType', $values);
-        }
+class AnimalsDefaultDataMaker extends DefaultDataMaker {
+
+    public function make() {
+        $values = array(
+            'Type 1',
+            'Type 2',
+        );
+        static::makeCustomFieldDataByValuesAndDefault('AnimalType', $values);
+
+        $values = array(
+            'Value 1',
+            'Value 2',
+        );
+        static::makeCustomFieldDataByValuesAndDefault('Cust_picklist', $values);
+
+        $values = array(
+            'Value 3',
+            'Value 4',
+        );
+        static::makeCustomFieldDataByValuesAndDefault('Cust_radiopicklist', $values);
     }
+}
 ?>
