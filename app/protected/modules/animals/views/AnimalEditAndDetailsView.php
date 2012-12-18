@@ -48,49 +48,146 @@
                     ),
                     'panelsDisplayType' => FormLayout::PANELS_DISPLAY_TYPE_ALL,
                     'panels' => array(
-                        array(
-                            'rows' => array(
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'name', 'type' => 'Text'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'elements' => array(
-                                                array('attributeName' => 'type', 'type' => 'DropDown'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'detailViewOnly' => true,
-                                            'elements' => array(
-                                                array('attributeName' => 'null', 'type' => 'DateTimeCreatedUser'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                array('cells' =>
-                                    array(
-                                        array(
-                                            'detailViewOnly' => true,
-                                            'elements' => array(
-                                                array('attributeName' => 'null', 'type' => 'DateTimeModifiedUser'),
-                                            ),
-                                        ),
-                                    )
-                                ),
-                            ),
+    array(
+        'rows' => array(
+            array('cells' =>
+                array(
+                    array(
+                        'elements' => array(
+                            array('attributeName' => 'name', 'type' => 'Text'),
                         ),
                     ),
+                    array(
+                        'elements' => array(
+                            array('attributeName' => 'type', 'type' => 'DropDown'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'elements' => array(
+                            array('attributeName' => 'description', 'type' => 'TextArea'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_checkbox', 'type' => 'CheckBox'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_datetime', 'type' => 'DateTime'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_integer', 'type' => 'Integer'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_text', 'type' => 'Text'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_url', 'type' => 'Url'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_currency', 'type' => 'CurrencyValue'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_radiopicklist', 'type' => 'RadioDropDown', 'addBlank' => '1'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_picklist', 'type' => 'DropDown', 'addBlank' => '1'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_decimal', 'type' => 'Decimal'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_phone', 'type' => 'Phone'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_textarea', 'type' => 'TextArea'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'cust_date', 'type' => 'Date'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => true,
+                        'elements' => array(
+                            array('attributeName' => 'null', 'type' => 'DateTimeCreatedUser'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => true,
+                        'elements' => array(
+                            array('attributeName' => 'null', 'type' => 'DateTimeModifiedUser'),
+                        ),
+                    ),
+                )
+            ),
+        ),
+    ),
+),
                 ),
             );
             return $metadata;
