@@ -26,5 +26,14 @@
 
     class AnimalsSearchForm extends OwnedSearchForm
     {
+        protected static function getRedBeanModelClassName()
+        {
+            return 'Animal';
+        }
+
+        public function __construct(Animal $model)
+        {
+            parent::__construct($model);
+        }
     }
 ?>

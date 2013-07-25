@@ -42,27 +42,26 @@
             return array('Animal');
         }
 
+        public static function getTranslatedRightsLabels()
+        {
+            $params                              = LabelUtil::getTranslationParamsForAllModules();
+            $labels                              = array();
+            $labels[self::RIGHT_CREATE_ACCOUNTS] = Zurmo::t('AnimalsModule', 'Create AnimalsModulePluralLabel',     $params);
+            $labels[self::RIGHT_DELETE_ACCOUNTS] = Zurmo::t('AnimalsModule', 'Delete AnimalsModulePluralLabel',     $params);
+            $labels[self::RIGHT_ACCESS_ACCOUNTS] = Zurmo::t('AnimalsModule', 'Access AnimalsModulePluralLabel Tab', $params);
+            return $labels;
+        }
+
         public static function getDefaultMetadata()
         {
             $metadata = array();
             $metadata['global'] = array(
                 'tabMenuItems' => array(
                     array(
-                        'label' => 'AnimalsModulePluralLabel',
-                        'url'   => array('/animals/default'),
-                        'right' => self::RIGHT_ACCESS_ANIMALS,
-                        'items' => array(
-                            array(
-                                'label' => 'Create AnimalsModuleSingularLabel',
-                                'url'   => array('/animals/default/create'),
-                                'right' => self::RIGHT_CREATE_ANIMALS
-                            ),
-                            array(
-                                'label' => 'AnimalsModulePluralLabel',
-                                'url'   => array('/animals/default'),
-                                'right' => self::RIGHT_ACCESS_ANIMALS
-                            ),
-                        ),
+                        'label'  => "eval:Zurmo::t('AnimalsModule', 'AnimalsModulePluralLabel', \$translationParams)",
+                        'url'    => array('/animals/default'),
+                        'right'  => self::RIGHT_ACCESS_ANIMALS,
+                        'mobile' => true,
                     ),
                 ),
                 'designerMenuItems' => array(
@@ -88,11 +87,6 @@
             return 'Animal';
         }
 
-        protected static function getSingularModuleLabel()
-        {
-            return 'Animal';
-        }
-
         public static function getAccessRight()
         {
             return self::RIGHT_ACCESS_ANIMALS;
@@ -111,6 +105,16 @@
         public static function getGlobalSearchFormClassName()
         {
             return 'AnimalsSearchForm';
+        }
+
+        protected static function getSingularModuleLabel($language)
+        {
+            return Zurmo::t('AnimalsModule', 'Animal', array(), null, $language);
+        }
+
+        protected static function getPluralModuleLabel($language)
+        {
+            return Zurmo::t('AnimalsModule', 'Animal', array(), null, $language);
         }
     }
 ?>
