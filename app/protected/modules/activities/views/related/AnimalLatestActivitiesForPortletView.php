@@ -35,73 +35,44 @@
      ********************************************************************************/
 
     /**
-     * Extend this class to make different types of activity models.
-     *
+     * Wrapper view for displaying an animal's latest activities feed.
      */
-    abstract class Activity extends OwnedSecurableItem
+    class AnimalLatestActivitiesForPortletView extends LatestActivitiesForPortletView
     {
-        public static function getByName($name)
+        public static function getDefaultMetadata()
         {
-            return self::getByNameOrEquivalent('name', $name);
+            $metadata = parent::getDefaultMetadata();
+            return array_merge($metadata, array(
+                'global' => array(
+                    'toolbar' => array(
+                        'elements' => array(
+                            array('type'                    => 'CreateConversationFromRelatedListLink',
+                                  'modelClassName'          => 'Conversation',
+                                  'routeParameters'         =>
+                                    array('relationAttributeName'    => 'notUsed',
+                                            'relationModelClassName' => 'Animal',
+                                            'relationModelId'        => 'eval:$this->params["relationModel"]->id',
+                                            'relationModuleId'       => 'animals',
+                                            'redirectUrl'            => 'eval:Yii::app()->request->getRequestUri()')
+                        ),
+                    ),
+                ),
+            )));
         }
 
-        protected static function translatedAttributeLabels($language)
+        public function getLatestActivitiesViewClassName()
         {
-            return array_merge(parent::translatedAttributeLabels($language),
-                array(
-                    'latestDateTime' => Zurmo::t('ActivitiesModule', 'Latest Date Time',  array(), null, $language),
-                    'activityItems'  => Zurmo::t('ActivitiesModule', 'Activity Items',    array(), null, $language),
-                )
-            );
+            return 'LatestActivitiesForAnimalListView';
         }
 
-        public static function canSaveMetadata()
+        public static function hasRollupSwitch()
         {
             return true;
         }
 
-        public function onCreated()
+        public static function getAllowedOnPortletViewClassNames()
         {
-            parent::onCreated();
-            $this->unrestrictedSet('latestDateTime', DateTimeUtil::convertTimestampToDbFormatDateTime(time()));
-        }
-
-        public static function getDefaultMetadata()
-        {
-            $metadata = parent::getDefaultMetadata();
-            $metadata[__CLASS__] = array(
-                'members' => array(
-                    'latestDateTime',
-                ),
-                'relations' => array(
-                    'activityItems' => array(RedBeanModel::MANY_MANY, 'Item'),
-                ),
-                'rules' => array(
-                    array('latestDateTime', 'required'),
-                    array('latestDateTime', 'readOnly'),
-                    array('latestDateTime', 'type', 'type' => 'datetime'),
-                ),
-                'elements' => array(
-                    'activityItems' => 'ActivityItem',
-                    'latestDateTime' => 'DateTime'
-                ),
-                'activityItemsModelClassNames' => array(
-                    'Account',
-                    'Contact',
-                    'Opportunity',
-                ),
-            );
-            return $metadata;
-        }
-
-        public static function getModuleClassName()
-        {
-            return 'ActivitiesModule';
-        }
-
-        public static function isTypeDeletable()
-        {
-            return false;
+            return array('AnimalDetailsAndRelationsView');
         }
     }
 ?>

@@ -77,16 +77,20 @@
         }
 
         public function actionDetails($id)
-        {                
+        {
             $animal = static::getModelAndCatchNotFoundAndDisplayError('Animal', intval($id));
-            $breadCrumbView          = StickySearchUtil::resolveBreadCrumbViewForDetailsControllerAction($this, 'AnimalsSearchView', $animal);
             ControllerSecurityUtil::resolveAccessCanCurrentUserReadModel($animal);
             AuditEvent::logAuditEvent('ZurmoModule', ZurmoModule::AUDIT_EVENT_ITEM_VIEWED, array(strval($animal), 'AnimalsModule'), $animal);
-            $titleBarAndEditView = $this->makeEditAndDetailsView($animal, 'Details');
+            $breadCrumbView          = StickySearchUtil::resolveBreadCrumbViewForDetailsControllerAction($this, 'AnimalsSearchView', $animal);
+            $detailsAndRelationsView = $this->makeDetailsAndRelationsView($animal, 'AnimalsModule',
+                'AnimalDetailsAndRelationsView',
+                Yii::app()->request->getRequestUri(),
+                $breadCrumbView);
             $view = new AnimalsPageView(ZurmoDefaultViewUtil::
-                                         makeStandardViewForCurrentUser($this, $titleBarAndEditView));
+                makeStandardViewForCurrentUser($this, $detailsAndRelationsView));
             echo $view->render();
         }
+
 
         public function actionCreate()
         {
