@@ -48,8 +48,8 @@
         public function actionList()
         {
             $pageSize                       = Yii::app()->pagination->resolveActiveForCurrentUserByType(
-                                              'listPageSize', get_class($this->getModule()));
-            $animal                        = new Animal(false);
+                'listPageSize', get_class($this->getModule()));
+            $animal                         = new Animal(false);
             $searchForm                     = new AnimalsSearchForm($animal);
             $listAttributesSelector         = new ListAttributesSelector('AnimalsListView', get_class($this->getModule()));
             $searchForm->setListAttributesSelector($listAttributesSelector);
@@ -69,14 +69,9 @@
             }
             else
             {
-                $mixedView = $this->makeActionBarSearchAndListView(
-                    $searchForm,
-                    $pageSize,
-                    AnimalsModule::getModuleLabelByTypeAndLanguage('Plural'),
-                    $dataProvider
-                );
+                $mixedView = $this->makeActionBarSearchAndListView($searchForm, $dataProvider);
                 $view = new AnimalsPageView(ZurmoDefaultViewUtil::
-                                         makeStandardViewForCurrentUser($this, $mixedView));
+                    makeStandardViewForCurrentUser($this, $mixedView));
             }
             echo $view->render();
         }

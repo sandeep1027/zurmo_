@@ -40,134 +40,120 @@
             return 'AnimalsModule';
         }
 
-        /**
-         * Returns the display name for the model class.
-         * @return dynamic label name based on module.
-         */
-        protected static function getLabel()
-        {
-            return 'AnimalsModuleSingularLabel';
-        }
-
-        /**
-         * Returns the display name for plural of the model class.
-         * @return dynamic label name based on module.
-         */
-        protected static function getPluralLabel()
-        {
-            return 'AnimalsModulePluralLabel';
-        }
-
         public static function canSaveMetadata()
         {
             return true;
         }
 
         public static function getDefaultMetadata()
-{
-    $metadata = parent::getDefaultMetadata();
-    $metadata[__CLASS__] = array(
-        'members' => array(
-            'name',
-            'description',
-            'cust_checkbox',
-            'cust_date',
-            'cust_datetime',
-            'cust_decimal',
-            'cust_integer',
-            'cust_phone',
-            'cust_text',
-            'cust_textarea',
-            'cust_url',
-        ),
-        'relations' => array(
-            'type'          => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
-            'cust_currency' => array(RedBeanModel::HAS_ONE,   'CurrencyValue', RedBeanModel::OWNED),
-            'cust_picklist' => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
-            'cust_radiopicklist' => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
-        ),
-        'rules' => array(
-            array('name',           'required'),
-            array('name',           'type',           'type'  => 'string'),
-            array('name',           'length',         'max'   => 100),
-            array('description',    'type',           'type'  => 'string'),
-            array('cust_checkbox',  'type',           'type'  => 'boolean'),
-            array('cust_checkbox',  'default',        'value' => 1),
-            array('cust_date',      'type',           'type'  => 'date'),
-            array('cust_date',      'dateTimeDefault','value' => 2),
-            array('cust_datetime',  'type',           'type'  => 'datetime'),
-            array('cust_datetime',  'dateTimeDefault','value' => 2),
-            array('cust_decimal',   'default',        'value' => 1),
-            array('cust_decimal',   'length',         'max'   => 18),
-            array('cust_decimal',   'numerical',      'precision' => 2),
-            array('cust_decimal',   'type',           'type'   => 'float'),
-            array('cust_integer',   'length',         'max'    => 11),
-            array('cust_integer',   'numerical',      'max'    => 9999, 'min' => 0 ),
-            array('cust_integer',   'type',           'type'   => 'integer'),
-            array('cust_picklist',  'default',        'value'  => 'Value one'),
-            array('cust_phone',     'length',         'max'    => 20),
-            array('cust_phone',     'type',           'type'   => 'string'),
-            array('cust_text',      'length',         'max'    => 255),
-            array('cust_text',      'type',           'type'   => 'string'),
-            array('cust_textarea',  'type',           'type'   => 'string'),
-            array('cust_url',       'length',         'max'    => 255),
-            array('cust_url',       'url'),
-        ),
-        'elements' => array(
-            'description'     => 'TextArea',
-            'cust_checkbox'   => 'CheckBox',
-            'cust_currency'   => 'CurrencyValue',
-            'cust_date'       => 'Date',
-            'cust_datetime'   => 'DateTime',
-            'cust_decimal'    => 'Decimal',
-            'cust_integer'    => 'Integer',
-            'cust_picklist'   => 'DropDown',
-            'cust_phone'      => 'Phone',
-            'cust_radiopicklist'     => 'RadioDropDown',
-            'cust_text'       => 'Text',
-            'cust_textarea'   => 'TextArea',
-            'cust_url'        => 'Url',
-        ),
-        'customFields' => array(
-            'type'               => 'AnimalType',
-            'cust_picklist'      => 'Cust_picklist',
-            'cust_radiopicklist' => 'Cust_radiopicklist',
-        ),
-        'defaultSortAttribute' => 'name',
-        'noAudit' => array(
-            'description',
-            'cust_date',
-            'cust_datetime',
-            'cust_decimal',
-            'cust_integer',
-            'cust_picklist',
-            'cust_phone',
-            'cust_radiopicklist',
-            'cust_text',
-            'cust_textarea',
-            'cust_url'
-        ),
-        'labels' => array(
-            'cust_checkbox'  => array('en' => 'Check Box'),
-            'cust_currency'  => array('en' => 'Currency'),
-            'cust_date'  => array('en' => 'Date'),
-            'cust_datetime'  => array('en' => 'Date Time'),
-            'cust_decimal'  => array('en' => 'Decimal'),
-            'cust_integer'  => array('en' => 'Integer'),
-            'cust_picklist'  => array('en' => 'Pick List'),
-            'cust_phone'  => array('en' => 'Phone'),
-            'cust_radiopicklist'  => array('en' => 'Radio Pick List'),
-            'cust_text'  => array('en' => 'Text'),
-            'cust_textarea'  => array('en' => 'Text Area'),
-            'cust_url'  => array('en' => 'URL'),
-        ),
-    );
-    return $metadata;
-}
+        {
+            $metadata = parent::getDefaultMetadata();
+            $metadata[__CLASS__] = array(
+                'members' => array(
+                    'name',
+                    'description',
+                    'checkBox',
+                    'date',
+                    'dateTime',
+                    'decimal',
+                    'integer',
+                    'phone',
+                    'text',
+                    'textArea',
+                    'url',
+                ),
+                'relations' => array(
+                    'type'          => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                    'currency'      => array(RedBeanModel::HAS_ONE,   'CurrencyValue', RedBeanModel::OWNED),
+                    'pickList'      => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                    'radioPickList' => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                ),
+                'derivedRelationsViaCastedUpModel' => array(
+                    'meetings' => array(RedBeanModel::MANY_MANY, 'Meeting', 'activityItems'),
+                    'notes'    => array(RedBeanModel::MANY_MANY, 'Note',    'activityItems'),
+                    'tasks'    => array(RedBeanModel::MANY_MANY, 'Task',    'activityItems'),
+                ),
+                'rules' => array(
+                    array('name',           'required'),
+                    array('name',           'type',           'type'  => 'string'),
+                    array('name',           'length',         'max'   => 100),
+                    array('description',    'type',           'type'  => 'string'),
+                    array('checkBox',  'type',           'type'  => 'boolean'),
+                    array('checkBox',  'default',        'value' => 1),
+                    array('date',      'type',           'type'  => 'date'),
+                    array('date',      'dateTimeDefault','value' => 2),
+                    array('dateTime',  'type',           'type'  => 'datetime'),
+                    array('dateTime',  'dateTimeDefault','value' => 2),
+                    array('decimal',   'default',        'value' => 1),
+                    array('decimal',   'length',         'max'   => 18),
+                    array('decimal',   'numerical',      'precision' => 2),
+                    array('decimal',   'type',           'type'   => 'float'),
+                    array('integer',   'length',         'max'    => 11),
+                    array('integer',   'numerical',      'max'    => 9999, 'min' => 0 ),
+                    array('integer',   'type',           'type'   => 'integer'),
+                    array('pickList',  'default',        'value'  => 'Value one'),
+                    array('phone',     'length',         'max'    => 20),
+                    array('phone',     'type',           'type'   => 'string'),
+                    array('text',      'length',         'max'    => 255),
+                    array('text',      'type',           'type'   => 'string'),
+                    array('textArea',  'type',           'type'   => 'string'),
+                    array('url',       'length',         'max'    => 255),
+                    array('url',       'url'),
+                ),
+                'elements' => array(
+                    'description'   => 'TextArea',
+                    'checkBox'      => 'CheckBox',
+                    'currency'      => 'CurrencyValue',
+                    'date'          => 'Date',
+                    'dateTime'      => 'DateTime',
+                    'decimal'       => 'Decimal',
+                    'integer'       => 'Integer',
+                    'pickList'      => 'DropDown',
+                    'phone'         => 'Phone',
+                    'radioPickList' => 'RadioDropDown',
+                    'text'          => 'Text',
+                    'textArea'      => 'TextArea',
+                    'url'           => 'Url',
+                ),
+                'customFields' => array(
+                    'type'          => 'AnimalType',
+                    'pickList'      => 'AnimalPickList',
+                    'radioPickList' => 'AnimalRadioPickList',
+                ),
+                'defaultSortAttribute' => 'name',
+                'noAudit' => array(
+                ),
+            );
+            return $metadata;
+        }
 
         public static function isTypeDeletable()
         {
             return true;
+        }
+
+        protected static function translatedAttributeLabels($language)
+        {
+            $params = LabelUtil::getTranslationParamsForAllModules();
+            return array_merge(parent::translatedAttributeLabels($language),
+                array(
+                    'name'              => Zurmo::t('AnimalsModule', 'Name',  $params, null, $language),
+                    'description'       => Zurmo::t('AnimalsModule', 'Description',  $params, null, $language),
+                    'checkBox'          => Zurmo::t('AnimalsModule', 'Check Box',  $params, null, $language),
+                    'date'              => Zurmo::t('AnimalsModule', 'Date',  $params, null, $language),
+                    'dateTime'          => Zurmo::t('AnimalsModule', 'Date Time',  $params, null, $language),
+                    'decimal'           => Zurmo::t('AnimalsModule', 'Decimal',  $params, null, $language),
+                    'integer'           => Zurmo::t('AnimalsModule', 'Integer',  $params, null, $language),
+                    'phone'             => Zurmo::t('AnimalsModule', 'Phone',  $params, null, $language),
+                    'text'              => Zurmo::t('AnimalsModule', 'Text',  $params, null, $language),
+                    'textArea'          => Zurmo::t('AnimalsModule', 'Text Area',  $params, null, $language),
+                    'url'               => Zurmo::t('AnimalsModule', 'Url',  $params, null, $language),
+                    'type'              => Zurmo::t('AnimalsModule', 'Type',  $params, null, $language),
+                    'currency'          => Zurmo::t('AnimalsModule', 'Name',  $params, null, $language),
+                    'pickList'          => Zurmo::t('AnimalsModule', 'Pick List',  $params, null, $language),
+                    'radioPickList'     => Zurmo::t('AnimalsModule', 'Radio Pick List',  $params, null, $language),
+                )
+            );
         }
     }
 ?>

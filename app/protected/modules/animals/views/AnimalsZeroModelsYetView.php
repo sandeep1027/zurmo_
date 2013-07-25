@@ -37,8 +37,8 @@
 
         protected function getMessageContent()
         {
-            return Yii::t('Default', '<h2>""Animals, Tigers, Bears, Oh my!" ' .
-                                     '."</h2><div class="large-icon"></div><p> ' .
+            return Yii::t('Default', '<h2>"Animals, Tigers, Bears, Oh my!" ' .
+                                     '</h2><div class="large-icon"></div><p> ' .
                                      '"Be the first to create an animal"</p>');
         }
     }

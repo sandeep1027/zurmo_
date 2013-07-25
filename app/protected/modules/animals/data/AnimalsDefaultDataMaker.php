@@ -40,13 +40,13 @@ class AnimalsDefaultDataMaker extends DefaultDataMaker {
             'Value 1',
             'Value 2',
         );
-        static::makeCustomFieldDataByValuesAndDefault('Cust_picklist', $values);
+        static::makeCustomFieldDataByValuesAndDefault('AnimalPickList', $values);
 
         $values = array(
             'Value 3',
             'Value 4',
         );
-        static::makeCustomFieldDataByValuesAndDefault('Cust_radiopicklist', $values);
+        static::makeCustomFieldDataByValuesAndDefault('AnimalRadioPickList', $values);
     }
 }
 ?>

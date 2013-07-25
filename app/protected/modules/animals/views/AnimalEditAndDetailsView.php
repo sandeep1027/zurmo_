@@ -59,7 +59,7 @@
                     ),
                     array(
                         'elements' => array(
-                            array('attributeName' => 'type', 'type' => 'DropDown'),
+                            array('attributeName' => 'type', 'type' => 'DropDown', 'addBlank' => true),
                         ),
                     ),
                 )
@@ -78,29 +78,13 @@
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_checkbox', 'type' => 'CheckBox'),
+                            array('attributeName' => 'checkBox', 'type' => 'CheckBox'),
                         ),
                     ),
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_datetime', 'type' => 'DateTime'),
-                        ),
-                    ),
-                )
-            ),
-            array('cells' =>
-                array(
-                    array(
-                        'detailViewOnly' => false,
-                        'elements' => array(
-                            array('attributeName' => 'cust_integer', 'type' => 'Integer'),
-                        ),
-                    ),
-                    array(
-                        'detailViewOnly' => false,
-                        'elements' => array(
-                            array('attributeName' => 'cust_text', 'type' => 'Text'),
+                            array('attributeName' => 'dateTime', 'type' => 'DateTime'),
                         ),
                     ),
                 )
@@ -110,29 +94,13 @@
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_url', 'type' => 'Url'),
+                            array('attributeName' => 'integer', 'type' => 'Integer'),
                         ),
                     ),
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_currency', 'type' => 'CurrencyValue'),
-                        ),
-                    ),
-                )
-            ),
-            array('cells' =>
-                array(
-                    array(
-                        'detailViewOnly' => false,
-                        'elements' => array(
-                            array('attributeName' => 'cust_radiopicklist', 'type' => 'RadioDropDown', 'addBlank' => '1'),
-                        ),
-                    ),
-                    array(
-                        'detailViewOnly' => false,
-                        'elements' => array(
-                            array('attributeName' => 'cust_picklist', 'type' => 'DropDown', 'addBlank' => '1'),
+                            array('attributeName' => 'text', 'type' => 'Text'),
                         ),
                     ),
                 )
@@ -142,13 +110,13 @@
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_decimal', 'type' => 'Decimal'),
+                            array('attributeName' => 'url', 'type' => 'Url'),
                         ),
                     ),
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_phone', 'type' => 'Phone'),
+                            array('attributeName' => 'currency', 'type' => 'CurrencyValue'),
                         ),
                     ),
                 )
@@ -158,13 +126,45 @@
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_textarea', 'type' => 'TextArea'),
+                            array('attributeName' => 'radioPickList', 'type' => 'RadioDropDown', 'addBlank' => true),
                         ),
                     ),
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'cust_date', 'type' => 'Date'),
+                            array('attributeName' => 'pickList', 'type' => 'DropDown', 'addBlank' => true),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'decimal', 'type' => 'Decimal'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'phone', 'type' => 'Phone'),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'textArea', 'type' => 'TextArea'),
+                        ),
+                    ),
+                    array(
+                        'detailViewOnly' => false,
+                        'elements' => array(
+                            array('attributeName' => 'date', 'type' => 'Date'),
                         ),
                     ),
                 )
