@@ -35,73 +35,24 @@
      ********************************************************************************/
 
     /**
-     * Extend this class to make different types of activity models.
-     *
+     * For a given animal, display the animals in a calendar.
      */
-    abstract class Activity extends OwnedSecurableItem
+    class UpcomingMeetingsForAnimalCalendarView extends UpcomingMeetingsRelatedCalendarView
     {
-        public static function getByName($name)
+        protected function getRelationAttributeName()
         {
-            return self::getByNameOrEquivalent('name', $name);
+            return 'Animal';
         }
 
-        protected static function translatedAttributeLabels($language)
+        public static function getDisplayDescription()
         {
-            return array_merge(parent::translatedAttributeLabels($language),
-                array(
-                    'latestDateTime' => Zurmo::t('ActivitiesModule', 'Latest Date Time',  array(), null, $language),
-                    'activityItems'  => Zurmo::t('ActivitiesModule', 'Activity Items',    array(), null, $language),
-                )
-            );
+            return Zurmo::t('MeetingsModule', 'MeetingsModulePluralLabel For AnimalsModuleSingularLabel',
+                        LabelUtil::getTranslationParamsForAllModules());
         }
 
-        public static function canSaveMetadata()
+        public static function getAllowedOnPortletViewClassNames()
         {
-            return true;
-        }
-
-        public function onCreated()
-        {
-            parent::onCreated();
-            $this->unrestrictedSet('latestDateTime', DateTimeUtil::convertTimestampToDbFormatDateTime(time()));
-        }
-
-        public static function getDefaultMetadata()
-        {
-            $metadata = parent::getDefaultMetadata();
-            $metadata[__CLASS__] = array(
-                'members' => array(
-                    'latestDateTime',
-                ),
-                'relations' => array(
-                    'activityItems' => array(RedBeanModel::MANY_MANY, 'Item'),
-                ),
-                'rules' => array(
-                    array('latestDateTime', 'required'),
-                    array('latestDateTime', 'readOnly'),
-                    array('latestDateTime', 'type', 'type' => 'datetime'),
-                ),
-                'elements' => array(
-                    'activityItems' => 'ActivityItem',
-                    'latestDateTime' => 'DateTime'
-                ),
-                'activityItemsModelClassNames' => array(
-                    'Account',
-                    'Contact',
-                    'Opportunity',
-                ),
-            );
-            return $metadata;
-        }
-
-        public static function getModuleClassName()
-        {
-            return 'ActivitiesModule';
-        }
-
-        public static function isTypeDeletable()
-        {
-            return false;
+            return array('AnimalDetailsAndRelationsView');
         }
     }
 ?>

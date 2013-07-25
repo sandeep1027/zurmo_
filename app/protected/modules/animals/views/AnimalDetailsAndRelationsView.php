@@ -34,74 +34,56 @@
      * "Copyright Zurmo Inc. 2013. All rights reserved".
      ********************************************************************************/
 
-    /**
-     * Extend this class to make different types of activity models.
-     *
-     */
-    abstract class Activity extends OwnedSecurableItem
+    class AnimalDetailsAndRelationsView extends ConfigurableDetailsAndRelationsView
     {
-        public static function getByName($name)
-        {
-            return self::getByNameOrEquivalent('name', $name);
-        }
-
-        protected static function translatedAttributeLabels($language)
-        {
-            return array_merge(parent::translatedAttributeLabels($language),
-                array(
-                    'latestDateTime' => Zurmo::t('ActivitiesModule', 'Latest Date Time',  array(), null, $language),
-                    'activityItems'  => Zurmo::t('ActivitiesModule', 'Activity Items',    array(), null, $language),
-                )
-            );
-        }
-
-        public static function canSaveMetadata()
+        public function isUniqueToAPage()
         {
             return true;
         }
 
-        public function onCreated()
-        {
-            parent::onCreated();
-            $this->unrestrictedSet('latestDateTime', DateTimeUtil::convertTimestampToDbFormatDateTime(time()));
-        }
-
         public static function getDefaultMetadata()
         {
-            $metadata = parent::getDefaultMetadata();
-            $metadata[__CLASS__] = array(
-                'members' => array(
-                    'latestDateTime',
-                ),
-                'relations' => array(
-                    'activityItems' => array(RedBeanModel::MANY_MANY, 'Item'),
-                ),
-                'rules' => array(
-                    array('latestDateTime', 'required'),
-                    array('latestDateTime', 'readOnly'),
-                    array('latestDateTime', 'type', 'type' => 'datetime'),
-                ),
-                'elements' => array(
-                    'activityItems' => 'ActivityItem',
-                    'latestDateTime' => 'DateTime'
-                ),
-                'activityItemsModelClassNames' => array(
-                    'Account',
-                    'Contact',
-                    'Opportunity',
-                ),
+            $metadata = array(
+                'global' => array(
+                    'toolbar' => array(
+                        'elements' => array(
+                            array(  'type'           => 'AddPortletAjaxLinkOnDetailView',
+                                    'uniqueLayoutId' => 'eval:$this->uniqueLayoutId',
+                                    'ajaxOptions'    => 'eval:static::resolveAjaxOptionsForAddPortlet()',
+                                    'htmlOptions'    => array('id' => 'AddPortletLink',
+                                    'class'          => 'icon-add'
+                                )
+                            ),
+                        ),
+                    ),
+                    'columns' => array(
+                        array(
+                            'rows' => array(
+                               array(
+                                    'type' => 'AnimalDetailsPortlet',
+                                ),
+                               array(
+                                    'type' => 'NoteInlineEditForPortlet',
+                                ),
+                                array(
+                                    'type' => 'AccountLatestActivitiesForPortlet',
+                                ),
+                            )
+                        ),
+                        array(
+                            'rows' => array(
+                                array(
+                                    'type' => 'UpcomingMeetingsForAnimalCalendar',
+                                ),
+                                array(
+                                    'type' => 'OpenTasksForAnimalRelatedList',
+                                ),
+                            )
+                        )
+                    )
+                )
             );
             return $metadata;
-        }
-
-        public static function getModuleClassName()
-        {
-            return 'ActivitiesModule';
-        }
-
-        public static function isTypeDeletable()
-        {
-            return false;
         }
     }
 ?>

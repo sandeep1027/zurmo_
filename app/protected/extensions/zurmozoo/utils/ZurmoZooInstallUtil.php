@@ -43,7 +43,6 @@
                 ZurmoModule::setMetadata($metadata);
                 GeneralCache::forgetAll();
             }
-
             $metadata = Activity::getMetadata();
             if(!in_array('Animal', $metadata['Activity']['activityItemsModelClassNames']))
             {
@@ -51,7 +50,6 @@
                 Activity::setMetadata($metadata);
                 GeneralCache::forgetAll();
             }
-
             Yii::import('application.extensions.zurmoinc.framework.data.*');
             Yii::import('application.modules.animals.data.*');
             $defaultDataMaker = new AnimalsDefaultDataMaker();
