@@ -52,6 +52,15 @@
                                     array(
                                         array(
                                             'elements' => array(
+                                                array('attributeName' => 'binomialName', 'type' => 'DropDownAsMultiSelect', 'addBlank' => true),
+                                            ),
+                                        ),
+                                    )
+                                ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'elements' => array(
                                                 array('attributeName' => null, 'type' => 'Null'), // Not Coding Standard
                                             ),
                                         ),

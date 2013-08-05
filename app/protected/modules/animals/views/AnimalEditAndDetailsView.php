@@ -68,6 +68,15 @@
                 array(
                     array(
                         'elements' => array(
+                            array('attributeName' => 'binomialName', 'type' => 'DropDown', 'addBlank' => true),
+                        ),
+                    ),
+                )
+            ),
+            array('cells' =>
+                array(
+                    array(
+                        'elements' => array(
                             array('attributeName' => 'description', 'type' => 'TextArea'),
                         ),
                     ),
@@ -94,7 +103,7 @@
                     array(
                         'detailViewOnly' => false,
                         'elements' => array(
-                            array('attributeName' => 'integer', 'type' => 'Integer'),
+                            array('attributeName' => 'maxGestationDays', 'type' => 'Integer'),
                         ),
                     ),
                     array(
