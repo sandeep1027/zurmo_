@@ -24,8 +24,14 @@
      * Buffalo Grove, IL 60089, USA. or at email address contact@zurmo.com.
      *********************************************************************************/
 
-    class Animal extends Item
+    class Animal extends OwnedSecurableItem
     {
+        
+        public static function getByName($name)
+        {
+            return self::getByNameOrEquivalent('name', $name);
+        }
+        
         public function __toString()
         {
             if (trim($this->name) == '')
@@ -56,7 +62,7 @@
                     'date',
                     'dateTime',
                     'decimal',
-                    'integer',
+                    'maxGestationDays',
                     'phone',
                     'text',
                     'textArea',
@@ -67,6 +73,10 @@
                     'currency'      => array(RedBeanModel::HAS_ONE,   'CurrencyValue', RedBeanModel::OWNED),
                     'pickList'      => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
                     'radioPickList' => array(RedBeanModel::HAS_ONE,   'OwnedCustomField', RedBeanModel::OWNED),
+                    
+                    //Genus + Species
+                    'binomialName'         => array(RedBeanModel::HAS_ONE, 'OwnedCustomField', RedBeanModel::OWNED,
+                                                RedBeanModel::LINK_TYPE_SPECIFIC, 'binomialName'),
                 ),
                 'derivedRelationsViaCastedUpModel' => array(
                     'meetings' => array(RedBeanModel::MANY_MANY, 'Meeting', 'activityItems'),
@@ -83,14 +93,14 @@
                     array('date',      'type',           'type'  => 'date'),
                     array('date',      'dateTimeDefault','value' => 2),
                     array('dateTime',  'type',           'type'  => 'datetime'),
-                    array('dateTime',  'dateTimeDefault','value' => 2),
+                    array('dateTime',  'dateTimeDefault','value' => DateTimeCalculatorUtil::NOW),
                     array('decimal',   'default',        'value' => 1),
                     array('decimal',   'length',         'max'   => 18),
                     array('decimal',   'numerical',      'precision' => 2),
                     array('decimal',   'type',           'type'   => 'float'),
-                    array('integer',   'length',         'max'    => 11),
-                    array('integer',   'numerical',      'max'    => 9999, 'min' => 0 ),
-                    array('integer',   'type',           'type'   => 'integer'),
+                    array('maxGestationDays',   'length',         'max'    => 11),
+                    array('maxGestationDays',   'numerical',      'max'    => 9999, 'min' => 0 ),
+                    array('maxGestationDays',   'type',           'type'   => 'integer'),
                     array('pickList',  'default',        'value'  => 'Value one'),
                     array('phone',     'length',         'max'    => 20),
                     array('phone',     'type',           'type'   => 'string'),
@@ -101,24 +111,26 @@
                     array('url',       'url'),
                 ),
                 'elements' => array(
-                    'description'   => 'TextArea',
-                    'checkBox'      => 'CheckBox',
-                    'currency'      => 'CurrencyValue',
-                    'date'          => 'Date',
-                    'dateTime'      => 'DateTime',
-                    'decimal'       => 'Decimal',
-                    'integer'       => 'Integer',
-                    'pickList'      => 'DropDown',
-                    'phone'         => 'Phone',
-                    'radioPickList' => 'RadioDropDown',
-                    'text'          => 'Text',
-                    'textArea'      => 'TextArea',
-                    'url'           => 'Url',
+                    'description'       => 'TextArea',
+                    'checkBox'          => 'CheckBox',
+                    'currency'          => 'CurrencyValue',
+                    'date'              => 'Date',
+                    'dateTime'          => 'DateTime',
+                    'decimal'           => 'Decimal',
+                    'maxGestationDays'  => 'Integer',
+                    'pickList'          => 'DropDown',
+                    'binomialName'      => 'DropDown',
+                    'phone'             => 'Phone',
+                    'radioPickList'     => 'RadioDropDown',
+                    'text'              => 'Text',
+                    'textArea'          => 'TextArea',
+                    'url'               => 'Url',
                 ),
                 'customFields' => array(
                     'type'          => 'AnimalType',
                     'pickList'      => 'AnimalPickList',
                     'radioPickList' => 'AnimalRadioPickList',
+                    'binomialName' => 'BinomialNames',
                 ),
                 'defaultSortAttribute' => 'name',
                 'noAudit' => array(
@@ -131,6 +143,12 @@
         {
             return true;
         }
+        
+        public static function hasReadPermissionsOptimization()
+        {
+            return true;
+        }
+
 
         protected static function translatedAttributeLabels($language)
         {
@@ -143,7 +161,7 @@
                     'date'              => Zurmo::t('AnimalsModule', 'Date',  $params, null, $language),
                     'dateTime'          => Zurmo::t('AnimalsModule', 'Date Time',  $params, null, $language),
                     'decimal'           => Zurmo::t('AnimalsModule', 'Decimal',  $params, null, $language),
-                    'integer'           => Zurmo::t('AnimalsModule', 'Integer',  $params, null, $language),
+                    'maxGestationDays'           => Zurmo::t('AnimalsModule', 'Max Gestation',  $params, null, $language),
                     'phone'             => Zurmo::t('AnimalsModule', 'Phone',  $params, null, $language),
                     'text'              => Zurmo::t('AnimalsModule', 'Text',  $params, null, $language),
                     'textArea'          => Zurmo::t('AnimalsModule', 'Text Area',  $params, null, $language),
@@ -152,6 +170,8 @@
                     'currency'          => Zurmo::t('AnimalsModule', 'Name',  $params, null, $language),
                     'pickList'          => Zurmo::t('AnimalsModule', 'Pick List',  $params, null, $language),
                     'radioPickList'     => Zurmo::t('AnimalsModule', 'Radio Pick List',  $params, null, $language),
+                    'binomialName'        => Zurmo::t('ZurmoModule',    'Binomial Name',  array(), null, $language),
+
                 )
             );
         }

@@ -52,6 +52,15 @@
                                         ),
                                     )
                                 ),
+                                array('cells' =>
+                                    array(
+                                        array(
+                                            'elements' => array(
+                                                array('attributeName' => 'binomialName', 'type' => 'DropDown', 'addBlank' => true),
+                                            ),
+                                        ),
+                                    )
+                                ),
                             ),
                         ),
                     ),

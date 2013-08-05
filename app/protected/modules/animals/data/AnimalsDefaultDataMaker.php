@@ -31,22 +31,31 @@ class AnimalsDefaultDataMaker extends DefaultDataMaker {
 
     public function make() {
         $values = array(
-            'Type 1',
-            'Type 2',
+            Zurmo::t('CustomField', 'Insect'),
+            Zurmo::t('CustomField', 'Mammal'),
+            Zurmo::t('CustomField', 'Reptile'),
         );
         static::makeCustomFieldDataByValuesAndDefault('AnimalType', $values);
 
         $values = array(
-            'Value 1',
-            'Value 2',
+            Zurmo::t('CustomField', 'Stripes'),
+            Zurmo::t('CustomField', 'Spots'),
         );
         static::makeCustomFieldDataByValuesAndDefault('AnimalPickList', $values);
 
         $values = array(
-            'Value 3',
-            'Value 4',
+            Zurmo::t('CustomField', 'Cute'),
+            Zurmo::t('CustomField', 'Scary'),
         );
         static::makeCustomFieldDataByValuesAndDefault('AnimalRadioPickList', $values);
+        
+        $values = array(
+            Zurmo::t('CustomField', 'Lasiorhinus latifrons'),
+            Zurmo::t('CustomField', 'Phascolarctos cinereus'),
+            Zurmo::t('CustomField', 'Phascolarctos stirtoni'),
+            Zurmo::t('CustomField', 'Vombatus ursinus'),
+        );
+        static::makeCustomFieldDataByValuesAndDefault('BinomialNames', $values);
     }
 }
 ?>

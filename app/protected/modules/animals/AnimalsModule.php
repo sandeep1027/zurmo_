@@ -33,6 +33,7 @@
         public function getDependencies()
         {
             return array(
+                'configuration',
                 'zurmo',
             );
         }
@@ -46,9 +47,9 @@
         {
             $params                              = LabelUtil::getTranslationParamsForAllModules();
             $labels                              = array();
-            $labels[self::RIGHT_CREATE_ACCOUNTS] = Zurmo::t('AnimalsModule', 'Create AnimalsModulePluralLabel',     $params);
-            $labels[self::RIGHT_DELETE_ACCOUNTS] = Zurmo::t('AnimalsModule', 'Delete AnimalsModulePluralLabel',     $params);
-            $labels[self::RIGHT_ACCESS_ACCOUNTS] = Zurmo::t('AnimalsModule', 'Access AnimalsModulePluralLabel Tab', $params);
+            $labels[self::RIGHT_CREATE_ANIMALS] = Zurmo::t('AnimalsModule', 'Create AnimalsModulePluralLabel',     $params);
+            $labels[self::RIGHT_DELETE_ANIMALS] = Zurmo::t('AnimalsModule', 'Delete AnimalsModulePluralLabel',     $params);
+            $labels[self::RIGHT_ACCESS_ANIMALS] = Zurmo::t('AnimalsModule', 'Access AnimalsModulePluralLabel Tab', $params);
             return $labels;
         }
 
@@ -56,6 +57,15 @@
         {
             $metadata = array();
             $metadata['global'] = array(
+                'designerMenuItems' => array(
+                    'showFieldsLink' => true,
+                    'showGeneralLink' => true,
+                    'showLayoutsLink' => true,
+                    'showMenusLink' => true,
+                ),
+                'globalSearchAttributeNames' => array(
+                    'name',
+                ),
                 'tabMenuItems' => array(
                     array(
                         'label'  => "eval:Zurmo::t('AnimalsModule', 'AnimalsModulePluralLabel', \$translationParams)",
@@ -64,14 +74,13 @@
                         'mobile' => true,
                     ),
                 ),
-                'designerMenuItems' => array(
-                    'showFieldsLink' => true,
-                    'showGeneralLink' => true,
-                    'showLayoutsLink' => true,
-                    'showMenusLink' => true,
-                ),
-                'globalSearchAttributeNames' => array(
-                    'name'
+                'shortcutsCreateMenuItems' => array(
+                    array(
+                        'label'  => "eval:Zurmo::t('AnimalsModule', 'AnimalsModuleSingularLabel', \$translationParams)",
+                        'url'    => array('/animals/default/create'),
+                        'right'  => self::RIGHT_CREATE_ANIMALS,
+                        'mobile' => true,
+                    ),
                 )
             );
             return $metadata;
@@ -101,11 +110,46 @@
         {
             return self::RIGHT_DELETE_ANIMALS;
         }
+        
+        public static function getDefaultDataMakerClassName()
+        {
+            return 'AnimalsDefaultDataMaker';
+        }
+
+        public static function getDemoDataMakerClassNames()
+        {
+            return array('AnimalsDemoDataMaker');
+        }
 
         public static function getGlobalSearchFormClassName()
         {
             return 'AnimalsSearchForm';
         }
+        
+        public static function hasPermissions()
+        {
+            return true;
+        }
+
+        public static function isReportable()
+        {
+            return true;
+        }
+
+        public static function canHaveWorkflow()
+        {
+            return true;
+        }
+
+        public static function canHaveContentTemplates()
+        {
+            return true;
+        }
+
+//        public static function getGlobalSearchFormClassName()
+//        {
+//            return null;
+//        }
 
         protected static function getSingularModuleLabel($language)
         {
@@ -114,7 +158,7 @@
 
         protected static function getPluralModuleLabel($language)
         {
-            return Zurmo::t('AnimalsModule', 'Animal', array(), null, $language);
+            return Zurmo::t('AnimalsModule', 'Animals', array(), null, $language);
         }
     }
 ?>
