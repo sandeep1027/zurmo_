@@ -35,7 +35,7 @@ class AnimalsDefaultDataMaker extends DefaultDataMaker {
             Zurmo::t('CustomField', 'Mammal'),
             Zurmo::t('CustomField', 'Reptile'),
         );
-        static::makeCustomFieldDataByValuesAndDefault('AnimalType', $values);
+        static::makeCustomFieldDataByValuesAndDefault('AnimalTypes', $values);
 
         $values = array(
             Zurmo::t('CustomField', 'Stripes'),

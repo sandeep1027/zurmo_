@@ -127,10 +127,10 @@
                     'url'               => 'Url',
                 ),
                 'customFields' => array(
-                    'type'          => 'AnimalType',
+                    'type'          => 'AnimalTypes',
                     'pickList'      => 'AnimalPickList',
                     'radioPickList' => 'AnimalRadioPickList',
-                    'binomialName' => 'BinomialNames',
+                    'binomialName'  => 'BinomialNames',
                 ),
                 'defaultSortAttribute' => 'name',
                 'noAudit' => array(
@@ -149,7 +149,6 @@
             return true;
         }
 
-
         protected static function translatedAttributeLabels($language)
         {
             $params = LabelUtil::getTranslationParamsForAllModules();
@@ -161,7 +160,7 @@
                     'date'              => Zurmo::t('AnimalsModule', 'Date',  $params, null, $language),
                     'dateTime'          => Zurmo::t('AnimalsModule', 'Date Time',  $params, null, $language),
                     'decimal'           => Zurmo::t('AnimalsModule', 'Decimal',  $params, null, $language),
-                    'maxGestationDays'           => Zurmo::t('AnimalsModule', 'Max Gestation',  $params, null, $language),
+                    'maxGestationDays'  => Zurmo::t('AnimalsModule', 'Max Gestation',  $params, null, $language),
                     'phone'             => Zurmo::t('AnimalsModule', 'Phone',  $params, null, $language),
                     'text'              => Zurmo::t('AnimalsModule', 'Text',  $params, null, $language),
                     'textArea'          => Zurmo::t('AnimalsModule', 'Text Area',  $params, null, $language),
@@ -170,7 +169,7 @@
                     'currency'          => Zurmo::t('AnimalsModule', 'Name',  $params, null, $language),
                     'pickList'          => Zurmo::t('AnimalsModule', 'Pick List',  $params, null, $language),
                     'radioPickList'     => Zurmo::t('AnimalsModule', 'Radio Pick List',  $params, null, $language),
-                    'binomialName'        => Zurmo::t('ZurmoModule',    'Binomial Name',  array(), null, $language),
+                    'binomialName'      => Zurmo::t('AnimalsModule',    'Binomial Name',  array(), null, $language),
 
                 )
             );

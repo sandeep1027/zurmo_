@@ -59,7 +59,7 @@
             //Searching with a custom field that is not blank should not produce any errors.
             //The data returned should be no animals.
             $fakePostData        = array('name'         => null,
-                                         'binomialName'     => array('value' => 'Phascolarctos cinereus'),
+                                         'binomialName' => array('value' => 'Phascolarctos cinereus'),
             );
             $animal             = new Animal(false);
             $searchForm          = new AnimalsSearchForm($animal);
@@ -82,7 +82,7 @@
             //Searching with a custom field that is not blank should not produce any errors.
             //The data returned should be no animals.
             $fakePostData        = array('name'         => null,
-                                         'binomialName'     => array('value' => "Ban'king"),
+                                         'binomialName' => array('value' => "Ban'king"),
                 );
             $animal             = new Animal(false);
             $searchForm          = new AnimalsSearchForm($animal);

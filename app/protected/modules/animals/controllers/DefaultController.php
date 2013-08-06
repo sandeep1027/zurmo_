@@ -28,7 +28,6 @@
     {
         public function filters()
         {
-            
             $modelClassName   = $this->getModule()->getPrimaryModelName();
             $viewClassName    = $modelClassName . 'EditAndDetailsView';
             return array_merge(parent::filters(),
@@ -44,8 +43,6 @@
                    ),
                )
             );
-            
-          
         }
 
         public function actionList()
@@ -77,8 +74,6 @@
                     makeStandardViewForCurrentUser($this, $mixedView));
             }
             echo $view->render();
-            
-
         }
 
         public function actionDetails($id)
@@ -94,7 +89,6 @@
             $view = new AnimalsPageView(ZurmoDefaultViewUtil::
                 makeStandardViewForCurrentUser($this, $detailsAndRelationsView));
             echo $view->render();
-            
         }
 
 
@@ -111,13 +105,6 @@
         {
             $animal = Animal::getById(intval($id));
             ControllerSecurityUtil::resolveAccessCanCurrentUserWriteModel($animal);
-//            $view = new AnimalsPageView(ZurmoDefaultViewUtil::
-//                                         makeStandardViewForCurrentUser($this,
-//                                             $this->makeEditAndDetailsView(
-//                                                 $this->attemptToSaveModelFromPost($animal, $redirectUrl), 'Edit')));
-//            echo $view->render();
-            
-            
             $this->processEdit($animal, $redirectUrl);
         }
         

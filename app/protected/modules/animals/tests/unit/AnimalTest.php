@@ -49,7 +49,6 @@
             Yii::app()->user->userModel = User::getByUsername('super');
         }
 
-        
         public function testCreateAndGetAnimalById()
         {
             $user = UserTestHelper::createBasicUser('Steven');
@@ -75,8 +74,6 @@
             $this->assertEquals('Windsor Wallaby', $animal->name);
             $this->assertEquals('Phascolarctos cinereus',   $animal->binomialName->value);
         }
-
-        
 
         /**
          * @depends testCreateAndGetAnimalById
@@ -184,8 +181,6 @@
             $animal = Animal::getById($id);
             $this->assertEquals('New Name', $animal->name);
         }
-
-        
 
         /**
          * @depends testUpdateAnimalFromForm
@@ -318,13 +313,13 @@
             $_POST['MassEdit'] = array(
                 'owner' => '1',
             );
-            $_POST['fake']  = array(
+            $fakePost  = array(
                 'owner'     => array(
                     'id'    => '',
                 )
             );
             PostUtil::sanitizePostForSavingMassEdit('fake');
-            $animal->setAttributes($_POST['fake']);
+            $animal->setAttributes($fakePost);
             $animal->validate(array_keys($_POST['MassEdit']));
             //there should be an owner error since it is specified but blank
             $this->assertNotEquals(array(), $animal->getErrors());
@@ -334,14 +329,14 @@
                 'maxGestationDays' => '1',
                 'owner'     => '2',
             );
-            $_POST['fake'] = array(
+            $fakePost = array(
                 'maxGestationDays' => 4,
                 'owner'     => array(
                      'id' => $user->id,
                 )
             );
             PostUtil::sanitizePostForSavingMassEdit('fake');
-            $animal->setAttributes($_POST['fake']);
+            $animal->setAttributes($fakePost);
             $animal->validate(array_keys($_POST['MassEdit']));
             $this->assertEquals(array(), $animal->getErrors());
         }

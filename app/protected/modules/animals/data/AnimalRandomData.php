@@ -34,32 +34,37 @@
      * "Copyright Zurmo Inc. 2013. All rights reserved".
      ********************************************************************************/
 
-    class AnimalTestHelper
-    {
-        public static function createAnimalByNameForOwner($name, $owner)
-        {
-            $animal         = new Animal();
-            $animal->name   = $name;
-            $animal->owner  = $owner;
-            $saved = $animal->save();
-            assert('$saved');
-            return $animal;
-        }
-
-        public static function createAnimalByNameTypeAndBinomialNameForOwner($name, $type, $binomialName, $owner)
-        {
-            $animal                         = new Animal();
-            $animal->name                   = $name;
-            $animal->binomialName->value    = $binomialName;
-            $animal->type->value            = $type;
-            $animal->owner = $owner;
-            $saved = $animal->save();
-            assert('$saved');
-            return $animal;
-        }
-
-        public static function createAnimalsForSearchWithDataProviderTests()
-        {
-        }
-    }
+    /**
+     * Animal related array of random seed data parts.
+     */
+    return array(
+        'names' => array(
+            'Andy Albatross',
+            'Billy Beaver',
+            'Charlie Cheetah',
+            'Donald Dolphin',
+            'Eric Elephant',
+            'Freddie Flamingo',
+            'Gordon Gecko',
+            'Harriet Hyena',
+            'Igor Iguana',
+            'Jimmy Jaguar',
+            'Kristine Kakapo',
+            'Lenny Lemur',
+            'Maggie Magpie',
+            'Newt Gingrich',
+            'Oscar Octopus',
+            'Porky Pig',
+            'Quinn Quail',
+            'Roger Raccoon',
+            'Sammy Skunk',
+            'Tommy Tiger',
+            'Ummi Umbrellabird',
+            'Vicki Vulture',
+            'Windsor Wallaby',
+            'Xerxes X-Ray Tetra',
+            'Yakkity Yak',
+            'Zeus Zebra',
+        )
+    );
 ?>
