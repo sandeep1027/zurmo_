@@ -34,32 +34,50 @@
      * "Copyright Zurmo Inc. 2013. All rights reserved".
      ********************************************************************************/
 
-    class AnimalTestHelper
+    /**
+     * Class that builds demo animals.
+     */
+    class AnimalsDemoDataMaker extends DemoDataMaker
     {
-        public static function createAnimalByNameForOwner($name, $owner)
+        protected $ratioToLoad = 1;
+
+        public static function getDependencies()
         {
-            $animal         = new Animal();
-            $animal->name   = $name;
-            $animal->owner  = $owner;
-            $saved = $animal->save();
-            assert('$saved');
-            return $animal;
+            return array('users');
         }
 
-        public static function createAnimalByNameTypeAndBinomialNameForOwner($name, $type, $binomialName, $owner)
+        public function makeAll(& $demoDataHelper)
         {
-            $animal                         = new Animal();
-            $animal->name                   = $name;
-            $animal->binomialName->value    = $binomialName;
-            $animal->type->value            = $type;
-            $animal->owner = $owner;
-            $saved = $animal->save();
-            assert('$saved');
-            return $animal;
+            assert('$demoDataHelper instanceof DemoDataHelper');
+            assert('$demoDataHelper->isSetRange("User")');
+
+            $animals = array();
+            for ($i = 0; $i < $this->resolveQuantityToLoad(); $i++)
+            {
+                $animal = new Animal();
+                $animal->owner = $demoDataHelper->getRandomByModelName('User');
+                $this->populateModel($animal);
+                $saved = $animal->save();
+                assert('$saved');
+                $animals[] = $animal->id;
+            }
+            $demoDataHelper->setRangeByModelName('Animal', $animals[0], $animals[count($animals)-1]);
         }
 
-        public static function createAnimalsForSearchWithDataProviderTests()
+        public function populateModel(& $model)
         {
+            assert('$model instanceof Animal');
+            parent::populateModel($model);
+            $animalRandomData = ZurmoRandomDataUtil::getRandomDataByModuleAndModelClassNames('AnimalsModule', 'Animal');
+            $name = RandomDataUtil::getRandomValueFromArray($animalRandomData['names']);
+
+            $type       = RandomDataUtil::getRandomValueFromArray(static::getCustomFieldDataByName('AnimalTypes'));
+            $binomialName   = RandomDataUtil::getRandomValueFromArray(static::getCustomFieldDataByName('BinomialNames'));
+
+            $model->name            = $name;
+            $model->type->value     = $type;
+            $model->binomialName->value = $binomialName;
+            
         }
     }
 ?>

@@ -57,11 +57,11 @@
         {
             $metadata = array();
             $metadata['global'] = array(
-                'designerMenuItems' => array(
-                    'showFieldsLink' => true,
-                    'showGeneralLink' => true,
-                    'showLayoutsLink' => true,
-                    'showMenusLink' => true,
+                'designerMenuItems'     => array(
+                    'showFieldsLink'    => true,
+                    'showGeneralLink'   => true,
+                    'showLayoutsLink'   => true,
+                    'showMenusLink'     => true,
                 ),
                 'globalSearchAttributeNames' => array(
                     'name',
@@ -145,11 +145,6 @@
         {
             return true;
         }
-
-//        public static function getGlobalSearchFormClassName()
-//        {
-//            return null;
-//        }
 
         protected static function getSingularModuleLabel($language)
         {
